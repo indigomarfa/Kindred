@@ -1,0 +1,7 @@
+{
+  "name": "Kindred",
+  "description": "A meaningful connection platform focusing on shared interests and direct scheduling to remove social friction.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
