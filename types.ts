@@ -36,6 +36,8 @@ export enum TimeOfDay {
   WEEKEND = 'Weekends Only'
 }
 
+export type SelfDefinition = 'Pro' | 'Fierce enthusiast' | 'Fan' | 'Learner' | 'First-stepper';
+
 export interface User {
   id: string;
   name: string;
@@ -52,6 +54,11 @@ export interface User {
   occupation: string;
   bio: string;
   interests: string[];
+  interestDuration?: {
+    value: number;
+    unit: 'Weeks' | 'Months' | 'Years';
+  };
+  selfDefinition?: SelfDefinition;
   personality: PersonalityType;
   preferredTime: TimeOfDay;
   isGolden?: boolean;
