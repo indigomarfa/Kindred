@@ -15,7 +15,7 @@
       h1, h2, h3, h4, h5, h6, .font-display, .uppercase {
         font-family: 'Outfit', sans-serif;
       }
-      /* Custom scrollbar for cleaner look */
+      
       ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -35,8 +35,45 @@
         clip-path: polygon(0 0, 100% 0, 100% 85%, 95% 100%, 0 100%);
       }
       
-      .glow-avatar {
-        box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+      .journey-path-glow {
+        box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
+      }
+
+      .cta-lean {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .cta-lean:hover {
+        transform: translateX(4px);
+      }
+
+      .narrative-beat {
+        position: relative;
+        padding-left: 1.5rem;
+      }
+
+      .narrative-beat::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.5rem;
+        width: 2px;
+        height: 1.5rem;
+        background: #dc2626;
+        border-radius: 99px;
+      }
+      
+      @keyframes fade-up-noted {
+        0% { opacity: 0; transform: translateY(8px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+
+      .noted-feedback {
+        animation: fade-up-noted 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+
+      .journey-line-segment {
+        transition: all 0.8s cubic-bezier(0.65, 0, 0.35, 1);
       }
     </style>
   <script type="importmap">

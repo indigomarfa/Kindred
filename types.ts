@@ -4,9 +4,9 @@ export enum ViewState {
   MEETINGS = 'MEETINGS',
   LIKES = 'LIKES',
   SUBSCRIPTION = 'SUBSCRIPTION',
-  PERKS = 'PERKS', // New view
+  PERKS = 'PERKS',
   GOLDEN = 'GOLDEN',
-  USER_DETAILS = 'USER_DETAILS' // Visiting another profile
+  USER_DETAILS = 'USER_DETAILS'
 }
 
 export enum AuthStep {
@@ -38,12 +38,19 @@ export enum TimeOfDay {
 
 export type SelfDefinition = 'Pro' | 'Fierce enthusiast' | 'Fan' | 'Learner' | 'First-stepper';
 
+export interface Milestone {
+  id: string;
+  label: string;
+  description: string;
+  date: Date;
+}
+
 export interface User {
   id: string;
   name: string;
   age: number;
   gender: Gender;
-  rating: number; // New field
+  rating: number;
   avatar: string;
   location: {
     country: string;
@@ -63,6 +70,9 @@ export interface User {
   preferredTime: TimeOfDay;
   isGolden?: boolean;
   isOnline?: boolean;
+  hasCompletedOnboarding?: boolean;
+  milestones: Milestone[];
+  identityLabel?: string;
 }
 
 export interface Meeting {

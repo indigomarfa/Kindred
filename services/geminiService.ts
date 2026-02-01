@@ -1,15 +1,21 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 
-const apiKey = process.env.API_KEY || '';
-const ai = new GoogleGenAI({ apiKey });
+// Always use the environment variable directly for API key initialization
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
+// Simple in-memory cache to speed up repeated queries
+const suggestionCache = new Map<string, string[]>();
+const relatedCache = new Map<string, string[]>();
+
+/**
+ * Generates a creative bio using Gemini AI.
+ */
 export const generateSmartBio = async (
   interests: string[],
   occupation: string,
   personality: string
 ): Promise<string> => {
-  if (!apiKey) return "Please configure your API Key to use AI features.";
-
   try {
     const prompt = `
       Write a short, engaging, and modern social bio (max 40 words) for a user on a connection app called "Kindred".
@@ -17,21 +23,24 @@ export const generateSmartBio = async (
       The tone should be friendly, professional yet approachable. No hashtags.
     `;
 
+    // Direct call to generateContent with model and prompt
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
     });
 
-    return response.text.trim();
+    // Access .text property directly (not as a function)
+    return response.text?.trim() || "Could not generate bio at this time.";
   } catch (error) {
     console.error("Gemini Error:", error);
     return "Could not generate bio at this time.";
   }
 };
 
+/**
+ * Generates a full profile persona using structured JSON output.
+ */
 export const generateFullProfile = async (name: string): Promise<any> => {
-  if (!apiKey) return null;
-
   try {
     const prompt = `Generate a cohesive and interesting persona for a user named "${name}" on a social connection app. 
     Provide a realistic occupation, a major city, a set of 4-5 specific interests, a personality type (Introvert, Extrovert, or Ambivert), 
@@ -67,21 +76,28 @@ export const generateFullProfile = async (name: string): Promise<any> => {
       }
     });
 
-    return JSON.parse(response.text);
+    const text = response.text;
+    return text ? JSON.parse(text) : null;
   } catch (error) {
     console.error("Gemini Full Profile Error:", error);
     return null;
   }
 };
 
+/**
+ * Suggests interests based on partial input using the model.
+ */
 export const getInterestSuggestions = async (input: string): Promise<string[]> => {
-  if (!apiKey || input.length < 2) return [];
+  if (input.length < 2) return [];
+  
+  const cacheKey = input.toLowerCase().trim();
+  if (suggestionCache.has(cacheKey)) {
+    return suggestionCache.get(cacheKey)!;
+  }
 
   try {
-    const prompt = `Based on the partial text "${input}", suggest 8 unique, high-quality, and meaningful interests or hobbies. 
-    Focus on intellectual, professional, creative, and niche topics. 
-    Include variations, synonyms, and specific sub-topics. 
-    Respond ONLY with a JSON array of strings.`;
+    const prompt = `Suggest 8 unique interests for partial text "${cacheKey}". 
+    Focus on intellectual, professional, creative topics. Respond ONLY with a JSON array of strings.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -95,19 +111,30 @@ export const getInterestSuggestions = async (input: string): Promise<string[]> =
       }
     });
 
-    return JSON.parse(response.text);
+    const text = response.text;
+    if (!text) return [];
+    const result = JSON.parse(text);
+    suggestionCache.set(cacheKey, result);
+    return result;
   } catch (error) {
     console.error("Gemini Suggestion Error:", error);
     return [];
   }
 };
 
+/**
+ * Suggests related interests based on current interests list.
+ */
 export const getRelatedInterests = async (currentInterests: string[]): Promise<string[]> => {
-  if (!apiKey || currentInterests.length === 0) return [];
+  if (currentInterests.length === 0) return [];
+
+  const cacheKey = [...currentInterests].sort().join('|').toLowerCase();
+  if (relatedCache.has(cacheKey)) {
+    return relatedCache.get(cacheKey)!;
+  }
 
   try {
-    const prompt = `Given these interests: ${currentInterests.join(', ')}, suggest 6 related, complementary, or semantically close interests that the user might also enjoy. 
-    Avoid obvious duplicates. Focus on variety and depth.
+    const prompt = `Given these interests: ${currentInterests.join(', ')}, suggest 6 related interests. 
     Respond ONLY with a JSON array of strings.`;
 
     const response = await ai.models.generateContent({
@@ -122,7 +149,11 @@ export const getRelatedInterests = async (currentInterests: string[]): Promise<s
       }
     });
 
-    return JSON.parse(response.text);
+    const text = response.text;
+    if (!text) return [];
+    const result = JSON.parse(text);
+    relatedCache.set(cacheKey, result);
+    return result;
   } catch (error) {
     console.error("Gemini Related Interests Error:", error);
     return [];
