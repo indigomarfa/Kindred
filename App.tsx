@@ -12,6 +12,8 @@ import {
 
 // --- CONSTANTS ---
 
+const accentRed = "#FF2A2A";
+
 const OCCUPATION_SUGGESTIONS = [
   "Software Engineer", "Digital Artist", "Data Scientist", "Architect", "Chef", 
   "UX Designer", "Product Manager", "Marketing Lead", "Musician", "Marine Biologist",
@@ -57,16 +59,163 @@ const MOCK_USERS: User[] = [
   { id: '4', name: 'James Smith', age: 29, gender: Gender.MALE, rating: 4.8, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&auto=format&fit=crop&q=60', location: { country: 'Australia', city: 'Melbourne', lat: -37.81, lng: 144.96 }, occupation: 'Robotics Engineer', bio: 'Building the future. Big fan of tech, sci-fi, and fast cars.', interests: ['Engineering', 'Robotics', 'Formula 1'], personality: PersonalityType.AMBIVERT, preferredTime: TimeOfDay.MORNING, milestones: [] }
 ];
 
+// --- 3D BUTTON COMPONENT ---
+
+function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
+  const [isPressed, setIsPressed] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <button
+      type="button"
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsPressed(false);
+        setIsHovered(false);
+      }}
+      onClick={onClick}
+      style={{
+        position: "relative",
+        width: 320,
+        height: 78,
+        border: "none",
+        padding: 0,
+        background: "transparent",
+        cursor: "pointer",
+        outline: "none",
+      }}
+    >
+      {/* Black outer base with conditional red ambient glow */}
+      <span
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: 999,
+          background:
+            "linear-gradient(180deg, #5a5a5a 0%, #1a1a1a 45%, #080808 100%)",
+          boxShadow: isHovered
+            ? `0 45px 100px -15px rgba(255,42,42,0.85), 
+               0 20px 45px -5px rgba(255,42,42,0.55),
+               0 0 60px 0px rgba(255,42,42,0.4), 
+               0 25px 40px rgba(0,0,0,0.9), 
+               inset 0 2px 0 rgba(255,255,255,0.15), 
+               inset 0 -18px 24px rgba(0,0,0,0.9)`
+            : `0 15px 30px rgba(0,0,0,0.6), 
+               0 25px 40px rgba(0,0,0,0.8), 
+               inset 0 2px 0 rgba(255,255,255,0.1), 
+               inset 0 -18px 24px rgba(0,0,0,0.9)`,
+          transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+      />
+
+      {/* Red bottom thickness (base lip) */}
+      <span
+        style={{
+          position: "absolute",
+          left: 14,
+          right: 14,
+          bottom: 10,
+          height: 18,
+          borderRadius: 999,
+          background:
+            "linear-gradient(180deg, #ff4b4b 0%, #e10000 55%, #a30000 100%)",
+          boxShadow: isHovered
+            ? `0 0 35px rgba(255,42,42,0.5),
+               0 10px 14px rgba(0,0,0,.45), 
+               inset 0 2px 0 rgba(255,255,255,.22), 
+               inset 0 -7px 10px rgba(0,0,0,.48)`
+            : `0 10px 14px rgba(0,0,0,.45), 
+               inset 0 2px 0 rgba(255,255,255,.22), 
+               inset 0 -7px 10px rgba(0,0,0,.48)`,
+          transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+      />
+
+      {/* White top face (pressable) */}
+      <span
+        style={{
+          position: "absolute",
+          left: 10,
+          right: 10,
+          top: 10,
+          height: 54,
+          borderRadius: 999,
+          background:
+            "linear-gradient(180deg, #ffffff 0%, #f4f4f4 55%, #e6e6e6 100%)",
+          boxShadow: isPressed 
+            ? "0 4px 0 rgba(0,0,0,.30), inset 0 2px 0 rgba(255,255,255,.90), inset 0 -3px 0 rgba(0,0,0,.12)"
+            : "0 11px 0 rgba(0,0,0,.30), inset 0 2px 0 rgba(255,255,255,.90), inset 0 -3px 0 rgba(0,0,0,.12)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
+          transform: isPressed ? "translateY(7px)" : "translateY(0px)",
+          transition: "transform 120ms ease-out, box-shadow 120ms ease-out",
+        }}
+      >
+        {/* Gloss highlight */}
+        <span
+          style={{
+            position: "absolute",
+            left: "8%",
+            right: "8%",
+            top: "8%",
+            height: "60%",
+            borderRadius: 999,
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(255,255,255,.50) 55%, rgba(255,255,255,0) 100%)",
+            transform: "skewX(-16deg)",
+            opacity: 0.92,
+          }}
+        />
+
+        {/* Top rim line */}
+        <span
+          style={{
+            position: "absolute",
+            left: "10%",
+            right: "10%",
+            top: 3,
+            height: 2,
+            borderRadius: 999,
+            background: "rgba(255,255,255,.80)",
+            opacity: 0.65,
+          }}
+        />
+
+        {/* Label */}
+        <span
+          style={{
+            position: "relative",
+            fontWeight: 800,
+            fontSize: 13,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            color: "#111",
+            fontFamily: "'Outfit', sans-serif",
+          }}
+        >
+          START JOURNEY
+        </span>
+      </span>
+    </button>
+  );
+}
+
 // --- SUB-COMPONENTS ---
 
-const Background = () => (
-  <div className="fixed inset-0 z-0 pointer-events-none bg-neutral-950 overflow-hidden">
-    <div className="absolute inset-0 opacity-10" style={{ 
-      backgroundImage: `linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)`, 
-      backgroundSize: '80px 80px' 
-    }}></div>
-    <div className="absolute left-[5%] top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-red-900/5 to-transparent"></div>
-    <div className="absolute right-[5%] top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-red-900/5 to-transparent"></div>
+const Background = ({ isAuth = false }: { isAuth?: boolean }) => (
+  <div className="fixed inset-0 z-0 pointer-events-none bg-[#0d0d0d] overflow-hidden">
+    {!isAuth && (
+      <div className="absolute inset-0 opacity-[0.03]" style={{ 
+        backgroundImage: `linear-gradient(#444 1px, transparent 1px), linear-gradient(90deg, #444 1px, transparent 1px)`, 
+        backgroundSize: '80px 80px' 
+      }}></div>
+    )}
+    <div className="absolute left-[5%] top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-white/5 to-transparent"></div>
+    <div className="absolute right-[5%] top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-white/5 to-transparent"></div>
   </div>
 );
 
@@ -136,12 +285,12 @@ const AutocompleteInput = ({
 
   return (
     <div className="relative group">
-      {label && <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3 group-focus-within:text-red-500 transition-colors">{label}</label>}
+      {label && <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3 group-focus-within:text-white transition-colors">{label}</label>}
       <div className="relative">
         <input 
           ref={inputRef}
           type="text"
-          className="w-full px-4 py-0 bg-black border border-neutral-800 focus:border-red-600 outline-none text-white placeholder-neutral-500 placeholder-opacity-50 rounded-xl transition-all font-medium h-[56px] text-sm group-hover:border-neutral-700"
+          className="w-full px-4 py-0 bg-neutral-900/60 border-none shadow-[0_20px_40px_-12px_rgba(255,42,42,0.25)] focus:shadow-[0_25px_50px_-12px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(255,42,42,0.2)] outline-none text-white placeholder-neutral-500 placeholder-opacity-50 rounded-xl transition-all font-medium h-[56px] text-sm"
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -152,7 +301,7 @@ const AutocompleteInput = ({
         />
         {isLoading && (
           <div className="absolute right-4 top-1/2 -translate-y-1/2">
-            <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
           </div>
         )}
       </div>
@@ -170,7 +319,7 @@ const AutocompleteInput = ({
               }}
               className={`w-full text-left p-4 text-sm font-medium transition-colors flex items-center gap-3 border-b border-neutral-800 last:border-none ${highlightedIndex === idx ? 'bg-neutral-800 text-white' : 'text-neutral-400'}`}
             >
-              <div className={`w-1.5 h-1.5 rounded-full transition-all ${highlightedIndex === idx ? 'bg-red-600' : 'bg-neutral-700'}`}></div>
+              <div className={`w-1.5 h-1.5 rounded-full transition-all ${highlightedIndex === idx ? 'bg-white' : 'bg-neutral-700'}`}></div>
               {s}
             </button>
           ))}
@@ -184,7 +333,7 @@ const AutocompleteInput = ({
               }}
               className={`w-full text-left p-4 text-sm font-medium transition-colors flex items-center gap-3 border-b border-neutral-800 last:border-none ${highlightedIndex === combinedSuggestions.length ? 'bg-neutral-800 text-white' : 'text-neutral-400'}`}
             >
-              <Icons.Sparkles className="w-4 h-4 text-red-500" />
+              <Icons.Sparkles className="w-4 h-4 text-white/40" />
               Add custom: "{value}"
             </button>
           )}
@@ -197,8 +346,8 @@ const AutocompleteInput = ({
 const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: any) => (
   <nav className="sticky top-0 z-50 bg-black/95 backdrop-blur-xl border-b border-neutral-800 h-24 px-6 md:px-12 flex items-center justify-between transition-all">
     <div className="flex items-center gap-5 cursor-pointer group" onClick={() => handleNav(ViewState.DISCOVERY)}>
-      <div className="w-10 h-10 bg-red-600 flex items-center justify-center text-white font-bold text-xl clip-diagonal group-hover:bg-white group-hover:text-black transition-all transform group-hover:scale-105">K</div>
-      <span className="text-xl md:text-2xl font-bold tracking-tight text-white group-hover:text-red-500 transition-all font-display uppercase">KINDRED</span>
+      <div className="w-10 h-10 bg-neutral-100 flex items-center justify-center text-black font-bold text-xl clip-diagonal group-hover:bg-neutral-200 transition-all transform group-hover:scale-105">K</div>
+      <span className="text-xl md:text-2xl font-bold tracking-tight text-white group-hover:text-neutral-400 transition-all font-display uppercase">KIND<span style={{ color: accentRed }}>RED.</span></span>
     </div>
 
     <div className="hidden md:flex items-center gap-8">
@@ -213,7 +362,7 @@ const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: a
            onClick={() => handleNav(item.id)}
            className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-all py-1 border-b-2 ${
              view === item.id 
-               ? 'border-red-600 text-white' 
+               ? 'border-white text-white' 
                : item.special 
                  ? 'border-transparent text-amber-500 hover:text-amber-400' 
                  : 'border-transparent text-neutral-500 hover:text-white'
@@ -229,7 +378,7 @@ const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: a
         <button onClick={() => setChatsOpen(prev => !prev)} className="p-2 text-neutral-500 hover:text-white transition-all"><Icons.MessageCircle className="w-5 h-5" /></button>
         <button onClick={() => setNotifsOpen(prev => !prev)} className="p-2 text-neutral-500 hover:text-white transition-all"><Icons.Bell className="w-5 h-5" /></button>
       </div>
-      <button onClick={() => handleNav(ViewState.PROFILE)} className="w-12 h-12 rounded-full p-0.5 bg-neutral-800 hover:bg-red-600 transition-all group overflow-hidden">
+      <button onClick={() => handleNav(ViewState.PROFILE)} className="w-12 h-12 rounded-full p-0.5 bg-neutral-800 hover:bg-neutral-700 transition-all group overflow-hidden">
          <img src={currentUser.avatar} alt="Profile" className="w-full h-full rounded-full object-cover border-2 border-black" />
       </button>
     </div>
@@ -364,12 +513,12 @@ const ProfileSetupView = ({
           {Array.from({ length: totalSteps }).map((_, i) => (
             <div 
               key={i} 
-              className={`h-full flex-1 journey-line-segment ${i + 1 <= step ? 'bg-red-600 journey-path-glow' : 'bg-transparent'}`}
+              className={`h-full flex-1 journey-line-segment ${i + 1 <= step ? 'bg-white' : 'bg-transparent'}`}
             />
           ))}
         </div>
         <div className="flex justify-between mt-4">
-          <span className="text-[10px] font-black text-red-500 uppercase tracking-widest noted-feedback">{labels[step-1]}</span>
+          <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest noted-feedback">{labels[step-1]}</span>
           <span className="text-[9px] font-bold text-neutral-600 uppercase tracking-widest">{step === totalSteps ? "Taking shape" : "Moving forward"}</span>
         </div>
       </div>
@@ -383,7 +532,11 @@ const ProfileSetupView = ({
       ) : <div />}
       <div className="flex gap-8 items-center">
         {skip && !isEditMode && <button type="button" onClick={onNext} className="text-neutral-500 hover:text-white text-xs font-bold uppercase tracking-widest transition-all">Skip</button>}
-        <button type="button" onClick={onNext} className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-neutral-100 transition-all text-[11px] rounded-xl shadow-2xl active:scale-95 cta-lean">
+        <button 
+          type="button" 
+          onClick={onNext} 
+          className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-neutral-100 transition-all text-[11px] rounded-xl shadow-[0_25px_45px_-10px_rgba(255,42,42,0.45),0_10px_20px_-5px_rgba(255,42,42,0.2)] active:scale-95 cta-lean"
+        >
           {isEditMode && step !== 7 ? "Refine" : nextLabel}
         </button>
       </div>
@@ -392,8 +545,8 @@ const ProfileSetupView = ({
 
   return (
     <div className="min-h-screen py-8 px-4 flex justify-center items-start overflow-y-auto text-white relative">
-       <Background />
-       <div className="max-w-3xl w-full bg-neutral-900/60 backdrop-blur-3xl border border-neutral-800 p-6 md:p-10 relative z-10 shadow-2xl rounded-[3rem] animate-in fade-in zoom-in duration-700">
+       <Background isAuth />
+       <div className="max-w-3xl w-full bg-neutral-800/40 backdrop-blur-3xl border border-white/10 p-6 md:p-10 relative z-10 shadow-2xl rounded-[3rem] animate-in fade-in zoom-in duration-700" style={{ boxShadow: '0 40px 100px rgba(0,0,0,0.4)', outline: '1px solid rgba(255,255,255,0.06)' }}>
          
          <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end border-b border-neutral-900 pb-8 gap-4">
            <div>
@@ -405,8 +558,8 @@ const ProfileSetupView = ({
              </p>
            </div>
            {currentUser.identityLabel && isEditMode && (
-             <div className="bg-white/5 border border-white/10 px-5 py-3 rounded-2xl group transition-all hover:border-red-600/50 hover:bg-red-600/5 cursor-default">
-               <span className="text-[11px] font-black uppercase tracking-[0.3em] text-red-500 group-hover:text-red-400">{currentUser.identityLabel}</span>
+             <div className="bg-white/5 border border-white/10 px-5 py-3 rounded-2xl group transition-all hover:bg-white/10 cursor-default">
+               <span className="text-[11px] font-black uppercase tracking-[0.3em] text-neutral-400 group-hover:text-white">{currentUser.identityLabel}</span>
              </div>
            )}
          </div>
@@ -426,7 +579,7 @@ const ProfileSetupView = ({
                  <input 
                     type="number" 
                     min="18" 
-                    className="w-full px-6 py-0 bg-black border border-neutral-800 focus:border-red-600 outline-none text-white text-left font-bold rounded-xl h-[64px] text-lg placeholder-neutral-700 transition-all hover:border-neutral-700" 
+                    className="w-full px-6 py-0 bg-neutral-900/60 border-none shadow-[0_20px_40px_-12px_rgba(255,42,42,0.25)] focus:shadow-[0_25px_50px_-12px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(255,42,42,0.2)] outline-none text-white text-left font-bold rounded-xl h-[64px] text-lg placeholder-neutral-700 transition-all" 
                     placeholder="e.g. 28"
                     value={currentUser.age || ''} 
                     onChange={(e) => handleUpdateProfile({age: parseInt(e.target.value) || 0})} 
@@ -435,7 +588,7 @@ const ProfileSetupView = ({
                <div className="space-y-3">
                  <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Gender</label>
                  <select 
-                    className={`w-full px-6 py-0 bg-black border border-neutral-800 focus:border-red-600 outline-none rounded-xl font-bold cursor-pointer h-[64px] text-base transition-all hover:border-neutral-700 ${!currentUser.gender ? 'text-neutral-500' : 'text-white'}`}
+                    className={`w-full px-6 py-0 bg-neutral-900/60 border-none shadow-[0_20px_40px_-12px_rgba(255,42,42,0.25)] focus:shadow-[0_25px_50px_-12px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(255,42,42,0.2)] rounded-xl font-bold cursor-pointer h-[64px] text-base transition-all appearance-none ${!currentUser.gender ? 'text-neutral-500' : 'text-white'}`}
                     value={currentUser.gender || ""} 
                     onChange={(e) => handleUpdateProfile({gender: e.target.value as Gender})}
                   >
@@ -487,7 +640,7 @@ const ProfileSetupView = ({
                   <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-widest">Social Battery</label>
                   <div className="grid grid-cols-3 gap-3">
                     {Object.values(PersonalityType).map(t => (
-                      <button key={t} type="button" onClick={() => handleUpdateProfile({personality: t})} className={`py-5 px-2 border text-[10px] font-black uppercase tracking-widest transition-all rounded-xl h-[64px] ${currentUser.personality === t ? 'bg-white text-black border-white shadow-xl' : 'bg-black/40 text-neutral-600 border-neutral-800 hover:border-neutral-700'}`}>{t}</button>
+                      <button key={t} type="button" onClick={() => handleUpdateProfile({personality: t})} className={`py-5 px-2 border-none text-[10px] font-black uppercase tracking-widest transition-all rounded-xl h-[64px] ${currentUser.personality === t ? 'bg-white text-black shadow-[0_15px_35px_-8px_rgba(255,42,42,0.35)]' : 'bg-neutral-800/50 text-neutral-600 hover:bg-neutral-700/50'}`}>{t}</button>
                     ))}
                   </div>
                </div>
@@ -495,7 +648,7 @@ const ProfileSetupView = ({
                   <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-widest">General Availability</label>
                   <div className="grid grid-cols-2 gap-3">
                     {Object.values(TimeOfDay).map(t => (
-                      <button key={t} type="button" onClick={() => handleUpdateProfile({preferredTime: t})} className={`py-3 px-6 text-[10px] font-black uppercase border transition-all text-left rounded-xl h-[64px] flex items-center ${currentUser.preferredTime === t ? 'bg-red-600 border-red-600 text-white shadow-xl' : 'bg-black/40 border-neutral-800 text-neutral-500 hover:border-neutral-700'}`}>{t}</button>
+                      <button key={t} type="button" onClick={() => handleUpdateProfile({preferredTime: t})} className={`py-3 px-6 text-[10px] font-black uppercase border-none transition-all text-left rounded-xl h-[64px] flex items-center ${currentUser.preferredTime === t ? 'bg-white text-black shadow-[0_15px_35px_-8px_rgba(255,42,42,0.35)]' : 'bg-neutral-800/50 text-neutral-500 hover:bg-neutral-700/50'}`}>{t}</button>
                     ))}
                   </div>
                </div>
@@ -525,7 +678,7 @@ const ProfileSetupView = ({
                 />
                 
                 {triedToSubmit && currentUser.interests.length < 2 && (
-                  <p className="text-red-500 text-[10px] font-black uppercase tracking-widest animate-in fade-in duration-300">
+                  <p className="text-neutral-500 text-[10px] font-black uppercase tracking-widest animate-in fade-in duration-300">
                     Shared interests are the anchor. Add at least 2.
                   </p>
                 )}
@@ -534,7 +687,7 @@ const ProfileSetupView = ({
                   {currentUser.interests.map(tag => (
                     <span key={tag} className="flex items-center gap-2 px-5 py-3 bg-neutral-900/50 text-white text-[10px] border border-neutral-800 font-black uppercase tracking-widest rounded-full hover:border-neutral-600 transition-all group animate-in zoom-in duration-500">
                       {tag}
-                      <button type="button" onClick={() => handleUpdateProfile({ interests: currentUser.interests.filter(i => i !== tag) })} className="text-neutral-600 hover:text-red-500"><Icons.X className="w-3 h-3"/></button>
+                      <button type="button" onClick={() => handleUpdateProfile({ interests: currentUser.interests.filter(i => i !== tag) })} className="text-neutral-600 hover:text-white"><Icons.X className="w-3 h-3"/></button>
                     </span>
                   ))}
                 </div>
@@ -549,7 +702,7 @@ const ProfileSetupView = ({
                          key={item}
                          type="button"
                          onClick={() => handleInterestSelect(item)}
-                         className="px-4 py-2.5 bg-neutral-900/30 border border-neutral-800 rounded-xl hover:border-red-600 transition-all text-[10px] font-bold text-neutral-500 hover:text-white"
+                         className="px-4 py-2.5 bg-neutral-900/30 border border-neutral-800 rounded-xl hover:border-white transition-all text-[10px] font-bold text-neutral-500 hover:text-white"
                        >
                          {item}
                        </button>
@@ -575,7 +728,7 @@ const ProfileSetupView = ({
                     <input 
                       type="number" 
                       min="1" 
-                      className="w-full px-6 py-0 bg-black border border-neutral-800 focus:border-red-600 outline-none text-white font-bold rounded-xl h-[64px] text-lg transition-all"
+                      className="w-full px-6 py-0 bg-neutral-900/60 border-none shadow-[0_20px_40px_-12px_rgba(255,42,42,0.25)] focus:shadow-[0_25px_50px_-12px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(255,42,42,0.2)] outline-none text-white font-bold rounded-xl h-[64px] text-lg transition-all"
                       placeholder="e.g. 2"
                       value={currentUser.interestDuration?.value || ''}
                       onChange={(e) => handleUpdateProfile({ 
@@ -586,7 +739,7 @@ const ProfileSetupView = ({
                       })}
                     />
                     <select 
-                      className={`w-full px-6 py-0 bg-black border border-neutral-800 focus:border-red-600 outline-none rounded-xl font-bold cursor-pointer h-[64px] text-base transition-all ${!currentUser.interestDuration?.unit ? 'text-neutral-500' : 'text-white'}`}
+                      className={`w-full px-6 py-0 bg-neutral-900/60 border-none shadow-[0_20px_40px_-12px_rgba(255,42,42,0.25)] focus:shadow-[0_25px_50px_-12px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(255,42,42,0.2)] outline-none rounded-xl font-bold cursor-pointer h-[64px] text-base transition-all appearance-none ${!currentUser.interestDuration?.unit ? 'text-neutral-500' : 'text-white'}`}
                       value={currentUser.interestDuration?.unit || ""}
                       onChange={(e) => handleUpdateProfile({ 
                         interestDuration: { 
@@ -611,7 +764,7 @@ const ProfileSetupView = ({
                         key={def}
                         type="button"
                         onClick={() => handleUpdateProfile({ selfDefinition: def })}
-                        className={`px-5 py-4 border text-[9px] font-black uppercase tracking-widest transition-all rounded-xl h-[64px] ${currentUser.selfDefinition === def ? 'bg-white text-black border-white shadow-xl' : 'bg-black/40 text-neutral-600 border-neutral-800 hover:border-neutral-700'}`}
+                        className={`px-5 py-4 border-none text-[9px] font-black uppercase tracking-widest transition-all rounded-xl h-[64px] ${currentUser.selfDefinition === def ? 'bg-white text-black shadow-[0_15px_35px_-8px_rgba(255,42,42,0.35)]' : 'bg-neutral-800/50 text-neutral-600 hover:bg-neutral-700/50'}`}
                       >
                         {def}
                       </button>
@@ -632,13 +785,13 @@ const ProfileSetupView = ({
              </div>
              <div className="space-y-5">
                 <div className="flex justify-end">
-                  <button type="button" onClick={handleAutoBioInternal} disabled={isGeneratingBio} className="flex items-center gap-2 text-[10px] text-red-500 hover:text-white transition-all font-black uppercase tracking-widest bg-red-600/5 px-6 py-3 rounded-full border border-red-600/30">
+                  <button type="button" onClick={handleAutoBioInternal} disabled={isGeneratingBio} className="flex items-center gap-2 text-[10px] text-neutral-400 hover:text-white transition-all font-black uppercase tracking-widest bg-white/5 px-6 py-3 rounded-full border border-white/10 hover:border-white/30">
                     <Icons.Sparkles className="w-3.5 h-3.5" />
                     {isGeneratingBio ? 'Refining...' : 'Refine with AI'}
                   </button>
                 </div>
                 <textarea 
-                  className="w-full h-40 p-8 bg-black border border-neutral-800 focus:border-red-600 outline-none resize-none text-white placeholder-neutral-700 text-lg leading-snug rounded-3xl shadow-inner transition-all" 
+                  className="w-full h-40 p-8 bg-neutral-900/60 border-none shadow-[0_20px_40px_-12px_rgba(255,42,42,0.25)] focus:shadow-[0_25px_50px_-12px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(255,42,42,0.2)] outline-none resize-none text-white placeholder-neutral-700 text-lg leading-snug rounded-3xl transition-all" 
                   placeholder="One or two sentences is enough. What makes a conversation meaningful to you?" 
                   value={currentUser.bio} 
                   onChange={(e) => handleUpdateProfile({bio: e.target.value})} 
@@ -662,17 +815,17 @@ const ProfileSetupView = ({
              
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-black/30 border border-neutral-800 p-6 rounded-2xl relative group">
-                  <button onClick={() => setStep(1)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-red-500 transition-all uppercase text-[8px] font-black tracking-widest">Edit</button>
+                  <button onClick={() => setStep(1)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-white/60 hover:text-white transition-all uppercase text-[8px] font-black tracking-widest">Edit</button>
                   <label className="text-[9px] font-black text-neutral-600 uppercase tracking-widest block mb-2">Basics</label>
                   <p className="font-bold text-white">{currentUser.age || '?'} yrs · {currentUser.gender || 'Other'}</p>
                 </div>
                 <div className="bg-black/30 border border-neutral-800 p-6 rounded-2xl relative group">
-                  <button onClick={() => setStep(2)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-red-500 transition-all uppercase text-[8px] font-black tracking-widest">Edit</button>
+                  <button onClick={() => setStep(2)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-white/60 hover:text-white transition-all uppercase text-[8px] font-black tracking-widest">Edit</button>
                   <label className="text-[9px] font-black text-neutral-600 uppercase tracking-widest block mb-2">Location & Work</label>
                   <p className="font-bold text-white">{currentUser.occupation || 'Wanderer'} in {currentUser.location.city || 'Secret'}</p>
                 </div>
                 <div className="bg-black/30 border border-neutral-800 p-6 rounded-2xl relative group col-span-1 md:col-span-2">
-                  <button onClick={() => setStep(4)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-red-500 transition-all uppercase text-[8px] font-black tracking-widest">Edit</button>
+                  <button onClick={() => setStep(4)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-white/60 hover:text-white transition-all uppercase text-[8px] font-black tracking-widest">Edit</button>
                   <label className="text-[9px] font-black text-neutral-600 uppercase tracking-widest block mb-2">Interests</label>
                   <div className="flex flex-wrap gap-2">
                     {currentUser.interests.map(i => <span key={i} className="text-[9px] px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-full font-bold">{i}</span>)}
@@ -680,7 +833,7 @@ const ProfileSetupView = ({
                   </div>
                 </div>
                 <div className="bg-black/30 border border-neutral-800 p-6 rounded-2xl relative group col-span-1 md:col-span-2">
-                  <button onClick={() => setStep(6)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-red-500 transition-all uppercase text-[8px] font-black tracking-widest">Edit</button>
+                  <button onClick={() => setStep(6)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-white/60 hover:text-white transition-all uppercase text-[8px] font-black tracking-widest">Edit</button>
                   <label className="text-[9px] font-black text-neutral-600 uppercase tracking-widest block mb-2">Bio</label>
                   <p className="text-xs text-neutral-400 italic line-clamp-3 leading-snug font-medium">"{currentUser.bio || 'Your bio will appear here...'}"</p>
                 </div>
@@ -696,12 +849,12 @@ const ProfileSetupView = ({
                     {currentUser.milestones.map((milestone, idx) => (
                       <div key={milestone.id} className="flex gap-8 group">
                         <div className="flex flex-col items-center">
-                          <div className="w-1.5 h-1.5 rounded-full bg-red-600 shadow-[0_0_12px_rgba(220,38,38,0.3)] group-hover:scale-125 transition-transform"></div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.3)] group-hover:scale-125 transition-transform"></div>
                           {idx !== currentUser.milestones.length - 1 && <div className="w-[1px] flex-1 bg-neutral-800/60 mt-4 mb-4"></div>}
                         </div>
                         <div className="pb-4">
                           <div className="flex items-center gap-4 mb-2">
-                            <span className="text-xs font-bold text-white uppercase tracking-tighter group-hover:text-red-500 transition-colors">{milestone.label}</span>
+                            <span className="text-xs font-bold text-white uppercase tracking-tighter group-hover:text-white transition-colors">{milestone.label}</span>
                             <span className="text-[8px] font-black text-neutral-700 uppercase tracking-widest">{milestone.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                           </div>
                           <p className="text-[10px] text-neutral-500 leading-snug font-semibold max-w-md noted-feedback">{milestone.description}</p>
@@ -714,7 +867,7 @@ const ProfileSetupView = ({
 
              <div className="pt-8 flex justify-between items-center">
                 {isEditMode ? <div /> : <button type="button" onClick={prevStep} className="text-neutral-500 hover:text-white text-xs font-bold uppercase tracking-widest transition-all">Back</button>}
-                <button type="button" onClick={finishOnboarding} className="px-16 py-6 bg-red-600 text-white font-black uppercase tracking-[0.2em] hover:bg-red-700 transition-all text-[11px] rounded-2xl shadow-2xl active:scale-95 cta-lean">
+                <button type="button" onClick={finishOnboarding} className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-neutral-100 transition-all text-[11px] rounded-2xl shadow-[0_25px_45px_-10px_rgba(255,42,42,0.45),0_10px_20px_-5px_rgba(255,42,42,0.2)] active:scale-95 cta-lean">
                   {isComplete ? "Save changes" : "Finish setup"}
                 </button>
              </div>
@@ -727,50 +880,129 @@ const ProfileSetupView = ({
 
 const LandingView = ({ setAuthStep }: { setAuthStep: (step: AuthStep) => void }) => (
   <div className="min-h-screen flex flex-col justify-center items-center p-6 text-center">
-    <Background />
+    <Background isAuth />
     <div className="relative z-10">
-      <h1 className="text-7xl md:text-9xl font-bold text-white tracking-tighter mb-8 font-display">KIND<span className="text-red-600">RED</span>.</h1>
+      <h1 className="text-7xl md:text-9xl font-bold text-white tracking-tighter mb-16 font-display">KIND<span style={{ color: accentRed }}>RED.</span></h1>
       <p className="text-xl text-neutral-400 font-light mb-16">Where shared interests meet shared time.</p>
-      <button onClick={() => setAuthStep(AuthStep.SIGNUP)} className="px-16 py-6 bg-white text-black font-bold uppercase tracking-widest clip-diagonal hover:bg-neutral-200 transition-all shadow-2xl">Start journey</button>
+      
+      <div className="relative inline-block">
+        <StartJourney3DButton onClick={() => setAuthStep(AuthStep.SIGNUP)} />
+      </div>
     </div>
   </div>
 );
 
 const SignupView = ({ currentUser, handleUpdateProfile, setAuthStep }: any) => {
   const [isLogin, setIsLogin] = useState(false);
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState(currentUser.name || '');
+
+  const primaryButtonLabel = isLogin ? 'GO ON' : 'GET STARTED';
+  const contextLine = isLogin ? 'GOOD TO HAVE YOU BACK' : 'LET’S SET YOU UP IN UNDER A MINUTE';
+
+  const isEnabled = useMemo(() => {
+    if (isLogin) return email.length > 3;
+    return email.length > 3 && name.length > 1;
+  }, [isLogin, email, name]);
+
+  const handleTabSwitch = (loginMode: boolean) => {
+    setIsLogin(loginMode);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-4">
-      <Background />
-      <div className="max-w-lg w-full relative z-10 bg-neutral-900/40 backdrop-blur-3xl border border-neutral-800 p-12 rounded-[3rem] shadow-2xl">
-        <div className="flex bg-black/60 p-1.5 rounded-2xl mb-10 shadow-inner">
-           <button onClick={() => setIsLogin(false)} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${!isLogin ? 'bg-white text-black shadow-xl translate-y-[-1px]' : 'text-neutral-600'}`}>Arriving</button>
-           <button onClick={() => setIsLogin(true)} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${isLogin ? 'bg-white text-black shadow-xl translate-y-[-1px]' : 'text-neutral-600'}`}>Returning</button>
-        </div>
-        <form className="space-y-8" onSubmit={(e) => { e.preventDefault(); setAuthStep(isLogin ? AuthStep.COMPLETED : AuthStep.PROFILE_SETUP); }}>
-          {!isLogin && (
-            <div className="space-y-2">
-              <label className="block text-[9px] font-black text-neutral-600 uppercase tracking-widest ml-1">Name</label>
-              <input required type="text" className="w-full p-5 bg-black/40 border border-neutral-800 focus:border-red-600 outline-none text-white font-bold rounded-xl placeholder-neutral-700 transition-all hover:border-neutral-700" placeholder="e.g. Alex Rivera" value={currentUser.name} onChange={(e) => handleUpdateProfile({ name: e.target.value })} />
+    <div className="min-h-screen flex flex-col items-center pt-[12vh] p-4 relative overflow-hidden">
+      <Background isAuth />
+      
+      <div className="max-w-lg w-full relative z-10">
+        {/* Subtle glow behind card */}
+        <div 
+          className="absolute -inset-[120px] rounded-full pointer-events-none opacity-40 z-0"
+          style={{ 
+            background: 'radial-gradient(circle at center, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.00) 65%)',
+            filter: 'blur(30px)'
+          }}
+        ></div>
+
+        <div 
+          className="w-full bg-neutral-900/80 backdrop-blur-xl border border-white/15 p-14 pb-12 rounded-[3rem] shadow-2xl shadow-black/60 animate-in fade-in zoom-in duration-500 relative z-[1]"
+          style={{ 
+            outline: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: '0 40px 100px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.05)'
+          }}
+        >
+          {/* Tabs Switcher */}
+          <div className="relative flex bg-black/60 p-1.5 rounded-2xl mb-4 shadow-inner">
+             <div 
+               className={`absolute top-1.5 bottom-1.5 w-[calc(50%-0.375rem)] bg-white rounded-xl shadow-xl transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] z-0 ${isLogin ? 'left-[calc(50%+0.1875rem)]' : 'left-1.5'}`}
+             ></div>
+             
+             <button 
+               onClick={() => handleTabSwitch(false)} 
+               className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest relative z-10 transition-colors duration-200 ${!isLogin ? 'text-black' : 'text-[#B8B8B8] hover:text-[#F5F5F5]'}`}
+             >
+               NEW HERE
+             </button>
+             <button 
+               onClick={() => handleTabSwitch(true)} 
+               className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest relative z-10 transition-colors duration-200 ${isLogin ? 'text-black' : 'text-[#B8B8B8] hover:text-[#F5F5F5]'}`}
+             >
+               WELCOME BACK
+             </button>
+          </div>
+
+          <p className="text-[10px] font-bold text-[#B8B8B8] uppercase tracking-[0.2em] text-center mb-10 transition-all opacity-100">
+            {contextLine}
+          </p>
+
+          <form className="space-y-8" onSubmit={(e) => { 
+            e.preventDefault(); 
+            if (!isEnabled) return;
+            handleUpdateProfile({ name });
+            setAuthStep(isLogin ? AuthStep.COMPLETED : AuthStep.PROFILE_SETUP); 
+          }}>
+            {!isLogin && (
+              <div className="space-y-2 group">
+                <label className="block text-[9px] font-black text-[#B8B8B8] uppercase tracking-widest ml-1 transition-colors group-focus-within:text-[#F5F5F5]">NAME</label>
+                <input 
+                  required 
+                  type="text" 
+                  className="w-full p-5 bg-neutral-900/60 border-none shadow-[0_20px_40px_-12px_rgba(255,42,42,0.25)] focus:shadow-[0_25px_50px_-12px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(255,42,42,0.2)] transition-all outline-none text-white font-bold rounded-xl placeholder-[#7A7A7A]" 
+                  placeholder="e.g. Alex Rivera" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                />
+              </div>
+            )}
+            <div className="space-y-2 group">
+              <label className="block text-[9px] font-black text-[#B8B8B8] uppercase tracking-widest ml-1 transition-colors group-focus-within:text-[#F5F5F5]">EMAIL</label>
+              <input 
+                required 
+                type="email" 
+                className="w-full p-5 bg-neutral-900/60 border-none shadow-[0_20px_40px_-12px_rgba(255,42,42,0.25)] focus:shadow-[0_25px_50px_-12px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(255,42,42,0.2)] transition-all outline-none text-white font-bold rounded-xl placeholder-[#7A7A7A]" 
+                placeholder="alex@example.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
-          )}
-          <div className="space-y-2">
-            <label className="block text-[9px] font-black text-neutral-600 uppercase tracking-widest ml-1">Address</label>
-            <input required type="email" className="w-full p-5 bg-black/40 border border-neutral-800 focus:border-red-600 outline-none text-white font-bold rounded-xl placeholder-neutral-700 transition-all hover:border-neutral-700" placeholder="alex@example.com" />
-          </div>
-          <div className="space-y-2">
-            <label className="block text-[9px] font-black text-neutral-600 uppercase tracking-widest ml-1">Key</label>
-            <input required type="password" className="w-full p-5 bg-black/40 border border-neutral-800 focus:border-red-600 outline-none text-white font-bold rounded-xl placeholder-neutral-700 transition-all hover:border-neutral-700" placeholder="••••••••" />
-          </div>
-          <button type="submit" className="w-full py-6 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-neutral-100 transition-all rounded-xl shadow-xl active:scale-95 text-[11px] cta-lean">{isLogin ? 'Sign in' : 'Continue arrival'}</button>
-        </form>
+
+            <button 
+              type="submit" 
+              disabled={!isEnabled}
+              className={`w-full py-6 font-black uppercase tracking-[0.2em] transition-all duration-[200ms] rounded-xl text-[11px] cta-lean relative ${
+                isEnabled 
+                  ? 'bg-[#F5F5F5] text-black shadow-[0_25px_50px_-12px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(255,42,42,0.2)] hover:bg-white scale-100' 
+                  : 'bg-neutral-800/80 text-[#B8B8B8] opacity-100 cursor-not-allowed scale-[0.98] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]'
+              }`}
+            >
+              {primaryButtonLabel}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
 };
 
-/**
- * Main App component that manages navigation and user state.
- */
 const App = () => {
   const [view, setView] = useState<ViewState>(ViewState.DISCOVERY);
   const [authStep, setAuthStep] = useState<AuthStep>(AuthStep.LANDING);
@@ -778,7 +1010,6 @@ const App = () => {
   const [chatsOpen, setChatsOpen] = useState(false);
   const [notifsOpen, setNotifsOpen] = useState(false);
   
-  // Search & Filter State
   const [searchQuery, setSearchQuery] = useState('');
   const [filterGender, setFilterGender] = useState<Gender | 'All'>('All');
   const [filterPersonality, setFilterPersonality] = useState<PersonalityType | 'All'>('All');
@@ -824,7 +1055,6 @@ const App = () => {
     setFilterTime('All');
   };
 
-  // Landing & Auth Flow
   if (authStep === AuthStep.LANDING) {
     return <LandingView setAuthStep={setAuthStep} />;
   }
@@ -833,7 +1063,6 @@ const App = () => {
     return <SignupView currentUser={currentUser} handleUpdateProfile={handleUpdateProfile} setAuthStep={setAuthStep} />;
   }
 
-  // Show onboarding if not completed
   if (authStep !== AuthStep.COMPLETED && !currentUser.hasCompletedOnboarding) {
     return (
       <ProfileSetupView 
@@ -846,7 +1075,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-red-500/30">
+    <div className="min-h-screen bg-black text-white selection:bg-neutral-800/30">
       <Background />
       <Navbar 
         currentUser={currentUser} 
@@ -866,29 +1095,27 @@ const App = () => {
               </div>
             </div>
 
-            {/* Tight Search & Extended Filters Bar */}
             <div className="space-y-6">
               <div className="max-w-3xl mx-auto w-full group relative">
                 <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                  <Icons.Search className="w-5 h-5 text-neutral-600 group-focus-within:text-red-500 transition-colors" />
+                  <Icons.Search className="w-5 h-5 text-neutral-600 transition-colors" />
                 </div>
                 <input
                   type="text"
                   placeholder="Explore interests, occupations, or names..."
-                  className="w-full bg-neutral-900/40 border border-neutral-800 rounded-2xl py-5 pl-14 pr-6 text-white placeholder-neutral-600 focus:outline-none focus:border-red-600 transition-all backdrop-blur-xl hover:border-neutral-700 shadow-xl"
+                  className="w-full bg-neutral-900/40 border border-neutral-800 rounded-2xl py-5 pl-14 pr-6 text-white placeholder-neutral-600 focus:outline-none focus:border-white/20 transition-all backdrop-blur-xl hover:border-neutral-700 shadow-xl"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
 
-              {/* Extended Filter Row */}
               <div className="max-w-4xl mx-auto flex flex-wrap justify-center items-center gap-3">
                 <div className="flex items-center gap-2">
                   <span className="text-[9px] font-black text-neutral-600 uppercase tracking-widest mr-1">Gender</span>
                   <select 
                     value={filterGender} 
                     onChange={(e) => setFilterGender(e.target.value as any)}
-                    className="bg-black border border-neutral-800 rounded-xl px-4 py-2 text-[10px] font-bold text-neutral-400 focus:border-red-600 outline-none hover:border-neutral-700 transition-all appearance-none cursor-pointer text-center min-w-[100px]"
+                    className="bg-black border border-neutral-800 rounded-xl px-4 py-2 text-[10px] font-bold text-neutral-400 outline-none hover:border-neutral-700 transition-all appearance-none cursor-pointer text-center min-w-[100px]"
                   >
                     <option value="All">ALL</option>
                     {Object.values(Gender).map(g => <option key={g} value={g}>{g.toUpperCase()}</option>)}
@@ -900,7 +1127,7 @@ const App = () => {
                   <select 
                     value={filterPersonality} 
                     onChange={(e) => setFilterPersonality(e.target.value as any)}
-                    className="bg-black border border-neutral-800 rounded-xl px-4 py-2 text-[10px] font-bold text-neutral-400 focus:border-red-600 outline-none hover:border-neutral-700 transition-all appearance-none cursor-pointer text-center min-w-[120px]"
+                    className="bg-black border border-neutral-800 rounded-xl px-4 py-2 text-[10px] font-bold text-neutral-400 outline-none hover:border-neutral-700 transition-all appearance-none cursor-pointer text-center min-w-[120px]"
                   >
                     <option value="All">ALL TYPES</option>
                     {Object.values(PersonalityType).map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
@@ -912,7 +1139,7 @@ const App = () => {
                   <select 
                     value={filterTime} 
                     onChange={(e) => setFilterTime(e.target.value as any)}
-                    className="bg-black border border-neutral-800 rounded-xl px-4 py-2 text-[10px] font-bold text-neutral-400 focus:border-red-600 outline-none hover:border-neutral-700 transition-all appearance-none cursor-pointer text-center min-w-[140px]"
+                    className="bg-black border border-neutral-800 rounded-xl px-4 py-2 text-[10px] font-bold text-neutral-400 outline-none hover:border-neutral-700 transition-all appearance-none cursor-pointer text-center min-w-[140px]"
                   >
                     <option value="All">ANY TIME</option>
                     {Object.values(TimeOfDay).map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
@@ -922,7 +1149,7 @@ const App = () => {
                 {(searchQuery || filterGender !== 'All' || filterPersonality !== 'All' || filterTime !== 'All') && (
                   <button 
                     onClick={clearFilters}
-                    className="ml-2 text-[9px] font-black text-red-600 hover:text-white uppercase tracking-widest transition-all"
+                    className="ml-2 text-[9px] font-black text-neutral-500 hover:text-white uppercase tracking-widest transition-all"
                   >
                     Reset
                   </button>
@@ -933,30 +1160,30 @@ const App = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
               {filteredUsers.length > 0 ? (
                 filteredUsers.map(user => (
-                  <div key={user.id} className="bg-neutral-900/40 border border-neutral-800 rounded-3xl overflow-hidden hover:border-red-600/50 transition-all group cursor-pointer shadow-2xl">
+                  <div key={user.id} className="bg-neutral-900/40 border border-neutral-800 rounded-3xl overflow-hidden transition-all group cursor-pointer shadow-2xl">
                     <div className="h-64 relative overflow-hidden">
                       <img src={user.avatar} alt={user.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                       <div className="absolute bottom-4 left-4">
                         <h3 className="text-2xl font-bold font-display uppercase tracking-tight">{user.name}, {user.age}</h3>
-                        <p className="text-[10px] text-red-500 font-black uppercase tracking-[0.2em]">{user.occupation}</p>
+                        <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">{user.occupation}</p>
                       </div>
                     </div>
                     <div className="p-6 space-y-4">
                       <p className="text-sm text-neutral-400 line-clamp-2 italic font-medium">"{user.bio}"</p>
                       <div className="flex flex-wrap gap-2">
                         {user.interests.map(i => (
-                          <span key={i} className="text-[9px] px-3 py-1 bg-neutral-800/50 border border-neutral-800 rounded-full font-bold uppercase tracking-widest text-neutral-500">{i}</span>
+                          <span key={i} className="text-[9px] px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-full font-bold uppercase tracking-widest text-neutral-500">{i}</span>
                         ))}
                       </div>
-                      <button className="w-full py-4 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-xl hover:bg-red-600 hover:text-white transition-all cta-lean active:scale-95">Connect</button>
+                      <button className="w-full py-4 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-xl hover:bg-neutral-100 transition-all shadow-[0_15px_35px_-8px_rgba(255,42,42,0.35)] cta-lean active:scale-95">Connect</button>
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="col-span-full py-20 text-center space-y-4 opacity-50">
                    <p className="text-neutral-500 font-black uppercase tracking-[0.3em]">No quiet connections found</p>
-                   <button onClick={clearFilters} className="text-red-500 font-bold uppercase tracking-widest text-[10px] hover:underline">Clear exploration</button>
+                   <button onClick={clearFilters} className="text-neutral-400 font-bold uppercase tracking-widest text-[10px] hover:underline">Clear exploration</button>
                 </div>
               )}
             </div>
@@ -990,12 +1217,11 @@ const App = () => {
             <Icons.Crown className="w-16 h-16 text-amber-500 animate-pulse" />
             <h2 className="text-3xl font-bold uppercase tracking-tighter">Premium Access</h2>
             <p className="text-neutral-500 max-w-sm">This section is reserved for our golden members. Elevate your presence to unlock.</p>
-            <button className="px-10 py-4 bg-amber-500 text-black font-black uppercase tracking-widest text-[10px] rounded-xl">Go Golden</button>
+            <button className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-xl shadow-[0_20px_50px_-12px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(255,42,42,0.2)] transition-all hover:bg-neutral-50">Go Golden</button>
           </div>
         )}
       </main>
 
-      {/* Sidebars for Chats and Notifications */}
       {chatsOpen && (
         <div className="fixed inset-y-0 right-0 w-80 bg-neutral-900 border-l border-neutral-800 z-[100] p-6 shadow-2xl animate-in slide-in-from-right duration-300">
            <div className="flex justify-between items-center mb-8">

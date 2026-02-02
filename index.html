@@ -75,6 +75,97 @@
       .journey-line-segment {
         transition: all 0.8s cubic-bezier(0.65, 0, 0.35, 1);
       }
+
+      /* ===== 3D Start Journey Button ===== */
+      .sj3d {
+        position: relative;
+        width: 320px;
+        height: 74px;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        cursor: pointer;
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* 3) Make the black sidewall feel more like a "wall" */
+      .sj3d::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #2a2a2a 0%, #0f0f0f 55%, #050505 100%);
+        box-shadow:
+          0 18px 26px rgba(0,0,0,.55),
+          0 3px 0 rgba(255,255,255,.06) inset,
+          0 -14px 18px rgba(0,0,0,.72) inset; /* Deeper inner shade for a hollow shell look */
+      }
+
+      /* 1) Make the red thickness visible */
+      .sj3d::after {
+        content: "";
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        height: 16px;          /* Thicker red base */
+        bottom: 9px;           /* keeps it peeking */
+        border-radius: 999px;
+        background: linear-gradient(180deg, #ff4b4b 0%, #e10000 55%, #a30000 100%);
+        box-shadow:
+          0 10px 14px rgba(0,0,0,.45),
+          0 2px 0 rgba(255,255,255,.22) inset,
+          0 -7px 10px rgba(0,0,0,.48) inset;
+        z-index: 1;
+      }
+
+      /* 2) Shadow seam between white top and base */
+      .sj3d__top {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        top: 10px;
+        height: 52px;
+        border-radius: 999px;
+
+        background: linear-gradient(
+          180deg,
+          #ffffff 0%,
+          #f5f5f5 45%,
+          #e6e6e6 100%
+        );
+
+        box-shadow:
+          0 10px 0 rgba(0,0,0,.30),
+          inset 0 2px 0 rgba(255,255,255,.95),
+          inset 0 -3px 0 rgba(0,0,0,.14);
+
+        transform: translateY(0);
+        transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sj3d__label {
+        position: relative;
+        font: 800 13px/1 'Outfit', sans-serif;
+        letter-spacing: .18em;
+        color: #111;
+        text-transform: uppercase;
+        z-index: 3;
+      }
+
+      /* 5) Press interaction: mechanical switch feel */
+      .sj3d:active .sj3d__top {
+        transform: translateY(6px);
+        box-shadow:
+          0 6px 0 rgba(0,0,0,.32),
+          0 2px 0 rgba(255,255,255,.75) inset,
+          0 -3px 0 rgba(0,0,0,.14) inset,
+          0 0 0 2px rgba(255,255,255,.14);
+      }
     </style>
   <script type="importmap">
 {
