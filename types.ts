@@ -36,6 +36,19 @@ export enum TimeOfDay {
   WEEKEND = 'Weekends Only'
 }
 
+export enum ConversationDepth {
+  LIGHT = 'Light & curious',
+  THOUGHTFUL = 'Thoughtful',
+  DEEP = 'Deep & reflective',
+  INTENSE = 'Intense / challenging'
+}
+
+export enum MeetingIntent {
+  ONE_OFF = 'One-off',
+  OCCASIONAL = 'Occasional',
+  FOLLOW_UP = 'Follow-up'
+}
+
 export type SelfDefinition = 'Pro' | 'Fierce enthusiast' | 'Fan' | 'Learner' | 'First-stepper';
 
 export interface Milestone {
@@ -68,6 +81,8 @@ export interface User {
   selfDefinition?: SelfDefinition;
   personality: PersonalityType;
   preferredTime: TimeOfDay;
+  depth?: ConversationDepth;
+  intent?: MeetingIntent;
   isGolden?: boolean;
   isOnline?: boolean;
   hasCompletedOnboarding?: boolean;

@@ -7,13 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <style>
       body {
         font-family: 'Plus Jakarta Sans', sans-serif;
+        letter-spacing: -0.01em;
       }
-      h1, h2, h3, h4, h5, h6, .font-display, .uppercase {
+      h1, h2, h3, h4, h5, h6, .font-display {
         font-family: 'Outfit', sans-serif;
+        letter-spacing: -0.02em;
+      }
+      .uppercase {
+        letter-spacing: 0.1em;
       }
       
       ::-webkit-scrollbar {
@@ -59,7 +64,7 @@
         top: 0.5rem;
         width: 2px;
         height: 1.5rem;
-        background: #dc2626;
+        background: #FF2A2A;
         border-radius: 99px;
       }
       
@@ -76,95 +81,24 @@
         transition: all 0.8s cubic-bezier(0.65, 0, 0.35, 1);
       }
 
-      /* ===== 3D Start Journey Button ===== */
-      .sj3d {
-        position: relative;
-        width: 320px;
-        height: 74px;
-        border: 0;
-        padding: 0;
-        background: transparent;
-        cursor: pointer;
-        outline: none;
-        -webkit-tap-highlight-color: transparent;
+      /* Semantic Load Reduction: Blur background text nodes specifically */
+      .pop-up-active h1,
+      .pop-up-active h2,
+      .pop-up-active h3,
+      .pop-up-active p,
+      .pop-up-active label,
+      .pop-up-active .noted-feedback,
+      .pop-up-active span:not(:has(svg)),
+      .pop-up-active div:not([class*="bg-"]):not([class*="border"]):not(:has(*)) {
+        filter: blur(0.8px);
+        transition: filter 0.4s ease;
       }
 
-      /* 3) Make the black sidewall feel more like a "wall" */
-      .sj3d::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 999px;
-        background: linear-gradient(180deg, #2a2a2a 0%, #0f0f0f 55%, #050505 100%);
-        box-shadow:
-          0 18px 26px rgba(0,0,0,.55),
-          0 3px 0 rgba(255,255,255,.06) inset,
-          0 -14px 18px rgba(0,0,0,.72) inset; /* Deeper inner shade for a hollow shell look */
-      }
-
-      /* 1) Make the red thickness visible */
-      .sj3d::after {
-        content: "";
-        position: absolute;
-        left: 14px;
-        right: 14px;
-        height: 16px;          /* Thicker red base */
-        bottom: 9px;           /* keeps it peeking */
-        border-radius: 999px;
-        background: linear-gradient(180deg, #ff4b4b 0%, #e10000 55%, #a30000 100%);
-        box-shadow:
-          0 10px 14px rgba(0,0,0,.45),
-          0 2px 0 rgba(255,255,255,.22) inset,
-          0 -7px 10px rgba(0,0,0,.48) inset;
-        z-index: 1;
-      }
-
-      /* 2) Shadow seam between white top and base */
-      .sj3d__top {
-        position: absolute;
-        left: 10px;
-        right: 10px;
-        top: 10px;
-        height: 52px;
-        border-radius: 999px;
-
-        background: linear-gradient(
-          180deg,
-          #ffffff 0%,
-          #f5f5f5 45%,
-          #e6e6e6 100%
-        );
-
-        box-shadow:
-          0 10px 0 rgba(0,0,0,.30),
-          inset 0 2px 0 rgba(255,255,255,.95),
-          inset 0 -3px 0 rgba(0,0,0,.14);
-
-        transform: translateY(0);
-        transition: transform 120ms ease-out, box-shadow 120ms ease-out;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .sj3d__label {
-        position: relative;
-        font: 800 13px/1 'Outfit', sans-serif;
-        letter-spacing: .18em;
-        color: #111;
-        text-transform: uppercase;
-        z-index: 3;
-      }
-
-      /* 5) Press interaction: mechanical switch feel */
-      .sj3d:active .sj3d__top {
-        transform: translateY(6px);
-        box-shadow:
-          0 6px 0 rgba(0,0,0,.32),
-          0 2px 0 rgba(255,255,255,.75) inset,
-          0 -3px 0 rgba(0,0,0,.14) inset,
-          0 0 0 2px rgba(255,255,255,.14);
+      /* Protect icons and images from blur */
+      .pop-up-active svg,
+      .pop-up-active img,
+      .pop-up-active .icon-container {
+        filter: none !important;
       }
     </style>
   <script type="importmap">
