@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Icons } from './components/Icons';
 import { Calendar } from './components/Calendar';
@@ -68,6 +69,12 @@ const MOCK_USERS: User[] = [
   { id: '2', name: 'Marcus Johnson', age: 31, gender: Gender.MALE, rating: 4.7, avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=60', location: { country: 'UK', city: 'London', lat: 51.50, lng: -0.12 }, occupation: 'Marketing Lead', bio: 'Extrovert seeking interesting conversations about global markets and vintage cars.', interests: ['Marketing', 'Formula 1', 'Stocks'], personality: PersonalityType.EXTROVERT, preferredTime: TimeOfDay.AFTERNOON, depth: ConversationDepth.LIGHT, intent: MeetingIntent.ONE_OFF, milestones: [] },
   { id: '3', name: 'Elena Popova', age: 24, gender: Gender.FEMALE, rating: 5.0, avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&auto=format&fit=crop&q=60', location: { country: 'Ukraine', city: 'Kyiv', lat: 50.45, lng: 30.52 }, occupation: 'Digital Artist', bio: 'Art is life. Seeking muse and good vibes. I love exploring galleries.', interests: ['Art', 'Museums', 'Wine'], personality: PersonalityType.INTROVERT, preferredTime: TimeOfDay.EVENING, depth: ConversationDepth.THOUGHTFUL, intent: MeetingIntent.FOLLOW_UP, milestones: [] },
   { id: '4', name: 'James Smith', age: 29, gender: Gender.MALE, rating: 4.8, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&auto=format&fit=crop&q=60', location: { country: 'Australia', city: 'Melbourne', lat: -37.81, lng: 144.96 }, occupation: 'Robotics Engineer', bio: 'Building the future. Big fan of tech, sci-fi, and fast cars.', interests: ['Engineering', 'Robotics', 'Formula 1'], personality: PersonalityType.AMBIVERT, preferredTime: TimeOfDay.MORNING, depth: ConversationDepth.INTENSE, intent: MeetingIntent.ONE_OFF, milestones: [] }
+];
+
+const MOCK_REMINDERS = [
+  { id: 'r1', user: MOCK_USERS[0], topic: 'How does data actually change the gut feeling of a race strategist?', time: 'Tomorrow' },
+  { id: 'r2', user: MOCK_USERS[2], topic: 'Is human creativity just a complex algorithm we haven\'t mapped yet?', time: 'In 3 days' },
+  { id: 'r3', user: MOCK_USERS[1], topic: 'Why do we still crave the tactile friction of vintage machinery?', time: 'This Saturday' }
 ];
 
 const Background = ({ isAuth = false }: { isAuth?: boolean }) => (
@@ -278,7 +285,8 @@ const CustomSelect = ({
                 onChange(opt);
                 setIsOpen(false);
               }}
-              className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative group/opt ${value === opt ? 'bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]' : 'text-[#7A7A7A] hover:text-white hover:bg-white/5'}`}
+              /* Fixed syntax error: removed trailing ': text-white' ternary segment that was breaking parser and scope */
+              className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative group/opt ${value === opt ? 'bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]' : 'text-[#7A7A7A]'}`}
             >
               {value === opt && (
                 <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A]"></div>
@@ -928,12 +936,13 @@ const ProfileSetupView = ({
 
          {step === 7 && (
            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-1000">
-             <div className="space-y-2 narrative-beat">
-               <h3 className="text-3xl font-bold text-white uppercase tracking-tighter font-display">Final Shape</h3>
-               <p className="text-[#949494] text-sm font-medium leading-snug max-w-md italic opacity-70">
-                 {isInternalEditing ? "Choose a block to refine." : "You’ve arrived. Take a quiet look."}
-               </p>
-             </div>
+             {isInternalEditing && (
+                <div className="space-y-2 narrative-beat">
+                  <p className="text-[#949494] text-sm font-medium leading-snug max-w-md italic opacity-70">
+                    Choose a block to refine.
+                  </p>
+                </div>
+             )}
              
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
                 <button 
@@ -1314,7 +1323,7 @@ const App = () => {
                     <div className="space-y-6">
                       <label className="text-[14px] font-bold text-neutral-400 tracking-tight block">When are you most present?</label>
                       <div className="flex flex-wrap gap-3">
-                        {(['ANY', ...Object.values(TimeOfDay)] as const).map((t) => (
+                        {(['ANY', ...Object.values(PersonalityType)] as const).map((t) => (
                           <FilterChip 
                             key={t} 
                             label={t} 
@@ -1409,9 +1418,48 @@ const App = () => {
         )}
 
         {view === ViewState.MEETINGS && (
-          <div className="space-y-10">
-            <h2 className="text-4xl font-bold uppercase tracking-tighter">Your Schedule</h2>
-            <Calendar events={[]} interactive />
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="space-y-2">
+              <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tighter font-display">Your Kind Reminder</h2>
+              <p className="text-[#949494] text-sm font-medium tracking-wide">Conversations you’ve said yes to.</p>
+            </div>
+            
+            <div className="max-w-3xl space-y-4">
+              {MOCK_REMINDERS.map((reminder) => (
+                <div 
+                  key={reminder.id}
+                  className="group relative bg-[#121212] border border-neutral-800/80 rounded-[2rem] p-6 flex items-center gap-6 transition-all duration-150 hover:bg-[#1a1a1a] hover:border-neutral-700 hover:-translate-y-0.5 cursor-pointer shadow-xl active:scale-[0.995]"
+                >
+                  {/* Subtle red left accent */}
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-12 bg-[#FF2A2A]/40 rounded-r-full group-hover:h-16 group-hover:bg-[#FF2A2A] transition-all duration-150"></div>
+                  
+                  <div className="w-16 h-16 rounded-full overflow-hidden border border-white/5 flex-shrink-0 group-hover:scale-105 transition-transform duration-150">
+                    <img src={reminder.user.avatar} alt={reminder.user.name} className="w-full h-full object-cover" />
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start">
+                      <h3 className="text-lg font-bold text-neutral-400 group-hover:text-white transition-colors uppercase tracking-tight truncate">{reminder.user.name}</h3>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF2A2A]/80 px-3 py-1 bg-[#FF2A2A]/5 rounded-full border border-[#FF2A2A]/10 transition-all duration-150 group-hover:shadow-[0_0_10px_rgba(255,42,42,0.25)] group-hover:text-white group-hover:border-[#FF2A2A]/30">
+                        {reminder.time}
+                      </span>
+                    </div>
+                    <p className="text-neutral-500 group-hover:text-neutral-200 transition-colors mt-1 font-medium leading-relaxed italic line-clamp-2">"{reminder.topic}"</p>
+                  </div>
+                  
+                  <div className="flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 px-2">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">View</span>
+                    <Icons.Zap className="w-4 h-4 text-[#FF2A2A]/80" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {MOCK_REMINDERS.length === 0 && (
+              <div className="py-24 text-center border-2 border-dashed border-neutral-900 rounded-[3rem]">
+                <p className="text-neutral-700 font-black uppercase tracking-[0.4em] text-sm">Waiting for a new wave.</p>
+              </div>
+            )}
           </div>
         )}
 
