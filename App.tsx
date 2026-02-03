@@ -432,7 +432,7 @@ const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: a
 
     <div className="hidden md:flex items-center gap-8">
        {[
-         { id: ViewState.DISCOVERY, label: 'Discover' },
+         { id: ViewState.DISCOVERY, label: 'Unlock' },
          { id: ViewState.MEETINGS, label: 'Meetings' },
          { id: ViewState.PERKS, label: 'Presence' },
          { id: ViewState.GOLDEN, label: 'Golden', special: true },
@@ -1089,24 +1089,24 @@ const App = () => {
         {view === ViewState.DISCOVERY && (
           <div className="space-y-16 animate-in fade-in duration-700">
             <div>
-              <h1 className="text-6xl md:text-8xl font-bold text-white uppercase tracking-tighter font-display">Discover</h1>
-              <p className="text-neutral-500 font-black uppercase tracking-widest text-xs mt-4">Meaningful, friendly connections.</p>
+              <h1 className="text-6xl md:text-8xl font-bold text-white uppercase tracking-tighter font-display">Unlock. You.</h1>
             </div>
 
             {/* HERO SEARCH BAR - BOLDER & PROVOCATIVE COMMAND BAR */}
             <div className="max-w-6xl mx-auto w-full group relative py-12">
               <div className="relative transition-all duration-100 hover:-translate-y-0.5">
                 {/* Kindred Red Accent Line - Solid, sharp, reactive */}
-                <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-[#FF2A2A] rounded-l-[8px] z-20 transition-all duration-100 group-focus-within:w-[6px]`}></div>
+                <div className={`absolute left-0 top-0 bottom-0 w-[4px] bg-[#FF2A2A] rounded-l-[8px] z-20 transition-all duration-100 group-focus-within:w-[6px]`}></div>
                 
                 <input
                   type="text"
                   placeholder="Who do you dare to talk to?"
                   className="
                     w-full h-[56px] rounded-[8px] pl-12 pr-44 text-lg font-bold text-white 
-                    placeholder:text-neutral-500 placeholder:font-black outline-none transition-all
-                    bg-[#141414] border border-neutral-800
-                    focus:bg-[#181818] focus:border-neutral-700
+                    placeholder:text-neutral-500 placeholder:font-black outline-none transition-all duration-100
+                    bg-[#121212] border border-white/35
+                    hover:border-white/50
+                    focus:bg-[#141414] focus:border-white/70 focus:text-white
                     caret-[#FF2A2A]
                   "
                   value={searchQuery}
@@ -1117,11 +1117,11 @@ const App = () => {
                 <button 
                   onClick={() => setShowFilters(!showFilters)}
                   className={`
-                    absolute right-4 top-1/2 -translate-y-1/2 h-[32px] px-6 rounded-[4px] 
-                    text-[10px] font-black uppercase tracking-[0.2em] transition-all 
+                    absolute right-4 top-1/2 -translate-y-1/2 h-[34px] px-6 rounded-[2px] 
+                    text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-100 
                     bg-neutral-900 border border-neutral-800 text-neutral-400
                     hover:border-[#FF2A2A] hover:text-white hover:bg-transparent
-                    ${showFilters ? 'border-[#FF2A2A] text-white bg-neutral-800 shadow-[0_0_15px_rgba(255,42,42,0.1)]' : ''}
+                    ${showFilters ? 'border-[#FF2A2A] text-white bg-neutral-800' : ''}
                   `}
                 >
                   FILTERS
