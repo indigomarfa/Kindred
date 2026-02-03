@@ -471,21 +471,25 @@ const ProfileSetupView = ({
   setAuthStep,
   handleAiBio,
   isEditMode = false,
-  isBackgrounded = false
+  isBackgrounded = false,
+  onClose
 }: {
   currentUser: User,
   handleUpdateProfile: (u: Partial<User>) => void,
   setAuthStep: (s: AuthStep) => void,
   handleAiBio: () => Promise<void>,
   isEditMode?: boolean,
-  isBackgrounded?: boolean
+  isBackgrounded?: boolean,
+  onClose?: () => void
 }) => {
   const [step, setStep] = useState(isEditMode ? 7 : 1);
+  const [isInternalEditing, setIsInternalEditing] = useState(false);
   const [interestInput, setInterestInput] = useState('');
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [isGeneratingBio, setIsGeneratingBio] = useState(false);
   const [triedToSubmit, setTriedToSubmit] = useState(false);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
 
   const totalSteps = 7;
   const isComplete = currentUser.hasCompletedOnboarding;
@@ -505,14 +509,6 @@ const ProfileSetupView = ({
 
     return () => clearTimeout(timer);
   }, [interestInput]);
-
-  const localFilteredInterests = useMemo(() => {
-    if (interestInput.length < 2) return [];
-    return POPULAR_INTERESTS.filter(i => 
-      i.toLowerCase().includes(interestInput.toLowerCase()) && 
-      !currentUser.interests.includes(i)
-    );
-  }, [interestInput, currentUser.interests]);
 
   const handleInterestSelect = useCallback((val: string) => {
     const trimmed = val.trim();
@@ -555,6 +551,24 @@ const ProfileSetupView = ({
     window.scrollTo(0, 0);
   };
 
+  const handleClose = useCallback(() => {
+    if (isInternalEditing) {
+      setShowDiscardConfirm(true);
+    } else {
+      onClose?.();
+    }
+  }, [isInternalEditing, onClose]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isEditMode && step === 7) {
+        handleClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isEditMode, step, handleClose]);
+
   const finishOnboarding = () => {
     let label = 'Explorer';
     if (currentUser.personality === PersonalityType.INTROVERT) label = 'Thinker';
@@ -578,6 +592,7 @@ const ProfileSetupView = ({
       identityLabel: label
     });
     setAuthStep(AuthStep.COMPLETED);
+    setIsInternalEditing(false);
   };
 
   const renderProgress = () => {
@@ -610,13 +625,21 @@ const ProfileSetupView = ({
         <button 
           type="button" 
           onClick={onNext} 
-          className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-white hover:shadow-[0_20px_50px_-10px_rgba(255,255,255,0.5),0_10px_20px_-5px_rgba(0,0,0,0.3)] transition-all text-[11px] rounded-xl shadow-[0_25px_45px_-10px_rgba(0,0,0,0.45),0_10px_20px_-5px_rgba(0,0,0,0.2)] active:scale-95 cta-lean"
+          className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-white hover:shadow-[0_20px_50px_-10px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(0,0,0,0.3)] transition-all text-[11px] rounded-xl shadow-[0_25px_45px_-10px_rgba(0,0,0,0.45),0_10px_20px_-5px_rgba(0,0,0,0.2)] active:scale-95 cta-lean"
         >
           {isEditMode && step !== 7 ? "Refine" : nextLabel}
         </button>
       </div>
     </div>
   );
+
+  const localFilteredInterests = useMemo(() => {
+    if (interestInput.length < 2) return [];
+    return POPULAR_INTERESTS.filter(i => 
+      i.toLowerCase().includes(interestInput.toLowerCase()) && 
+      !currentUser.interests.includes(i)
+    );
+  }, [interestInput, currentUser.interests]);
 
   return (
     <div className="min-h-screen py-8 px-4 flex justify-center items-start overflow-y-auto text-white relative">
@@ -629,15 +652,33 @@ const ProfileSetupView = ({
         }}
        >
          
-         <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end border-b border-neutral-900 pb-8 gap-4">
-           <div>
+         <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-neutral-900 pb-8 gap-4 relative">
+           <div className="flex flex-col items-start">
              <h2 className="text-4xl font-bold text-white uppercase tracking-tighter font-display">
                 {isComplete ? "Your member card" : "You’ve arrived"}
              </h2>
              <p className="text-[10px] font-black uppercase tracking-widest text-[#949494] mt-1.5 opacity-100">
-                {isComplete ? "Your presence, refined over time." : "Building your member card"}
+                {isComplete ? "This is you." : "Building your member card"}
              </p>
+             {isEditMode && step === 7 && (
+                <button 
+                  onClick={() => setIsInternalEditing(!isInternalEditing)}
+                  className={`mt-5 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border ${isInternalEditing ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-neutral-900 border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-white'}`}
+                >
+                  {isInternalEditing ? <Icons.X className="w-3.5 h-3.5" /> : <Icons.Zap className="w-3.5 h-3.5" />}
+                  {isInternalEditing ? 'Done' : 'Edit'}
+                </button>
+             )}
            </div>
+           {isEditMode && step === 7 && (
+             <button 
+              onClick={handleClose}
+              className="p-2 -mr-2 text-neutral-200 hover:text-white transition-all hover:scale-110 active:scale-95 flex items-center gap-2 group absolute right-0 top-0 md:relative"
+             >
+               <span className="text-[10px] font-black uppercase tracking-widest hidden md:inline opacity-0 group-hover:opacity-100 transition-opacity">Exit</span>
+               <Icons.X className="w-5 h-5" />
+             </button>
+           )}
          </div>
 
          {!isEditMode && step < totalSteps && renderProgress()}
@@ -889,35 +930,130 @@ const ProfileSetupView = ({
            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-1000">
              <div className="space-y-2 narrative-beat">
                <h3 className="text-3xl font-bold text-white uppercase tracking-tighter font-display">Final Shape</h3>
-               <p className="text-[#949494] text-sm font-medium leading-snug max-w-md italic opacity-70">You’ve arrived. Take a quiet look.</p>
+               <p className="text-[#949494] text-sm font-medium leading-snug max-w-md italic opacity-70">
+                 {isInternalEditing ? "Choose a block to refine." : "You’ve arrived. Take a quiet look."}
+               </p>
              </div>
              
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-black/30 border border-neutral-800 p-6 rounded-2xl relative group hover:border-neutral-600 transition-all">
-                  <label className="text-[9px] font-black text-[#949494] uppercase tracking-widest block mb-2">Basics</label>
-                  <p className="font-bold text-white">{currentUser.age || '?'} yrs · {currentUser.gender || 'Other'}</p>
-                </div>
-                <div className="bg-black/30 border border-neutral-800 p-6 rounded-2xl relative group hover:border-neutral-600 transition-all">
-                  <label className="text-[9px] font-black text-[#949494] uppercase tracking-widest block mb-2">Location & Work</label>
-                  <p className="font-bold text-white">{currentUser.occupation || 'Wanderer'} in {currentUser.location.city || 'Secret'}</p>
-                </div>
-                <div className="bg-black/30 border border-neutral-800 p-6 rounded-2xl relative group col-span-1 md:col-span-2 hover:border-neutral-600 transition-all">
-                  <label className="text-[9px] font-black text-[#949494] uppercase tracking-widest block mb-2">Interests</label>
-                  <div className="flex flex-wrap gap-2">
-                    {currentUser.interests.map(i => <span key={i} className="text-[9px] px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-full font-bold">{i}</span>)}
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
+                <button 
+                  onClick={() => isInternalEditing && setStep(1)}
+                  className={`bg-black/30 border border-neutral-800/80 p-5 rounded-3xl relative text-left transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 group shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] ${isInternalEditing ? 'hover:border-white/40 hover:-translate-y-0.5 cursor-pointer' : 'cursor-default'}`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <label className="text-[9px] font-black text-[#949494] uppercase tracking-[0.2em] block">Basics</label>
+                    {isInternalEditing && <Icons.Zap className="w-3 h-3 text-[#FF2A2A] opacity-0 group-hover:opacity-100 transition-opacity" />}
                   </div>
-                </div>
+                  <p className="font-bold text-white text-base tracking-tight">{currentUser.age || '?'} yrs · {currentUser.gender || 'Other'}</p>
+                </button>
+
+                <button 
+                  onClick={() => isInternalEditing && setStep(2)}
+                  className={`bg-black/30 border border-neutral-800/80 p-5 rounded-3xl relative text-left transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 group shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] delay-75 ${isInternalEditing ? 'hover:border-white/40 hover:-translate-y-0.5 cursor-pointer' : 'cursor-default'}`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <label className="text-[9px] font-black text-[#949494] uppercase tracking-[0.2em] block">Location & Work</label>
+                    {isInternalEditing && <Icons.Zap className="w-3 h-3 text-[#FF2A2A] opacity-0 group-hover:opacity-100 transition-opacity" />}
+                  </div>
+                  <p className="font-bold text-white text-base tracking-tight truncate">
+                    {currentUser.occupation || 'Wanderer'} <span className="text-neutral-500 font-medium lowercase">in</span> {currentUser.location.city || 'Secret'}
+                  </p>
+                </button>
+
+                <button 
+                  onClick={() => isInternalEditing && setStep(4)}
+                  className={`bg-black/30 border border-neutral-800/80 p-6 rounded-[2.5rem] relative text-left transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 group col-span-1 md:col-span-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] delay-150 ${isInternalEditing ? 'hover:border-white/40 hover:-translate-y-0.5 cursor-pointer' : 'cursor-default'}`}
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <label className="text-[9px] font-black text-[#949494] uppercase tracking-[0.2em] block">Passions</label>
+                    {isInternalEditing && <span className="text-[9px] font-black text-[#FF2A2A] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Add/Remove</span>}
+                  </div>
+                  <div className="flex flex-wrap gap-2.5">
+                    {currentUser.interests.length > 0 ? currentUser.interests.map(i => (
+                      <span key={i} className="text-[10px] px-4 py-1.5 bg-neutral-900 border border-white/10 rounded-full font-black uppercase tracking-widest text-white flex items-center gap-2 group/chip transition-all hover:bg-neutral-800 hover:border-white/20">
+                        {i}
+                        {isInternalEditing && <Icons.X className="w-3 h-3 text-neutral-500 hover:text-white" />}
+                      </span>
+                    )) : <p className="text-neutral-600 italic text-sm">No passions listed yet.</p>}
+                  </div>
+                </button>
+
+                <button 
+                  onClick={() => isInternalEditing && setStep(6)}
+                  className={`bg-black/30 border border-neutral-800/80 p-6 rounded-[2.5rem] relative text-left transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 group col-span-1 md:col-span-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] delay-200 ${isInternalEditing ? 'hover:border-white/40 hover:-translate-y-0.5 cursor-pointer' : 'cursor-default'}`}
+                >
+                   <div className="flex justify-between items-start mb-4">
+                    <label className="text-[9px] font-black text-[#949494] uppercase tracking-[0.2em] block">Your Voice</label>
+                    {isInternalEditing && <Icons.Zap className="w-3 h-3 text-[#FF2A2A] opacity-0 group-hover:opacity-100 transition-opacity" />}
+                  </div>
+                  <p className="text-neutral-400 font-medium italic leading-relaxed text-base line-clamp-3">
+                    "{currentUser.bio || "No bio yet. Let people know what you're about."}"
+                  </p>
+                </button>
              </div>
 
-             <div className="pt-8 flex justify-between items-center">
-                <button type="button" onClick={prevStep} className="text-[#7A7A7A] hover:text-white text-xs font-bold uppercase tracking-widest transition-all">Back</button>
-                <button type="button" onClick={finishOnboarding} className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all text-[11px] rounded-2xl">
-                  {isComplete ? "Save changes" : "Finish setup"}
+             <div className="pt-8 border-t border-neutral-900 flex justify-between items-center">
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    if (isInternalEditing) setIsInternalEditing(false);
+                    else prevStep();
+                  }} 
+                  className="text-[#7A7A7A] hover:text-white text-xs font-black uppercase tracking-widest transition-all"
+                >
+                  {isInternalEditing ? 'Cancel' : 'Back'}
                 </button>
+                
+                {isInternalEditing ? (
+                   <button 
+                    type="button" 
+                    onClick={finishOnboarding} 
+                    className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all text-[11px] rounded-2xl"
+                  >
+                    Save changes
+                  </button>
+                ) : (
+                  <button 
+                    type="button" 
+                    onClick={finishOnboarding} 
+                    className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all text-[11px] rounded-2xl"
+                  >
+                    {isComplete ? "Finish setup" : "Finish setup"}
+                  </button>
+                )}
              </div>
            </div>
          )}
          </div>
+
+         {/* Discard Confirmation Dialog */}
+         {showDiscardConfirm && (
+           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowDiscardConfirm(false)}></div>
+             <div className="bg-neutral-900 border border-white/10 p-10 rounded-[2.5rem] shadow-2xl relative z-10 max-w-sm w-full animate-in zoom-in-95 duration-200">
+               <h4 className="text-xl font-bold uppercase tracking-tight text-white mb-4">Discard changes?</h4>
+               <p className="text-neutral-400 text-sm font-medium mb-8 leading-relaxed">Your edits will be lost. Return to discovery?</p>
+               <div className="flex flex-col gap-3">
+                 <button 
+                   onClick={() => {
+                     setShowDiscardConfirm(false);
+                     setIsInternalEditing(false);
+                     onClose?.();
+                   }}
+                   className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-2xl hover:bg-neutral-200 transition-all"
+                 >
+                   Discard
+                 </button>
+                 <button 
+                   onClick={() => setShowDiscardConfirm(false)}
+                   className="w-full py-4 bg-neutral-800 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl hover:bg-neutral-700 transition-all"
+                 >
+                   Keep editing
+                 </button>
+               </div>
+             </div>
+           </div>
+         )}
     </div>
   );
 };
@@ -1238,10 +1374,15 @@ const App = () => {
             {/* RESULTS GRID */}
             <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-32 transition-opacity duration-1000 ${!searchQuery && !showFilters ? 'opacity-70 grayscale-[0.4]' : 'opacity-100 grayscale-0'}`}>
               {filteredUsers.length > 0 ? filteredUsers.map(user => (
-                <div key={user.id} className="bg-neutral-900/40 border border-neutral-800/80 rounded-[2.5rem] overflow-hidden transition-all duration-700 group cursor-pointer shadow-2xl hover:bg-neutral-800/60 hover:-translate-y-2 transform">
+                <div key={user.id} className="bg-neutral-900/40 border border-neutral-800/80 rounded-[2.5rem] overflow-hidden transition-all duration-700 group cursor-pointer shadow-2xl hover:bg-neutral-800/60 hover:-translate-y-[2px] transform">
                   <div className="h-72 relative overflow-hidden">
-                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
+                    <img 
+                      src={user.avatar} 
+                      alt={user.name} 
+                      className="w-full h-full object-cover transition-[transform,filter] duration-[2000ms] group-hover:scale-110 group-hover:brightness-[1.12] group-hover:saturate-[1.18] group-hover:contrast-[1.05]" 
+                      style={{ transition: 'transform 2000ms ease-in-out, filter 200ms ease-out' }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 transition-opacity duration-200 group-hover:opacity-65"></div>
                     <div className="absolute bottom-6 left-6">
                       <h3 className="text-3xl font-bold uppercase tracking-tight">{user.name}, {user.age}</h3>
                       <p className="text-[11px] text-neutral-400 font-black uppercase tracking-[0.25em] mt-1">{user.occupation}</p>
@@ -1254,7 +1395,7 @@ const App = () => {
                         <span key={i} className="text-[10px] px-4 py-1.5 bg-neutral-950 border border-neutral-800 rounded-full font-bold uppercase tracking-widest text-neutral-500 transition-colors group-hover:text-neutral-300 group-hover:border-neutral-700">{i}</span>
                       ))}
                     </div>
-                    <button className="w-full py-5 bg-white text-black font-black uppercase tracking-[0.25em] text-[11px] rounded-2xl hover:shadow-2xl hover:scale-[1.02] transform transition-all active:scale-95">Initiate Connection</button>
+                    <button className="w-full py-5 bg-white text-black font-black uppercase tracking-[0.25em] text-[11px] rounded-2xl hover:shadow-2xl hover:scale-[1.02] transform transition-all active:scale-95">Click</button>
                   </div>
                 </div>
               )) : (
@@ -1275,7 +1416,15 @@ const App = () => {
         )}
 
         {view === ViewState.PROFILE && (
-          <ProfileSetupView currentUser={currentUser} handleUpdateProfile={handleUpdateProfile} setAuthStep={setAuthStep} handleAiBio={handleAiBio} isEditMode={true} isBackgrounded={isPopUpOpen} />
+          <ProfileSetupView 
+            currentUser={currentUser} 
+            handleUpdateProfile={handleUpdateProfile} 
+            setAuthStep={setAuthStep} 
+            handleAiBio={handleAiBio} 
+            isEditMode={true} 
+            isBackgrounded={isPopUpOpen} 
+            onClose={() => setView(ViewState.DISCOVERY)}
+          />
         )}
       </main>
 
