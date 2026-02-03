@@ -262,7 +262,7 @@ const CustomSelect = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-6 py-0 transition-all flex items-center justify-between outline-none font-bold ${height} text-left ${isOpen ? `${selectActiveBase} rounded-t-xl rounded-b-none` : `${inputIdleBase} ${inputHoverBase} rounded-xl focus:shadow-[inset_2px_0_0_0_#FF2A2A,inset_0_2px_4px_rgba(255,255,255,0.2),inset_0_-2px_5px_rgba(0,0,0,0.8),0_10px_20px_-5px_rgba(0,0,0,0.6)] focus:bg-neutral-900/60`} ${!value ? 'text-[#7A7A7A]' : 'text-white'}`}
+        className={`w-full px-6 py-0 transition-all flex items-center justify-between outline-none font-bold ${height} text-left ${isOpen ? `${selectActiveBase} rounded-t-xl rounded-b-none` : `${inputIdleBase} ${inputHoverBase} rounded-xl focus:shadow-[inset_2px_0_0_0_#FF2A2A,inset_0_2px_4px_rgba(255,255,255,0.2),inset_0_-2px_5px_rgba(0,0,0,0.8),0_10px_20_5px_rgba(0,0,0,0.6)] focus:bg-neutral-900/60`} ${!value ? 'text-[#7A7A7A]' : 'text-white'}`}
       >
         <span className="truncate">{value || placeholder}</span>
         <Icons.Menu className={`w-3.5 h-3.5 transition-all duration-300 ${isOpen ? 'rotate-90 text-white' : 'text-[#949494]'} group-hover:text-white`} />
@@ -1093,23 +1093,22 @@ const App = () => {
               <p className="text-neutral-500 font-black uppercase tracking-widest text-xs mt-4">Meaningful, friendly connections.</p>
             </div>
 
-            {/* HERO SEARCH BAR */}
-            <div className="max-w-5xl mx-auto w-full group relative space-y-4">
-              <div className="relative transition-transform duration-500 hover:-translate-y-0.5">
-                {/* Typing Indicator (Left Edge Accent) */}
-                {searchQuery.length > 0 && (
-                  <div className="absolute left-0 top-[20%] bottom-[20%] w-[4px] bg-[#FF2A2A] rounded-r-full z-20 animate-in fade-in duration-300 shadow-[0_0_10px_rgba(255,42,42,0.8)]"></div>
-                )}
+            {/* HERO SEARCH BAR - BOLDER & PROVOCATIVE COMMAND BAR */}
+            <div className="max-w-6xl mx-auto w-full group relative py-12">
+              <div className="relative transition-all duration-100 hover:-translate-y-0.5">
+                {/* Kindred Red Accent Line - Solid, sharp, reactive */}
+                <div className={`absolute left-0 top-0 bottom-0 w-[3px] bg-[#FF2A2A] rounded-l-[8px] z-20 transition-all duration-100 group-focus-within:w-[6px]`}></div>
                 
                 <input
                   type="text"
-                  placeholder="Who would you like to talk to today?"
-                  className={`
-                    w-full rounded-[2.5rem] py-10 pl-12 pr-44 text-2xl font-medium text-white 
-                    placeholder-neutral-700 outline-none transition-all backdrop-blur-3xl
-                    bg-gradient-to-br from-neutral-900/60 to-neutral-950/60
-                    ${inputIdleBase} ${inputHoverBase} ${inputFocusBase}
-                  `}
+                  placeholder="Who do you dare to talk to?"
+                  className="
+                    w-full h-[56px] rounded-[8px] pl-12 pr-44 text-lg font-bold text-white 
+                    placeholder:text-neutral-500 placeholder:font-black outline-none transition-all
+                    bg-[#141414] border border-neutral-800
+                    focus:bg-[#181818] focus:border-neutral-700
+                    caret-[#FF2A2A]
+                  "
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onClick={() => !showFilters && setShowFilters(true)}
@@ -1118,16 +1117,14 @@ const App = () => {
                 <button 
                   onClick={() => setShowFilters(!showFilters)}
                   className={`
-                    absolute right-6 top-1/2 -translate-y-1/2 px-10 py-4 rounded-3xl 
-                    text-[12px] font-black uppercase tracking-[0.2em] transition-all 
-                    shadow-xl border border-white/5
-                    ${showFilters 
-                      ? 'bg-white text-black hover:bg-neutral-200 shadow-[0_0_20px_rgba(255,255,255,0.2)]' 
-                      : 'bg-neutral-800 text-white hover:bg-neutral-700 hover:border-white/10'
-                    }
+                    absolute right-4 top-1/2 -translate-y-1/2 h-[32px] px-6 rounded-[4px] 
+                    text-[10px] font-black uppercase tracking-[0.2em] transition-all 
+                    bg-neutral-900 border border-neutral-800 text-neutral-400
+                    hover:border-[#FF2A2A] hover:text-white hover:bg-transparent
+                    ${showFilters ? 'border-[#FF2A2A] text-white bg-neutral-800 shadow-[0_0_15px_rgba(255,42,42,0.1)]' : ''}
                   `}
                 >
-                  Filters
+                  FILTERS
                 </button>
               </div>
 
