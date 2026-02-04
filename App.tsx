@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Icons } from './components/Icons';
 import { Calendar } from './components/Calendar';
@@ -251,50 +250,80 @@ const CustomSelect = ({
   height?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
 
+  // Handle scroll lock and positioning
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      if (triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        setDropdownPos({
+          top: rect.bottom + 12, // 12px gap from input
+          left: rect.left,
+          width: rect.width
+        });
       }
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [isOpen]);
+
+  const handleSelect = (opt: string) => {
+    onChange(opt);
+    setIsOpen(false);
+  };
 
   return (
-    <div className="relative group" ref={containerRef}>
+    <div className="relative group">
       {label && <label className="block text-[10px] font-bold text-[#949494] uppercase tracking-widest mb-3 group-focus-within:text-white transition-colors">{label}</label>}
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-6 py-0 transition-all flex items-center justify-between outline-none font-bold ${height} text-left ${isOpen ? `${selectActiveBase} rounded-t-xl rounded-b-none` : `${inputIdleBase} ${inputHoverBase} rounded-xl focus:shadow-[inset_2px_0_0_0_#FF2A2A,inset_0_2px_4px_rgba(255,255,255,0.2),inset_0_-2px_5px_rgba(0,0,0,0.8),0_10px_20_5px_rgba(0,0,0,0.6)] focus:bg-neutral-900/60`} ${!value ? 'text-[#7A7A7A]' : 'text-white'}`}
+        className={`w-full px-6 py-0 transition-all flex items-center justify-between outline-none font-bold ${height} text-left rounded-xl ${isOpen ? 'border-[#FF2A2A] shadow-[inset_2px_0_0_0_#FF2A2A,0_0_15px_rgba(255,42,42,0.1)]' : `${inputIdleBase} ${inputHoverBase} focus:border-[#FF2A2A]/50 focus:shadow-[inset_2px_0_0_0_#FF2A2A]`} ${!value ? 'text-[#7A7A7A]' : 'text-white'}`}
       >
         <span className="truncate">{value || placeholder}</span>
         <Icons.Menu className={`w-3.5 h-3.5 transition-all duration-300 ${isOpen ? 'rotate-90 text-white' : 'text-[#949494]'} group-hover:text-white`} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 z-[60] w-full bg-[#121212]/98 backdrop-blur-3xl border-x border-b border-white/10 rounded-b-xl overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
-          {options.map((opt) => (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => {
-                onChange(opt);
-                setIsOpen(false);
-              }}
-              /* Fixed syntax error: removed trailing ': text-white' ternary segment that was breaking parser and scope */
-              className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative group/opt ${value === opt ? 'bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]' : 'text-[#7A7A7A]'}`}
-            >
-              {value === opt && (
-                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A]"></div>
-              )}
-              <span className="relative z-10">{opt}</span>
-            </button>
-          ))}
-        </div>
+        <>
+          {/* Full-screen Scrim */}
+          <div 
+            className="fixed inset-0 z-[100] bg-black/55 backdrop-blur-[6px] animate-in fade-in duration-150"
+            onClick={() => setIsOpen(false)}
+          />
+          
+          {/* Elevated Popup */}
+          <div 
+            style={{ 
+              position: 'fixed', 
+              top: `${dropdownPos.top}px`, 
+              left: `${dropdownPos.left}px`, 
+              width: `${dropdownPos.width}px` 
+            }}
+            className="z-[101] bg-[#141414] border border-white/10 rounded-2xl shadow-[0_16px_50px_rgba(0,0,0,0.65)] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-[180ms] ease-out"
+          >
+            {options.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => handleSelect(opt)}
+                className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative group/opt border-b border-white/[0.03] last:border-none ${value === opt ? 'bg-white/[0.04] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]' : 'text-[#7A7A7A]'}`}
+              >
+                {value === opt && (
+                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
+                )}
+                <span className="relative z-10">{opt}</span>
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
@@ -663,7 +692,7 @@ const ProfileSetupView = ({
          <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-neutral-900 pb-8 gap-4 relative">
            <div className="flex flex-col items-start">
              <h2 className="text-4xl font-bold text-white uppercase tracking-tighter font-display">
-                {isComplete ? "Your member card" : "You’ve arrived"}
+                {isComplete ? "Your member card" : "It gets personal"}
              </h2>
              <p className="text-[10px] font-black uppercase tracking-widest text-[#949494] mt-1.5 opacity-100">
                 {isComplete ? "This is you." : "Building your member card"}
