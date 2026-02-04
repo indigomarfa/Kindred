@@ -250,21 +250,11 @@ const CustomSelect = ({
   height?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
 
-  // Handle scroll lock and positioning
+  // Handle scroll lock
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      if (triggerRef.current) {
-        const rect = triggerRef.current.getBoundingClientRect();
-        setDropdownPos({
-          top: rect.bottom + 12, // 12px gap from input
-          left: rect.left,
-          width: rect.width
-        });
-      }
     } else {
       document.body.style.overflow = 'auto';
     }
@@ -279,13 +269,12 @@ const CustomSelect = ({
   };
 
   return (
-    <div className="relative group">
+    <div className={`relative group ${isOpen ? 'z-[100]' : ''}`}>
       {label && <label className="block text-[10px] font-bold text-[#949494] uppercase tracking-widest mb-3 group-focus-within:text-white transition-colors">{label}</label>}
       <button
-        ref={triggerRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-6 py-0 transition-all flex items-center justify-between outline-none font-bold ${height} text-left rounded-xl ${isOpen ? 'border-[#FF2A2A] shadow-[inset_2px_0_0_0_#FF2A2A,0_0_15px_rgba(255,42,42,0.1)]' : `${inputIdleBase} ${inputHoverBase} focus:border-[#FF2A2A]/50 focus:shadow-[inset_2px_0_0_0_#FF2A2A]`} ${!value ? 'text-[#7A7A7A]' : 'text-white'}`}
+        className={`w-full px-6 py-0 transition-all flex items-center justify-between outline-none font-bold ${height} text-left rounded-xl ${isOpen ? 'border-[#FF2A2A] shadow-[inset_2px_0_0_0_#FF2A2A,0_0_15px_rgba(255,42,42,0.1)] relative z-[101]' : `${inputIdleBase} ${inputHoverBase} focus:border-[#FF2A2A] focus:shadow-[inset_2px_0_0_0_#FF2A2A]`} ${!value ? 'text-[#7A7A7A]' : 'text-white'}`}
       >
         <span className="truncate">{value || placeholder}</span>
         <Icons.Menu className={`w-3.5 h-3.5 transition-all duration-300 ${isOpen ? 'rotate-90 text-white' : 'text-[#949494]'} group-hover:text-white`} />
@@ -293,28 +282,22 @@ const CustomSelect = ({
 
       {isOpen && (
         <>
-          {/* Full-screen Scrim */}
+          {/* Full-screen Scrim - Anchored behind the current component's context */}
           <div 
-            className="fixed inset-0 z-[100] bg-black/55 backdrop-blur-[6px] animate-in fade-in duration-150"
+            className="fixed inset-0 z-[99] bg-black/60 backdrop-blur-[6px] animate-in fade-in duration-150"
             onClick={() => setIsOpen(false)}
           />
           
-          {/* Elevated Popup */}
+          {/* Elevated Popup - Locally anchored to the parent container */}
           <div 
-            style={{ 
-              position: 'fixed', 
-              top: `${dropdownPos.top}px`, 
-              left: `${dropdownPos.left}px`, 
-              width: `${dropdownPos.width}px` 
-            }}
-            className="z-[101] bg-[#141414] border border-white/10 rounded-2xl shadow-[0_16px_50px_rgba(0,0,0,0.65)] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-[180ms] ease-out"
+            className="absolute top-[calc(100%+8px)] left-0 w-full z-[102] bg-[#141414] border border-white/10 rounded-2xl shadow-[0_16px_50px_rgba(0,0,0,0.65)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-[150ms] ease-out"
           >
             {options.map((opt) => (
               <button
                 key={opt}
                 type="button"
                 onClick={() => handleSelect(opt)}
-                className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative group/opt border-b border-white/[0.03] last:border-none ${value === opt ? 'bg-white/[0.04] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]' : 'text-[#7A7A7A]'}`}
+                className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative group/opt border-b border-white/[0.03] last:border-none ${value === opt ? 'bg-white/[0.04] text-white shadow-[inset_1px_0_0_rgba(255,255,255,0.05)]' : 'text-[#7A7A7A] hover:text-white hover:bg-white/[0.02]'}`}
               >
                 {value === opt && (
                   <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
@@ -396,13 +379,13 @@ const AutocompleteInput = ({
   const hasItemsToShow = (value.length > 0 || combinedSuggestions.length > 0);
 
   return (
-    <div className="relative group">
+    <div className={`relative group ${show && hasItemsToShow ? 'z-[100]' : ''}`}>
       {label && <label className="block text-[10px] font-bold text-[#949494] uppercase tracking-widest mb-3 group-focus-within:text-white transition-colors">{label}</label>}
       <div className="relative">
         <input 
           ref={inputRef}
           type="text"
-          className={`w-full px-4 py-0 transition-all outline-none font-medium h-[56px] text-sm text-white placeholder-[#7A7A7A] ${inputIdleBase} ${inputHoverBase} ${inputFocusBase} ${show && hasItemsToShow ? 'rounded-t-xl rounded-b-none' : 'rounded-xl'}`}
+          className={`w-full px-4 py-0 transition-all outline-none font-medium h-[56px] text-sm text-white placeholder-[#7A7A7A] ${inputIdleBase} ${inputHoverBase} ${inputFocusBase} rounded-xl`}
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -419,42 +402,45 @@ const AutocompleteInput = ({
       </div>
       
       {show && hasItemsToShow && (
-        <div className="absolute top-full left-0 z-50 w-full bg-[#121212]/98 backdrop-blur-3xl border-x border-b border-white/10 rounded-b-xl overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
-          {combinedSuggestions.map((s, idx) => (
-            <button 
-              key={s}
-              type="button"
-              onMouseEnter={() => setHighlightedIndex(idx)}
-              onMouseDown={(e) => {
-                e.preventDefault(); 
-                handleSelectInternal(s);
-              }}
-              className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === idx ? 'bg-white/10 text-white shadow-[inset_1px_0_0_0_rgba(255,255,255,0.05)]' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
-            >
-              {highlightedIndex === idx && (
-                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A]"></div>
-              )}
-              <span className="relative z-10">{s}</span>
-            </button>
-          ))}
-          {showCustomFallback && value.length > 0 && !combinedSuggestions.some(f => f.toLowerCase() === value.toLowerCase()) && (
-            <button 
-              type="button"
-              onMouseEnter={() => setHighlightedIndex(combinedSuggestions.length)}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                handleSelectInternal(value);
-              }}
-              className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === combinedSuggestions.length ? 'bg-white/10 text-white' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
-            >
-              {highlightedIndex === combinedSuggestions.length && (
-                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A]"></div>
-              )}
-              <Icons.Sparkles className="w-4 h-4 text-amber-500/80" />
-              Add custom: "{value}"
-            </button>
-          )}
-        </div>
+        <>
+          {/* Anchored elevated list */}
+          <div className="absolute top-[calc(100%+8px)] left-0 w-full z-50 bg-[#141414] border border-white/10 rounded-2xl shadow-[0_16px_50px_rgba(0,0,0,0.65)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-[150ms] ease-out">
+            {combinedSuggestions.map((s, idx) => (
+              <button 
+                key={s}
+                type="button"
+                onMouseEnter={() => setHighlightedIndex(idx)}
+                onMouseDown={(e) => {
+                  e.preventDefault(); 
+                  handleSelectInternal(s);
+                }}
+                className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === idx ? 'bg-white/10 text-white shadow-[inset_1px_0_0_0_rgba(255,255,255,0.05)]' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
+              >
+                {highlightedIndex === idx && (
+                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
+                )}
+                <span className="relative z-10">{s}</span>
+              </button>
+            ))}
+            {showCustomFallback && value.length > 0 && !combinedSuggestions.some(f => f.toLowerCase() === value.toLowerCase()) && (
+              <button 
+                type="button"
+                onMouseEnter={() => setHighlightedIndex(combinedSuggestions.length)}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  handleSelectInternal(value);
+                }}
+                className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === combinedSuggestions.length ? 'bg-white/10 text-white' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
+              >
+                {highlightedIndex === combinedSuggestions.length && (
+                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
+                )}
+                <Icons.Sparkles className="w-4 h-4 text-amber-500/80" />
+                Add custom: "{value}"
+              </button>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
@@ -682,7 +668,7 @@ const ProfileSetupView = ({
     <div className="min-h-screen py-8 px-4 flex justify-center items-start overflow-y-auto text-white relative">
       <Background isAuth />
        <div 
-        className={`max-w-3xl w-full bg-neutral-800/40 backdrop-blur-3xl border border-white/10 p-6 md:p-10 relative z-10 rounded-[3rem] transition-all duration-700 animate-in fade-in zoom-in ${isBackgrounded ? 'shadow-lg translate-y-2' : 'shadow-2xl'}`} 
+        className={`max-w-3xl w-full bg-neutral-800/40 backdrop-blur-3xl border border-white/10 p-6 md:p-10 relative z-10 rounded-[3rem] transition-all duration-700 animate-in fade-in zoom-in ${isBackgrounded ? 'shadow-lg translate-y-2 opacity-85 blur-[1.5px]' : 'shadow-2xl'}`} 
         style={{ 
           boxShadow: isBackgrounded ? '0 15px 30px rgba(0,0,0,0.5)' : '0 40px 100px rgba(0,0,0,0.4)', 
           outline: '1px solid rgba(255,255,255,0.06)' 
@@ -1304,7 +1290,7 @@ const App = () => {
 
               {/* FILTERS PANEL */}
               <div className={`overflow-hidden transition-all duration-500 ease-in-out ${showFilters ? 'max-h-[1400px] opacity-100 mt-6' : 'max-h-0 opacity-0 pointer-events-none'}`}>
-                <div className="p-12 bg-[#1a1a1a] border border-neutral-800/80 rounded-[3rem] space-y-16 relative shadow-2xl">
+                <div className="p-12 bg-[#141414] border border-white/10 rounded-[3rem] space-y-16 relative shadow-[0_16px_50px_rgba(0,0,0,0.65)]">
                   <div className="flex justify-between items-center border-b border-neutral-800 pb-8">
                     <div>
                       <h3 className="text-[14px] font-black text-white uppercase tracking-[0.3em]">Refine Discovery</h3>
@@ -1352,7 +1338,7 @@ const App = () => {
                     <div className="space-y-6">
                       <label className="text-[14px] font-bold text-neutral-400 tracking-tight block">When are you most present?</label>
                       <div className="flex flex-wrap gap-3">
-                        {(['ANY', ...Object.values(PersonalityType)] as const).map((t) => (
+                        {(['ANY', ...Object.values(TimeOfDay)] as const).map((t) => (
                           <FilterChip 
                             key={t} 
                             label={t} 
@@ -1505,30 +1491,41 @@ const App = () => {
         )}
       </main>
 
+      {/* Sidebars Updated to Match Elevated Design */}
       {chatsOpen && (
-        <div className="fixed inset-y-0 right-0 w-80 bg-[#0d0d0d] border-l border-neutral-800 z-[100] shadow-2xl animate-in slide-in-from-right duration-300">
-           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,_rgba(0,0,0,0.7)_0%,_transparent_80%)] pointer-events-none"></div>
-           <div className="relative z-10 h-full p-6">
-             <div className="flex justify-between items-center mb-8 border-b border-neutral-900 pb-4">
-                <h3 className="font-bold uppercase tracking-widest text-sm text-white">Messages</h3>
-                <button onClick={() => setChatsOpen(false)} className="text-neutral-500 hover:text-white transition-all"><Icons.X className="w-5 h-5" /></button>
+        <>
+          <div className="fixed inset-0 z-[110] bg-black/55 backdrop-blur-[6px] animate-in fade-in duration-200" onClick={() => setChatsOpen(false)} />
+          <div className="fixed inset-y-0 right-0 w-80 bg-[#141414] border-l border-white/10 z-[120] shadow-[0_16px_50px_rgba(0,0,0,0.65)] animate-in slide-in-from-right duration-300">
+             <div className="relative z-10 h-full p-8">
+               <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+                  <h3 className="font-bold uppercase tracking-[0.2em] text-[11px] text-white">Messages</h3>
+                  <button onClick={() => setChatsOpen(false)} className="text-neutral-500 hover:text-white transition-all"><Icons.X className="w-5 h-5" /></button>
+               </div>
+               <div className="flex flex-col items-center justify-center h-full -mt-20">
+                 <div className="w-1.5 h-1.5 rounded-full bg-neutral-800 mb-6"></div>
+                 <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.3em] text-center">No active chats</p>
+               </div>
              </div>
-             <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.3em] text-center mt-20">No active chats</p>
-           </div>
-        </div>
+          </div>
+        </>
       )}
 
       {notifsOpen && (
-        <div className="fixed inset-y-0 right-0 w-80 bg-[#0d0d0d] border-l border-neutral-800 z-[100] shadow-2xl animate-in slide-in-from-right duration-300">
-           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,_rgba(0,0,0,0.7)_0%,_transparent_80%)] pointer-events-none"></div>
-           <div className="relative z-10 h-full p-6">
-             <div className="flex justify-between items-center mb-8 border-b border-neutral-900 pb-4">
-                <h3 className="font-bold uppercase tracking-widest text-sm text-white">Notifications</h3>
-                <button onClick={() => setNotifsOpen(false)} className="text-neutral-500 hover:text-white transition-all"><Icons.X className="w-5 h-5" /></button>
+        <>
+          <div className="fixed inset-0 z-[110] bg-black/55 backdrop-blur-[6px] animate-in fade-in duration-200" onClick={() => setNotifsOpen(false)} />
+          <div className="fixed inset-y-0 right-0 w-80 bg-[#141414] border-l border-white/10 z-[120] shadow-[0_16px_50px_rgba(0,0,0,0.65)] animate-in slide-in-from-right duration-300">
+             <div className="relative z-10 h-full p-8">
+               <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+                  <h3 className="font-bold uppercase tracking-[0.2em] text-[11px] text-white">Notifications</h3>
+                  <button onClick={() => setNotifsOpen(false)} className="text-neutral-500 hover:text-white transition-all"><Icons.X className="w-5 h-5" /></button>
+               </div>
+               <div className="flex flex-col items-center justify-center h-full -mt-20">
+                 <div className="w-1.5 h-1.5 rounded-full bg-neutral-800 mb-6"></div>
+                 <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.3em] text-center">All caught up</p>
+               </div>
              </div>
-             <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.3em] text-center mt-20">All caught up</p>
-           </div>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );
