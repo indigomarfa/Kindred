@@ -94,6 +94,19 @@ const Background = ({ isAuth = false }: { isAuth?: boolean }) => (
 function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
   const [isPressed, setIsPressed] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia('(max-width: 768px)').matches);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Force elevated state visual properties if on mobile
+  const effectiveHovered = isHovered || isMobile;
 
   return (
     <button
@@ -124,7 +137,7 @@ function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
           borderRadius: 999,
           background:
             "linear-gradient(180deg, #5a5a5a 0%, #1a1a1a 45%, #080808 100%)",
-          boxShadow: isHovered
+          boxShadow: effectiveHovered
             ? `0 50px 110px -10px rgba(255,42,42,1.0), 
                0 25px 55px -5px rgba(255,42,42,0.7),
                0 0 70px 0px rgba(255,42,42,0.5), 
@@ -149,7 +162,7 @@ function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
           borderRadius: 999,
           background:
             "linear-gradient(180deg, #ff4b4b 0%, #e10000 55%, #a30000 100%)",
-          boxShadow: isHovered
+          boxShadow: effectiveHovered
             ? `0 0 45px rgba(255,42,42,0.7),
                0 10px 14px rgba(0,0,0,.45), 
                inset 0 2px 0 rgba(255,255,255,.35), 
@@ -173,14 +186,16 @@ function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
             "linear-gradient(180deg, #ffffff 0%, #f4f4f4 55%, #e6e6e6 100%)",
           boxShadow: isPressed 
             ? "0 4px 0 rgba(0,0,0,.30), inset 0 2px 0 rgba(255,255,255,.90), inset 0 -3px 0 rgba(0,0,0,.12)"
-            : isHovered 
+            : effectiveHovered 
               ? "0 14px 0 rgba(0,0,0,.35), inset 0 3px 0 rgba(255,255,255,1.0), inset 0 -3px 0 rgba(0,0,0,.12), 0 0 20px rgba(255,255,255,0.4)"
               : "0 11px 0 rgba(0,0,0,.30), inset 0 2px 0 rgba(255,255,255,.90), inset 0 -3px 0 rgba(0,0,0,.12)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           overflow: "hidden",
-          transform: isPressed ? "translateY(7px)" : isHovered ? "translateY(-2px)" : "translateY(0px)",
+          transform: isPressed 
+            ? (isMobile ? "translateY(4px)" : "translateY(7px)") 
+            : (effectiveHovered ? "translateY(-2px)" : "translateY(0px)"),
           transition: "transform 150ms ease-out, box-shadow 150ms ease-out",
         }}
       >
@@ -195,7 +210,7 @@ function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
             background:
               "linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(255,255,255,.50) 55%, rgba(255,255,255,0) 100%)",
             transform: "skewX(-16deg)",
-            opacity: isHovered ? 1.0 : 0.92,
+            opacity: effectiveHovered ? 1.0 : 0.92,
             transition: "opacity 300ms ease",
           }}
         />
@@ -209,7 +224,7 @@ function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
             height: 2,
             borderRadius: 999,
             background: "rgba(255,255,255,.80)",
-            opacity: isHovered ? 1.0 : 0.65,
+            opacity: effectiveHovered ? 1.0 : 0.65,
             transition: "opacity 300ms ease",
           }}
         />
@@ -223,7 +238,7 @@ function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
             textTransform: "uppercase",
             color: "#000",
             fontFamily: "'Outfit', sans-serif",
-            textShadow: isHovered ? "0 0 8px rgba(255,255,255,0.5)" : "none",
+            textShadow: effectiveHovered ? "0 0 8px rgba(255,255,255,0.5)" : "none",
             transition: "text-shadow 300ms ease",
           }}
         >
@@ -478,8 +493,13 @@ const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: a
 
     <div className="flex items-center gap-6">
       <div className="flex items-center gap-2">
-        <button onClick={() => setChatsOpen(prev => !prev)} className="p-2 text-neutral-500 hover:text-white hover:scale-110 transition-all"><Icons.MessageCircle className="w-5 h-5" /></button>
-        <button onClick={() => setNotifsOpen(prev => !prev)} className="p-2 text-neutral-500 hover:text-white hover:scale-110 transition-all"><Icons.Bell className="w-5 h-5" /></button>
+        {/* Chat trigger strictly hidden on mobile (hidden md:block) */}
+        <button onClick={() => setChatsOpen(prev => !prev)} className="hidden md:block p-2 text-neutral-500 hover:text-white hover:scale-110 transition-all">
+          <Icons.MessageCircle className="w-5 h-5" />
+        </button>
+        <button onClick={() => setNotifsOpen(prev => !prev)} className="p-2 text-neutral-500 hover:text-white hover:scale-110 transition-all">
+          <Icons.Bell className="w-5 h-5" />
+        </button>
       </div>
       <button onClick={() => handleNav(ViewState.PROFILE)} className="w-12 h-12 rounded-full p-0.5 bg-neutral-800 hover:bg-neutral-600 transition-all group overflow-hidden hover:shadow-[0_0_15px_rgba(255,255,255,0.2)]">
          <img src={currentUser.avatar} alt="Profile" className="w-full h-full rounded-full object-cover border-2 border-black" />
@@ -1007,7 +1027,7 @@ const ProfileSetupView = ({
                   className={`bg-black/30 border border-neutral-800/80 p-6 rounded-[2.5rem] relative text-left transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 group col-span-1 md:col-span-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] delay-200 ${isInternalEditing ? 'hover:border-white/40 hover:-translate-y-0.5 cursor-pointer' : 'cursor-default'}`}
                 >
                    <div className="flex justify-between items-start mb-4">
-                    <label className="text-[9px] font-black text-[#949494] uppercase tracking-[0.2em] block">Your Voice</label>
+                    <label className="text-[9px] font-black text-[#949494] uppercase tracking-widest block">Your Voice</label>
                     {isInternalEditing && <Icons.Zap className="w-3 h-3 text-[#FF2A2A] opacity-0 group-hover:opacity-100 transition-opacity" />}
                   </div>
                   <p className="text-neutral-400 font-medium italic leading-relaxed text-base line-clamp-3">
@@ -1032,7 +1052,7 @@ const ProfileSetupView = ({
                    <button 
                     type="button" 
                     onClick={finishOnboarding} 
-                    className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all text-[11px] rounded-2xl"
+                    className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,42,42,0.25)] transition-all text-[11px] rounded-2xl"
                   >
                     Save changes
                   </button>
@@ -1040,7 +1060,7 @@ const ProfileSetupView = ({
                   <button 
                     type="button" 
                     onClick={finishOnboarding} 
-                    className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all text-[11px] rounded-2xl"
+                    className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,42,42,0.25)] transition-all text-[11px] rounded-2xl"
                   >
                     {isComplete ? "Finish setup" : "Finish setup"}
                   </button>
@@ -1254,33 +1274,39 @@ const App = () => {
 
             {/* HERO SEARCH BAR - BOLDER & PROVOCATIVE COMMAND BAR */}
             <div className="max-w-6xl mx-auto w-full group relative py-12">
-              <div className="relative transition-all duration-100 hover:-translate-y-0.5">
-                {/* Kindred Red Accent Line - Solid, sharp, reactive */}
-                <div className={`absolute left-0 top-0 bottom-0 w-[4px] bg-[#FF2A2A] rounded-l-[8px] z-20 transition-all duration-100 group-focus-within:w-[6px]`}></div>
+              <div className="flex items-center gap-3 w-full">
+                {/* Search Input Container */}
+                <div className="relative flex-1 min-w-0 group/search transition-all duration-100 hover:-translate-y-0.5">
+                  {/* Kindred Red Accent Line */}
+                  <div className={`absolute left-0 top-0 bottom-0 w-[4px] bg-[#FF2A2A] rounded-l-[8px] z-20 transition-all duration-100 group-focus-within/search:w-[6px]`}></div>
+                  
+                  <input
+                    type="text"
+                    placeholder="Who do you dare to talk to?"
+                    className="
+                      w-full h-[56px] rounded-[8px] pl-6 md:pl-10 pr-4 text-base md:text-lg font-bold text-white 
+                      placeholder:text-neutral-500 placeholder:font-black outline-none transition-all duration-100
+                      bg-[#121212] border border-white/35
+                      hover:border-white/50
+                      focus:bg-[#141414] focus:border-white/70 focus:text-white
+                      caret-[#FF2A2A]
+                      truncate
+                    "
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onClick={() => !showFilters && setShowFilters(true)}
+                  />
+                </div>
                 
-                <input
-                  type="text"
-                  placeholder="Who do you dare to talk to?"
-                  className="
-                    w-full h-[56px] rounded-[8px] pl-12 pr-44 text-lg font-bold text-white 
-                    placeholder:text-neutral-500 placeholder:font-black outline-none transition-all duration-100
-                    bg-[#121212] border border-white/35
-                    hover:border-white/50
-                    focus:bg-[#141414] focus:border-white/70 focus:text-white
-                    caret-[#FF2A2A]
-                  "
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onClick={() => !showFilters && setShowFilters(true)}
-                />
-                
+                {/* Filters Trigger */}
                 <button 
                   onClick={() => setShowFilters(!showFilters)}
                   className={`
-                    absolute right-4 top-1/2 -translate-y-1/2 h-[34px] px-6 rounded-[2px] 
-                    text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-100 
-                    bg-neutral-900 border border-neutral-800 text-neutral-400
-                    hover:border-[#FF2A2A] hover:text-white hover:bg-transparent
+                    flex-shrink-0 h-[56px] px-5 md:px-8 rounded-[8px] 
+                    text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-100 
+                    bg-[#1a1a1a] border border-white/10 text-neutral-400
+                    hover:border-[#FF2A2A] hover:text-white hover:bg-[#222]
+                    active:scale-95
                     ${showFilters ? 'border-[#FF2A2A] text-white bg-neutral-800' : ''}
                   `}
                 >
@@ -1419,7 +1445,8 @@ const App = () => {
                         <span key={i} className="text-[10px] px-4 py-1.5 bg-neutral-950 border border-neutral-800 rounded-full font-bold uppercase tracking-widest text-neutral-500 transition-colors group-hover:text-neutral-300 group-hover:border-neutral-700">{i}</span>
                       ))}
                     </div>
-                    <button className="w-full py-5 bg-white text-black font-black uppercase tracking-[0.25em] text-[11px] rounded-2xl hover:shadow-2xl hover:scale-[1.02] transform transition-all active:scale-95">Click</button>
+                    {/* Strictly remove 'Click' preview action strictly hidden on mobile version (hidden md:block) */}
+                    <button className="hidden md:block w-full py-5 bg-white text-black font-black uppercase tracking-[0.25em] text-[11px] rounded-2xl hover:shadow-2xl hover:scale-[1.02] transform transition-all active:scale-95">Click</button>
                   </div>
                 </div>
               )) : (
@@ -1462,7 +1489,8 @@ const App = () => {
                     <p className="text-neutral-500 group-hover:text-neutral-200 transition-colors mt-1 font-medium leading-relaxed italic line-clamp-2">"{reminder.topic}"</p>
                   </div>
                   
-                  <div className="flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 px-2">
+                  {/* Preview action hidden on mobile version (hidden md:flex) */}
+                  <div className="hidden md:flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 px-2">
                     <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">View</span>
                     <Icons.Zap className="w-4 h-4 text-[#FF2A2A]/80" />
                   </div>

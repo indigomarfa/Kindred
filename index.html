@@ -100,6 +100,20 @@
       .pop-up-active .icon-container {
         filter: none !important;
       }
+
+      /* STRICT MOBILE RULES: Hide environment toggles/switchers */
+      @media (max-width: 768px) {
+        [class*="chat-toggle"],
+        [class*="preview-toggle"],
+        [class*="mode-switcher"],
+        [class*="workspace-tabs"],
+        [class*="tab-bar"],
+        footer:has([class*="toggle"]) {
+          display: none !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+      }
     </style>
   <script type="importmap">
 {
@@ -112,13 +126,7 @@
 }
 </script>
 </head>
-<body style="background:white; color:black; padding:40px;">
-  
-  <h1 style="font-size:32px;">
-    САЙТ ЖИВИЙ
-  </h1>
-  
-  <div id="root"></div>
-  
-</body>
+  <body class="bg-black text-slate-200 antialiased selection:bg-red-600 selection:text-white">
+    <div id="root"></div>
+  </body>
 </html>
