@@ -418,8 +418,8 @@ const AutocompleteInput = ({
       
       {show && hasItemsToShow && (
         <>
-          {/* Anchored elevated list */}
-          <div className="absolute top-[calc(100%+8px)] left-0 w-full z-50 bg-[#141414] border border-white/10 rounded-2xl shadow-[0_16px_50px_rgba(0,0,0,0.65)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-[150ms] ease-out">
+          {/* Anchored elevated list - Use higher z-index to stay above other elements */}
+          <div className="absolute top-[calc(100%+8px)] left-0 w-full z-[110] bg-[#141414] border border-white/10 rounded-2xl shadow-[0_16px_50px_rgba(0,0,0,0.65)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-[150ms] ease-out">
             {combinedSuggestions.map((s, idx) => (
               <button 
                 key={s}
@@ -667,7 +667,7 @@ const ProfileSetupView = ({
         <button 
           type="button" 
           onClick={onNext} 
-          className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-white hover:shadow-[0_20px_50px_-10px_rgba(255,42,42,0.25)] transition-all text-[11px] rounded-xl shadow-[0_25px_45px_-10px_rgba(0,0,0,0.45),0_10px_20px_-5px_rgba(0,0,0,0.2)] active:scale-95 cta-lean"
+          className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,42,42,0.25)] transition-all text-[11px] rounded-xl shadow-[0_25px_45px_-10px_rgba(0,0,0,0.45),0_10px_20px_-5px_rgba(0,0,0,0.2)] active:scale-95 cta-lean"
         >
           {isEditMode && step !== 7 ? "Refine" : nextLabel}
         </button>
@@ -1008,7 +1008,7 @@ const ProfileSetupView = ({
                   className={`bg-black/30 border border-neutral-800/80 p-6 rounded-[2.5rem] relative text-left transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 group col-span-1 md:col-span-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] delay-150 ${isInternalEditing ? 'hover:border-white/40 hover:-translate-y-0.5 cursor-pointer' : 'cursor-default'}`}
                 >
                   <div className="flex justify-between items-start mb-4">
-                    <label className="text-[9px] font-black text-[#949494] uppercase tracking-[0.2em] block">Passions</label>
+                    <label className="text-[9px] font-black uppercase tracking-[0.2em] block">Passions</label>
                     {isInternalEditing && <span className="text-[9px] font-black text-[#FF2A2A] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Add/Remove</span>}
                   </div>
                   <div className="flex flex-wrap gap-2.5">
@@ -1319,7 +1319,7 @@ const App = () => {
               </div>
 
               {/* FILTERS PANEL */}
-              <div className={`overflow-hidden transition-all duration-500 ease-in-out ${showFilters ? 'max-h-[2000px] opacity-100 mt-6' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+              <div className={`transition-all duration-500 ease-in-out ${showFilters ? 'max-h-[2000px] opacity-100 mt-6 overflow-visible' : 'max-h-0 opacity-0 pointer-events-none overflow-hidden'}`}>
                 <div className="p-12 bg-[#141414] border border-white/10 rounded-[3rem] space-y-8 relative shadow-[0_16px_50px_rgba(0,0,0,0.65)]">
                   <div className="flex justify-between items-center border-b border-neutral-800 pb-8">
                     <div>
@@ -1394,18 +1394,6 @@ const App = () => {
 
                   {/* Advanced context merged into main Filters style */}
                   <div className="pt-12 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
-                    <div className="space-y-6">
-                      <label className="text-[16px] font-bold text-white tracking-tight block">Industry & Expertise</label>
-                      <AutocompleteInput 
-                        label=""
-                        placeholder="e.g. Technology, Design, Finance"
-                        value={filterIndustry}
-                        onChange={setFilterIndustry}
-                        suggestions={OCCUPATION_SUGGESTIONS}
-                        onSelect={setFilterIndustry}
-                      />
-                    </div>
-
                     <div className="space-y-6">
                       <label className="text-[16px] font-bold text-white tracking-tight block">Location</label>
                       <AutocompleteInput 
