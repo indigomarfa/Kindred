@@ -477,7 +477,7 @@ const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: a
          <button
            key={item.id}
            onClick={() => handleNav(item.id)}
-           className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-all py-1 border-b-2 ${
+           className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-all py-1 border-b-2 hover:border-white ${
              view === item.id 
                ? 'border-white text-white' 
                : item.special 
@@ -1203,7 +1203,7 @@ const App = () => {
   const [filterTime, setFilterTime] = useState<TimeOfDay | 'ANY'>('ANY');
   const [filterDepth, setFilterDepth] = useState<ConversationDepth | 'ANY'>('ANY');
   const [filterIntent, setFilterIntent] = useState<MeetingIntent | 'ANY'>('ANY');
-  const [filterIndustry, setFilterIndustry] = useState('');
+  const [filterAge, setFilterAge] = useState('Any');
   const [filterLocation, setFilterLocation] = useState('');
 
   const handleUpdateProfile = (updates: Partial<User>) => {
@@ -1229,7 +1229,7 @@ const App = () => {
     setFilterTime('ANY');
     setFilterDepth('ANY');
     setFilterIntent('ANY');
-    setFilterIndustry('');
+    setFilterAge('Any');
     setFilterLocation('');
   };
 
@@ -1238,9 +1238,9 @@ const App = () => {
     filterTime !== 'ANY' || 
     filterDepth !== 'ANY' || 
     filterIntent !== 'ANY' ||
-    filterIndustry !== '' ||
+    filterAge !== 'Any' ||
     filterLocation !== ''
-  , [filterPersonality, filterTime, filterDepth, filterIntent, filterIndustry, filterLocation]);
+  , [filterPersonality, filterTime, filterDepth, filterIntent, filterAge, filterLocation]);
 
   const filteredUsers = useMemo(() => {
     return MOCK_USERS.filter(user => {
@@ -1286,7 +1286,7 @@ const App = () => {
                   
                   <input
                     type="text"
-                    placeholder="Who do you dare to talk to?"
+                    placeholder="Who are you open to meeting?"
                     className="
                       w-full h-[56px] rounded-[8px] pl-6 md:pl-10 pr-4 text-base md:text-lg font-bold text-white 
                       placeholder:text-neutral-500 placeholder:font-black outline-none transition-all duration-100
@@ -1392,8 +1392,22 @@ const App = () => {
                     </div>
                   </div>
 
-                  {/* Advanced context merged into main Filters style */}
-                  <div className="pt-12 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
+                  {/* Tertiary Filters Grid: Age & Location (Moved Location higher) */}
+                  <div className="pt-8 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
+                    <div className="space-y-6">
+                      <label className="text-[16px] font-bold text-white tracking-tight block">Age</label>
+                      <div className="flex flex-wrap gap-3">
+                        {['Any', '18–24', '25–34', '35–44', '45+'].map((range) => (
+                          <FilterChip 
+                            key={range} 
+                            label={range} 
+                            active={filterAge === range} 
+                            onClick={() => setFilterAge(range)} 
+                          />
+                        ))}
+                      </div>
+                    </div>
+
                     <div className="space-y-6">
                       <label className="text-[16px] font-bold text-white tracking-tight block">Location</label>
                       <AutocompleteInput 
@@ -1450,41 +1464,55 @@ const App = () => {
 
         {view === ViewState.MEETINGS && (
           <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="space-y-2">
-              <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tighter font-display">Your Kind Reminder</h2>
-              <p className="text-[#949494] text-sm font-medium tracking-wide">Conversations you’ve said yes to.</p>
-            </div>
-            
-            <div className="max-w-3xl space-y-4">
-              {MOCK_REMINDERS.map((reminder) => (
-                <div 
-                  key={reminder.id}
-                  className="group relative bg-[#121212] border border-neutral-800/80 rounded-[2rem] p-6 flex items-center gap-6 transition-all duration-150 hover:bg-[#1a1a1a] hover:border-neutral-700 hover:-translate-y-0.5 cursor-pointer shadow-xl active:scale-[0.995]"
-                >
-                  {/* Subtle red left accent */}
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-12 bg-[#FF2A2A]/40 rounded-r-full group-hover:h-16 group-hover:bg-[#FF2A2A] transition-all duration-150"></div>
-                  
-                  <div className="w-16 h-16 rounded-full overflow-hidden border border-white/5 flex-shrink-0 group-hover:scale-105 transition-transform duration-150">
-                    <img src={reminder.user.avatar} alt={reminder.user.name} className="w-full h-full object-cover" />
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-lg font-bold text-neutral-400 group-hover:text-white transition-colors uppercase tracking-tight truncate">{reminder.user.name}</h3>
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF2A2A]/80 px-3 py-1 bg-[#FF2A2A]/5 rounded-full border border-[#FF2A2A]/10 transition-all duration-150 group-hover:shadow-[0_0_10px_rgba(255,42,42,0.25)] group-hover:text-white group-hover:border-[#FF2A2A]/30">
-                        {reminder.time}
-                      </span>
+            <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+              <div className="space-y-2 flex-1">
+                <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tighter font-display">Your Kind Reminder</h2>
+                <p className="text-[#949494] text-sm font-medium tracking-wide">Conversations you’ve said yes to.</p>
+                
+                <div className="max-w-3xl space-y-4 pt-8">
+                  {MOCK_REMINDERS.map((reminder) => (
+                    <div 
+                      key={reminder.id}
+                      className="group relative bg-[#121212] border border-neutral-800/80 rounded-[2rem] p-6 flex items-center gap-6 transition-all duration-150 hover:bg-[#1a1a1a] hover:border-neutral-700 hover:-translate-y-0.5 cursor-pointer shadow-xl active:scale-[0.995]"
+                    >
+                      {/* Subtle red left accent */}
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-12 bg-[#FF2A2A]/40 rounded-r-full group-hover:h-16 group-hover:bg-[#FF2A2A] transition-all duration-150"></div>
+                      
+                      <div className="w-16 h-16 rounded-full overflow-hidden border border-white/5 flex-shrink-0 group-hover:scale-105 transition-transform duration-150">
+                        <img src={reminder.user.avatar} alt={reminder.user.name} className="w-full h-full object-cover" />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <h3 className="text-lg font-bold text-neutral-400 group-hover:text-white transition-colors uppercase tracking-tight truncate">{reminder.user.name}</h3>
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF2A2A]/80 px-3 py-1 bg-[#FF2A2A]/5 rounded-full border border-[#FF2A2A]/10 transition-all duration-150 group-hover:shadow-[0_0_10px_rgba(255,42,42,0.25)] group-hover:text-white group-hover:border-[#FF2A2A]/30">
+                            {reminder.time}
+                          </span>
+                        </div>
+                        <p className="text-neutral-500 group-hover:text-neutral-200 transition-colors mt-1 font-medium leading-relaxed italic line-clamp-2">"{reminder.topic}"</p>
+                      </div>
+                      
+                      {/* Preview action hidden on mobile version (hidden md:flex) */}
+                      <div className="hidden md:flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 px-2">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">View</span>
+                        <Icons.Zap className="w-4 h-4 text-[#FF2A2A]/80" />
+                      </div>
                     </div>
-                    <p className="text-neutral-500 group-hover:text-neutral-200 transition-colors mt-1 font-medium leading-relaxed italic line-clamp-2">"{reminder.topic}"</p>
+                  ))}
+                </div>
+              </div>
+
+              {/* Side Calendar Widget */}
+              <div className="w-full md:w-80 flex-shrink-0 animate-in fade-in zoom-in duration-500">
+                <div className="bg-[#121212] border border-neutral-800 rounded-[2rem] overflow-hidden shadow-2xl">
+                  <div className="p-4 border-b border-neutral-800">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Overview</p>
                   </div>
-                  
-                  {/* Preview action hidden on mobile version (hidden md:flex) */}
-                  <div className="hidden md:flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 px-2">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">View</span>
-                    <Icons.Zap className="w-4 h-4 text-[#FF2A2A]/80" />
+                  <div className="transform scale-[0.95] origin-top">
+                    <Calendar events={[]} interactive={false} />
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
             
             {MOCK_REMINDERS.length === 0 && (
