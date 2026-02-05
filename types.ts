@@ -38,15 +38,15 @@ export enum TimeOfDay {
 
 export enum ConversationDepth {
   LIGHT = 'Light & curious',
-  THOUGHTFUL = 'Thoughtful',
-  DEEP = 'Deep & reflective',
-  INTENSE = 'Intense / challenging'
+  THOUGHTFUL = 'Warm & thoughtful',
+  DEEP = 'Deep & inside out',
+  INTENSE = 'Bold & challenging'
 }
 
 export enum MeetingIntent {
   ONE_OFF = 'One-off',
-  OCCASIONAL = 'Occasional',
-  FOLLOW_UP = 'Follow-up'
+  OCCASIONAL = 'Maybe a few sessions, if it clicks',
+  FOLLOW_UP = 'Ongoing, if it clicks'
 }
 
 export type SelfDefinition = 'Pro' | 'Fierce enthusiast' | 'Fan' | 'Learner' | 'First-stepper';

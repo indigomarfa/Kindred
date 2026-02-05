@@ -472,7 +472,6 @@ const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: a
        {[
          { id: ViewState.DISCOVERY, label: 'Unlock' },
          { id: ViewState.MEETINGS, label: 'Meetings' },
-         { id: ViewState.PERKS, label: 'Presence' },
          { id: ViewState.GOLDEN, label: 'Golden', special: true },
        ].map(item => (
          <button
@@ -668,7 +667,7 @@ const ProfileSetupView = ({
         <button 
           type="button" 
           onClick={onNext} 
-          className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-white hover:shadow-[0_20px_50px_-10px_rgba(255,42,42,0.5),0_10px_20px_-5px_rgba(0,0,0,0.3)] transition-all text-[11px] rounded-xl shadow-[0_25px_45px_-10px_rgba(0,0,0,0.45),0_10px_20px_-5px_rgba(0,0,0,0.2)] active:scale-95 cta-lean"
+          className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.15em] hover:bg-white hover:shadow-[0_20px_50px_-10px_rgba(255,42,42,0.25)] transition-all text-[11px] rounded-xl shadow-[0_25px_45px_-10px_rgba(0,0,0,0.45),0_10px_20px_-5px_rgba(0,0,0,0.2)] active:scale-95 cta-lean"
         >
           {isEditMode && step !== 7 ? "Refine" : nextLabel}
         </button>
@@ -1062,7 +1061,7 @@ const ProfileSetupView = ({
                     onClick={finishOnboarding} 
                     className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,42,42,0.25)] transition-all text-[11px] rounded-2xl"
                   >
-                    {isComplete ? "Finish setup" : "Finish setup"}
+                    Jump
                   </button>
                 )}
              </div>
@@ -1199,12 +1198,13 @@ const App = () => {
   // Filtering & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
   
   const [filterPersonality, setFilterPersonality] = useState<PersonalityType | 'ANY'>('ANY');
   const [filterTime, setFilterTime] = useState<TimeOfDay | 'ANY'>('ANY');
   const [filterDepth, setFilterDepth] = useState<ConversationDepth | 'ANY'>('ANY');
   const [filterIntent, setFilterIntent] = useState<MeetingIntent | 'ANY'>('ANY');
+  const [filterIndustry, setFilterIndustry] = useState('');
+  const [filterLocation, setFilterLocation] = useState('');
 
   const handleUpdateProfile = (updates: Partial<User>) => {
     setCurrentUser(prev => ({ ...prev, ...updates }));
@@ -1229,14 +1229,18 @@ const App = () => {
     setFilterTime('ANY');
     setFilterDepth('ANY');
     setFilterIntent('ANY');
+    setFilterIndustry('');
+    setFilterLocation('');
   };
 
   const isFiltersActive = useMemo(() => 
     filterPersonality !== 'ANY' || 
     filterTime !== 'ANY' || 
     filterDepth !== 'ANY' || 
-    filterIntent !== 'ANY'
-  , [filterPersonality, filterTime, filterDepth, filterIntent]);
+    filterIntent !== 'ANY' ||
+    filterIndustry !== '' ||
+    filterLocation !== ''
+  , [filterPersonality, filterTime, filterDepth, filterIntent, filterIndustry, filterLocation]);
 
   const filteredUsers = useMemo(() => {
     return MOCK_USERS.filter(user => {
@@ -1315,12 +1319,11 @@ const App = () => {
               </div>
 
               {/* FILTERS PANEL */}
-              <div className={`overflow-hidden transition-all duration-500 ease-in-out ${showFilters ? 'max-h-[1400px] opacity-100 mt-6' : 'max-h-0 opacity-0 pointer-events-none'}`}>
-                <div className="p-12 bg-[#141414] border border-white/10 rounded-[3rem] space-y-16 relative shadow-[0_16px_50px_rgba(0,0,0,0.65)]">
+              <div className={`overflow-hidden transition-all duration-500 ease-in-out ${showFilters ? 'max-h-[2000px] opacity-100 mt-6' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+                <div className="p-12 bg-[#141414] border border-white/10 rounded-[3rem] space-y-8 relative shadow-[0_16px_50px_rgba(0,0,0,0.65)]">
                   <div className="flex justify-between items-center border-b border-neutral-800 pb-8">
                     <div>
-                      <h3 className="text-[14px] font-black text-white uppercase tracking-[0.3em]">Refine Discovery</h3>
-                      <p className="text-[11px] text-neutral-500 mt-2 font-bold tracking-wide uppercase">Fine-tune your personal frequency</p>
+                      {/* Section title and subtitle removed as per request */}
                     </div>
                     {isFiltersActive && (
                       <button onClick={clearFilters} className="text-[11px] font-black text-neutral-500 hover:text-white uppercase tracking-widest transition-all cursor-pointer underline underline-offset-8 decoration-neutral-800 hover:decoration-white">Reset all</button>
@@ -1330,7 +1333,7 @@ const App = () => {
                   {/* Primary Filters */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
                     <div className="space-y-6">
-                      <label className="text-[16px] font-bold text-white tracking-tight block">How do you usually show up?</label>
+                      <label className="text-[16px] font-bold text-white tracking-tight block">What energy do you seek?</label>
                       <div className="flex flex-wrap gap-3">
                         {(['ANY', ...Object.values(PersonalityType)] as const).map((t) => (
                           <FilterChip 
@@ -1341,11 +1344,10 @@ const App = () => {
                           />
                         ))}
                       </div>
-                      <p className="text-[12px] text-neutral-600 font-medium leading-relaxed italic">The energy you seek in your next interaction.</p>
                     </div>
 
                     <div className="space-y-6">
-                      <label className="text-[16px] font-bold text-white tracking-tight block">What's the depth?</label>
+                      <label className="text-[16px] font-bold text-white tracking-tight block">How do you want it to feel?</label>
                       <div className="flex flex-wrap gap-3">
                         {(['ANY', ...Object.values(ConversationDepth)] as const).map((t) => (
                           <FilterChip 
@@ -1362,7 +1364,7 @@ const App = () => {
                   {/* Secondary Filters */}
                   <div className="pt-12 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
                     <div className="space-y-6">
-                      <label className="text-[14px] font-bold text-neutral-400 tracking-tight block">When are you most present?</label>
+                      <label className="text-[16px] font-bold text-white tracking-tight block">When are you most present?</label>
                       <div className="flex flex-wrap gap-3">
                         {(['ANY', ...Object.values(TimeOfDay)] as const).map((t) => (
                           <FilterChip 
@@ -1376,7 +1378,7 @@ const App = () => {
                     </div>
 
                     <div className="space-y-6">
-                      <label className="text-[14px] font-bold text-neutral-400 tracking-tight block">What's the commitment style?</label>
+                      <label className="text-[16px] font-bold text-white tracking-tight block">How do you want it to continue?</label>
                       <div className="flex flex-wrap gap-3">
                         {(['ANY', ...Object.values(MeetingIntent)] as const).map((t) => (
                           <FilterChip 
@@ -1390,32 +1392,31 @@ const App = () => {
                     </div>
                   </div>
 
-                  {/* Advanced Filters Toggle */}
-                  <div className="pt-6">
-                    <button 
-                      onClick={() => setShowAdvanced(!showAdvanced)}
-                      className="text-[11px] font-black text-neutral-600 hover:text-white uppercase tracking-widest flex items-center gap-3 transition-all"
-                    >
-                      <Icons.Menu className={`w-4 h-4 transition-transform ${showAdvanced ? 'rotate-90 text-white' : ''}`} />
-                      {showAdvanced ? 'Collapse context' : 'Advanced context'}
-                    </button>
-                    
-                    {showAdvanced && (
-                      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-12 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <div className="space-y-4">
-                          <label className="text-[11px] font-black text-neutral-500 uppercase tracking-widest block">Industry & Expertise</label>
-                          <div className="p-8 bg-[#212121] rounded-3xl border border-neutral-800 text-[12px] text-neutral-600 italic">
-                            Domain-specific filters are in preparation.
-                          </div>
-                        </div>
-                        <div className="space-y-4">
-                          <label className="text-[11px] font-black text-neutral-500 uppercase tracking-widest block">Region & Locale</label>
-                          <div className="p-8 bg-[#212121] rounded-3xl border border-neutral-800 text-[12px] text-neutral-600 italic">
-                            Global English / High Latency Optimized
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                  {/* Advanced context merged into main Filters style */}
+                  <div className="pt-12 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
+                    <div className="space-y-6">
+                      <label className="text-[16px] font-bold text-white tracking-tight block">Industry & Expertise</label>
+                      <AutocompleteInput 
+                        label=""
+                        placeholder="e.g. Technology, Design, Finance"
+                        value={filterIndustry}
+                        onChange={setFilterIndustry}
+                        suggestions={OCCUPATION_SUGGESTIONS}
+                        onSelect={setFilterIndustry}
+                      />
+                    </div>
+
+                    <div className="space-y-6">
+                      <label className="text-[16px] font-bold text-white tracking-tight block">Location</label>
+                      <AutocompleteInput 
+                        label=""
+                        placeholder="e.g. San Francisco, London"
+                        value={filterLocation}
+                        onChange={setFilterLocation}
+                        suggestions={CITY_SUGGESTIONS}
+                        onSelect={setFilterLocation}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
