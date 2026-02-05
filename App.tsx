@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Icons } from './components/Icons';
 import { Calendar } from './components/Calendar';
@@ -66,8 +65,8 @@ const INITIAL_USER_TEMPLATE: User = {
 
 const MOCK_USERS: User[] = [
   { id: '1', name: 'Sarah Chen', age: 26, gender: Gender.FEMALE, rating: 4.9, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=60', location: { country: 'USA', city: 'New York', lat: 40.71, lng: -74.00 }, occupation: 'Data Scientist', bio: 'F1 fanatic and data nerd. Lets talk race strategies over coffee.', interests: ['Formula 1', 'Data', 'Travel'], personality: PersonalityType.INTROVERT, preferredTime: TimeOfDay.EVENING, depth: ConversationDepth.DEEP, intent: MeetingIntent.OCCASIONAL, milestones: [] },
-  // Fix: Corrected AFTEROOON to AFTERNOON on line 68
   { id: '2', name: 'Marcus Johnson', age: 31, gender: Gender.MALE, rating: 4.7, avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=60', location: { country: 'UK', city: 'London', lat: 51.50, lng: -0.12 }, occupation: 'Marketing Lead', bio: 'Extrovert seeking interesting conversations about global markets and vintage cars.', interests: ['Marketing', 'Formula 1', 'Stocks'], personality: PersonalityType.EXTROVERT, preferredTime: TimeOfDay.AFTERNOON, depth: ConversationDepth.LIGHT, intent: MeetingIntent.ONE_OFF, milestones: [] },
+  // Fix: Corrected preferredTime from ViewState.PROFILE to TimeOfDay.EVENING
   { id: '3', name: 'Elena Popova', age: 24, gender: Gender.FEMALE, rating: 5.0, avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&auto=format&fit=crop&q=60', location: { country: 'Ukraine', city: 'Kyiv', lat: 50.45, lng: 30.52 }, occupation: 'Digital Artist', bio: 'Art is life. Seeking muse and good vibes. I love exploring galleries.', interests: ['Art', 'Museums', 'Wine'], personality: PersonalityType.INTROVERT, preferredTime: TimeOfDay.EVENING, depth: ConversationDepth.THOUGHTFUL, intent: MeetingIntent.FOLLOW_UP, milestones: [] },
   { id: '4', name: 'James Smith', age: 29, gender: Gender.MALE, rating: 4.8, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&auto=format&fit=crop&q=60', location: { country: 'Australia', city: 'Melbourne', lat: -37.81, lng: 144.96 }, occupation: 'Robotics Engineer', bio: 'Building the future. Big fan of tech, sci-fi, and fast cars.', interests: ['Engineering', 'Robotics', 'Formula 1'], personality: PersonalityType.AMBIVERT, preferredTime: TimeOfDay.MORNING, depth: ConversationDepth.INTENSE, intent: MeetingIntent.ONE_OFF, milestones: [] }
 ];
@@ -659,7 +658,7 @@ const ProfileSetupView = ({
   const StepActionButtons = ({ onNext, onPrev, nextLabel = "Keep going", skip = false }: { onNext: () => void, onPrev?: () => void, nextLabel?: string, skip?: boolean }) => (
     <div className="pt-10 flex justify-between items-center">
       {onPrev ? (
-        <button type="button" onClick={onPrev} className="text-[#7A7A7A] hover:text-white text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 transform">Back</button>
+        <button type="button" onClick={onPrev} className="text-[#7A7A7A] hover:text-white text-xs font-bold uppercase tracking-widest transition-all hover:scale-10 transform">Back</button>
       ) : <div />}
       <div className="flex gap-8 items-center">
         {skip && !isEditMode && <button type="button" onClick={onNext} className="text-[#7A7A7A] hover:text-white text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 transform">Skip</button>}
@@ -1055,13 +1054,15 @@ const ProfileSetupView = ({
                     Save changes
                   </button>
                 ) : (
-                  <button 
-                    type="button" 
-                    onClick={finishOnboarding} 
-                    className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,42,42,0.25)] transition-all text-[11px] rounded-2xl"
-                  >
-                    Jump
-                  </button>
+                  !isEditMode && (
+                    <button 
+                      type="button" 
+                      onClick={finishOnboarding} 
+                      className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,42,42,0.25)] transition-all text-[11px] rounded-2xl"
+                    >
+                      Jump
+                    </button>
+                  )
                 )}
              </div>
            </div>
@@ -1205,6 +1206,9 @@ const App = () => {
   const [filterAge, setFilterAge] = useState('Any');
   const [filterLocation, setFilterLocation] = useState('');
 
+  // Meetings specific state
+  const [meetingFilterDate, setMeetingFilterDate] = useState<Date | null>(null);
+
   const handleUpdateProfile = (updates: Partial<User>) => {
     setCurrentUser(prev => ({ ...prev, ...updates }));
   };
@@ -1256,6 +1260,54 @@ const App = () => {
       return matchesSearch && matchesPersonality && matchesTime && matchesDepth && matchesIntent;
     });
   }, [searchQuery, filterPersonality, filterTime, filterDepth, filterIntent]);
+
+  // Derived date calculation for mock reminders
+  const reminderEvents = useMemo(() => {
+    const today = new Date();
+    
+    const getTomorrow = () => {
+      const d = new Date(today);
+      d.setDate(d.getDate() + 1);
+      return d;
+    };
+    const getIn3Days = () => {
+      const d = new Date(today);
+      d.setDate(d.getDate() + 3);
+      return d;
+    };
+    const getThisSaturday = () => {
+      const d = new Date(today);
+      const day = d.getDay();
+      const diff = (6 - day + 7) % 7;
+      d.setDate(d.getDate() + (diff === 0 ? 7 : diff)); // Next Saturday
+      return d;
+    };
+
+    return [
+      { id: 'r1', date: getTomorrow(), reminder: MOCK_REMINDERS[0] },
+      { id: 'r2', date: getIn3Days(), reminder: MOCK_REMINDERS[1] },
+      { id: 'r3', date: getThisSaturday(), reminder: MOCK_REMINDERS[2] },
+    ];
+  }, []);
+
+  const isSameDay = (d1: Date, d2: Date) => {
+    return d1.getDate() === d2.getDate() && 
+           d1.getMonth() === d2.getMonth() && 
+           d1.getFullYear() === d2.getFullYear();
+  };
+
+  const filteredReminders = useMemo(() => {
+    if (!meetingFilterDate) return reminderEvents;
+    return reminderEvents.filter(re => isSameDay(re.date, meetingFilterDate));
+  }, [reminderEvents, meetingFilterDate]);
+
+  const calendarItems = useMemo(() => reminderEvents.map(re => ({
+    date: re.date,
+    title: re.reminder.topic,
+    type: 'meeting' as const,
+    avatar: re.reminder.user.avatar,
+    userName: re.reminder.user.name
+  })), [reminderEvents]);
 
   const isPopUpOpen = useMemo(() => chatsOpen || notifsOpen, [chatsOpen, notifsOpen]);
 
@@ -1465,13 +1517,25 @@ const App = () => {
           <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex flex-col md:flex-row justify-between items-start gap-8">
               <div className="space-y-2 flex-1">
-                <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tighter font-display">Your Kind Reminder</h2>
-                <p className="text-[#949494] text-sm font-medium tracking-wide">Conversations you’ve said yes to.</p>
+                <div className="flex justify-between items-end">
+                  <div>
+                    <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tighter font-display">Your Kind Reminder</h2>
+                    <p className="text-[#949494] text-sm font-medium tracking-wide">Conversations you’ve said yes to.</p>
+                  </div>
+                  {meetingFilterDate && (
+                    <button 
+                      onClick={() => setMeetingFilterDate(null)}
+                      className="text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-white transition-colors pb-1 border-b border-neutral-800 hover:border-neutral-500"
+                    >
+                      Clear filter
+                    </button>
+                  )}
+                </div>
                 
                 <div className="max-w-3xl space-y-4 pt-8">
-                  {MOCK_REMINDERS.map((reminder) => (
+                  {filteredReminders.map(({ id, reminder }) => (
                     <div 
-                      key={reminder.id}
+                      key={id}
                       className="group relative bg-[#121212] border border-neutral-800/80 rounded-[2rem] p-6 flex items-center gap-6 transition-all duration-150 hover:bg-[#1a1a1a] hover:border-neutral-700 hover:-translate-y-0.5 cursor-pointer shadow-xl active:scale-[0.995]"
                     >
                       {/* Subtle red left accent */}
@@ -1498,26 +1562,38 @@ const App = () => {
                       </div>
                     </div>
                   ))}
+
+                  {filteredReminders.length === 0 && (
+                    <div className="py-24 text-center border-2 border-dashed border-neutral-900 rounded-[3rem]">
+                      <p className="text-neutral-700 font-black uppercase tracking-[0.4em] text-sm">No meetings scheduled for this day.</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Side Calendar Widget - Compact Preview */}
-              <div className="w-full md:w-64 flex-shrink-0 animate-in fade-in zoom-in duration-500">
+              {/* Side Calendar Widget - Usable Overview */}
+              <div className="w-full md:w-[420px] flex-shrink-0 animate-in fade-in zoom-in duration-500">
                 <div className="bg-[#121212] border border-neutral-800 rounded-[2rem] overflow-hidden shadow-2xl">
                   <div className="p-4 border-b border-neutral-800 bg-[#161616]">
                     <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 flex items-center gap-2">
                       <Icons.Calendar className="w-3 h-3 text-[#FF2A2A]" />
-                      Waves
+                      Schedule
                     </p>
                   </div>
                   <div className="p-3">
-                    <Calendar events={[]} interactive={false} compact={true} />
+                    <Calendar 
+                      events={calendarItems} 
+                      interactive={true} 
+                      compact={true} 
+                      onDateClick={setMeetingFilterDate}
+                      selectedDate={meetingFilterDate}
+                    />
                   </div>
                 </div>
               </div>
             </div>
             
-            {MOCK_REMINDERS.length === 0 && (
+            {reminderEvents.length === 0 && (
               <div className="py-24 text-center border-2 border-dashed border-neutral-900 rounded-[3rem]">
                 <p className="text-neutral-700 font-black uppercase tracking-[0.4em] text-sm">Waiting for a new wave.</p>
               </div>
