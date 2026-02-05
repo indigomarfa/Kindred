@@ -13,15 +13,16 @@ import {
 // --- CONSTANTS ---
 
 const accentRed = "#FF2A2A";
-const placeholderBaseline = "#7A7A7A";
+const accentGold = "#C5A059";
+const accentSilver = "#949494";
+
+const textPrimary = "#E6E6E6";
+const textSecondary = "#B8B8B8";
+const textMuted = "#9A9A9A";
 
 const inputIdleBase = "bg-neutral-900/40 border border-neutral-800/50 shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.02),0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all duration-500";
 const inputHoverBase = "hover:border-neutral-700 hover:shadow-[0_20px_50px_-20px_rgba(255,42,42,0.08),0_10px_15px_-3px_rgba(0,0,0,0.2)] hover:bg-neutral-900/60";
-// Restoring the Kindred Red focus state
 const inputFocusBase = "focus:border-neutral-500 focus:shadow-[inset_3px_0_0_0_#FF2A2A,0_25px_60px_-25px_rgba(255,42,42,0.15),0_15px_25px_-5px_rgba(0,0,0,0.3)] focus:bg-neutral-900/80";
-
-// Restoring the strong red selection highlight
-const selectActiveBase = "bg-neutral-900/80 border-neutral-500 shadow-[inset_4px_0_0_0_#FF2A2A,0_25px_60px_-25px_rgba(255,42,42,0.15)]";
 
 const OCCUPATION_SUGGESTIONS = [
   "Software Engineer", "Digital Artist", "Data Scientist", "Architect", "Chef", 
@@ -66,7 +67,6 @@ const INITIAL_USER_TEMPLATE: User = {
 const MOCK_USERS: User[] = [
   { id: '1', name: 'Sarah Chen', age: 26, gender: Gender.FEMALE, rating: 4.9, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=60', location: { country: 'USA', city: 'New York', lat: 40.71, lng: -74.00 }, occupation: 'Data Scientist', bio: 'F1 fanatic and data nerd. Lets talk race strategies over coffee.', interests: ['Formula 1', 'Data', 'Travel'], personality: PersonalityType.INTROVERT, preferredTime: TimeOfDay.EVENING, depth: ConversationDepth.DEEP, intent: MeetingIntent.OCCASIONAL, milestones: [] },
   { id: '2', name: 'Marcus Johnson', age: 31, gender: Gender.MALE, rating: 4.7, avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=60', location: { country: 'UK', city: 'London', lat: 51.50, lng: -0.12 }, occupation: 'Marketing Lead', bio: 'Extrovert seeking interesting conversations about global markets and vintage cars.', interests: ['Marketing', 'Formula 1', 'Stocks'], personality: PersonalityType.EXTROVERT, preferredTime: TimeOfDay.AFTERNOON, depth: ConversationDepth.LIGHT, intent: MeetingIntent.ONE_OFF, milestones: [] },
-  // Fix: Corrected preferredTime from ViewState.PROFILE to TimeOfDay.EVENING
   { id: '3', name: 'Elena Popova', age: 24, gender: Gender.FEMALE, rating: 5.0, avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&auto=format&fit=crop&q=60', location: { country: 'Ukraine', city: 'Kyiv', lat: 50.45, lng: 30.52 }, occupation: 'Digital Artist', bio: 'Art is life. Seeking muse and good vibes. I love exploring galleries.', interests: ['Art', 'Museums', 'Wine'], personality: PersonalityType.INTROVERT, preferredTime: TimeOfDay.EVENING, depth: ConversationDepth.THOUGHTFUL, intent: MeetingIntent.FOLLOW_UP, milestones: [] },
   { id: '4', name: 'James Smith', age: 29, gender: Gender.MALE, rating: 4.8, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&auto=format&fit=crop&q=60', location: { country: 'Australia', city: 'Melbourne', lat: -37.81, lng: 144.96 }, occupation: 'Robotics Engineer', bio: 'Building the future. Big fan of tech, sci-fi, and fast cars.', interests: ['Engineering', 'Robotics', 'Formula 1'], personality: PersonalityType.AMBIVERT, preferredTime: TimeOfDay.MORNING, depth: ConversationDepth.INTENSE, intent: MeetingIntent.ONE_OFF, milestones: [] }
 ];
@@ -106,7 +106,6 @@ function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Force elevated state visual properties if on mobile
   const effectiveHovered = isHovered || isMobile;
 
   return (
@@ -215,7 +214,6 @@ function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
             transition: "opacity 300ms ease",
           }}
         />
-
         <span
           style={{
             position: "absolute",
@@ -229,7 +227,6 @@ function StartJourney3DButton({ onClick }: { onClick?: () => void }) {
             transition: "opacity 300ms ease",
           }}
         />
-
         <span
           style={{
             position: "relative",
@@ -267,7 +264,6 @@ const CustomSelect = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Handle scroll lock
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -298,13 +294,10 @@ const CustomSelect = ({
 
       {isOpen && (
         <>
-          {/* Full-screen Scrim - Anchored behind the current component's context */}
           <div 
             className="fixed inset-0 z-[99] bg-black/60 backdrop-blur-[6px] animate-in fade-in duration-150"
             onClick={() => setIsOpen(false)}
           />
-          
-          {/* Elevated Popup - Locally anchored to the parent container */}
           <div 
             className="absolute top-[calc(100%+8px)] left-0 w-full z-[102] bg-[#141414] border border-white/10 rounded-2xl shadow-[0_16px_50px_rgba(0,0,0,0.65)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-[150ms] ease-out"
           >
@@ -415,45 +408,42 @@ const AutocompleteInput = ({
       </div>
       
       {show && hasItemsToShow && (
-        <>
-          {/* Anchored elevated list - Use higher z-index to stay above other elements */}
-          <div className="absolute top-[calc(100%+8px)] left-0 w-full z-[110] bg-[#141414] border border-white/10 rounded-2xl shadow-[0_16px_50px_rgba(0,0,0,0.65)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-[150ms] ease-out">
-            {combinedSuggestions.map((s, idx) => (
-              <button 
-                key={s}
-                type="button"
-                onMouseEnter={() => setHighlightedIndex(idx)}
-                onMouseDown={(e) => {
-                  e.preventDefault(); 
-                  handleSelectInternal(s);
-                }}
-                className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === idx ? 'bg-white/10 text-white shadow-[inset_1px_0_0_0_rgba(255,255,255,0.05)]' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
-              >
-                {highlightedIndex === idx && (
-                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
-                )}
-                <span className="relative z-10">{s}</span>
-              </button>
-            ))}
-            {showCustomFallback && value.length > 0 && !combinedSuggestions.some(f => f.toLowerCase() === value.toLowerCase()) && (
-              <button 
-                type="button"
-                onMouseEnter={() => setHighlightedIndex(combinedSuggestions.length)}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  handleSelectInternal(value);
-                }}
-                className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === combinedSuggestions.length ? 'bg-white/10 text-white' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
-              >
-                {highlightedIndex === combinedSuggestions.length && (
-                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
-                )}
-                <Icons.Sparkles className="w-4 h-4 text-amber-500/80" />
-                Add custom: "{value}"
-              </button>
-            )}
-          </div>
-        </>
+        <div className="absolute top-[calc(100%+8px)] left-0 w-full z-[110] bg-[#141414] border border-white/10 rounded-2xl shadow-[0_16px_50px_rgba(0,0,0,0.65)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-[150ms] ease-out">
+          {combinedSuggestions.map((s, idx) => (
+            <button 
+              key={s}
+              type="button"
+              onMouseEnter={() => setHighlightedIndex(idx)}
+              onMouseDown={(e) => {
+                e.preventDefault(); 
+                handleSelectInternal(s);
+              }}
+              className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === idx ? 'bg-white/10 text-white shadow-[inset_1px_0_0_0_rgba(255,255,255,0.05)]' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
+            >
+              {highlightedIndex === idx && (
+                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
+              )}
+              <span className="relative z-10">{s}</span>
+            </button>
+          ))}
+          {showCustomFallback && value.length > 0 && !combinedSuggestions.some(f => f.toLowerCase() === value.toLowerCase()) && (
+            <button 
+              type="button"
+              onMouseEnter={() => setHighlightedIndex(combinedSuggestions.length)}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleSelectInternal(value);
+              }}
+              className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === combinedSuggestions.length ? 'bg-white/10 text-white' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
+            >
+              {highlightedIndex === combinedSuggestions.length && (
+                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
+              )}
+              <Icons.Sparkles className="w-4 h-4 text-amber-500/80" />
+              Add custom: "{value}"
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
@@ -490,7 +480,6 @@ const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: a
 
     <div className="flex items-center gap-6">
       <div className="flex items-center gap-2">
-        {/* Chat trigger strictly hidden on mobile (hidden md:block) */}
         <button onClick={() => setChatsOpen(prev => !prev)} className="hidden md:block p-2 text-neutral-500 hover:text-white hover:scale-110 transition-all">
           <Icons.MessageCircle className="w-5 h-5" />
         </button>
@@ -504,6 +493,125 @@ const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: a
     </div>
   </nav>
 );
+
+const GoldenView = () => {
+  return (
+    <div className="max-w-3xl mx-auto py-12 px-6 space-y-24 animate-in fade-in duration-700">
+      {/* Hero Section */}
+      <section className="text-center space-y-6 pt-10">
+        <h1 className="text-6xl md:text-8xl font-bold uppercase tracking-tighter font-display leading-[0.9]">
+          BE <span className="text-transparent bg-clip-text bg-gradient-to-b from-[#EEDD8C] via-[#C5A059] to-[#8C6F3D]">GOLDEN.</span>
+        </h1>
+        <p className="text-[#E6E6E6] text-lg md:text-xl font-medium tracking-wide">
+          Be visible where intention matters.
+        </p>
+      </section>
+
+      {/* Access Tiers Stack */}
+      <div className="space-y-12">
+        {/* Silver Access Card */}
+        <div className="group relative bg-[#0D0D0D] border border-[#BFC3C7]/20 rounded-[2.5rem] p-10 md:p-14 overflow-hidden shadow-2xl hover:bg-neutral-900/40 transition-all duration-500">
+          <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <h2 className="text-4xl font-bold uppercase tracking-tight text-[#E6E6E6]">BE SILVER</h2>
+                <div className="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-[#BFC3C7]/40 bg-gradient-to-br from-[#BFC3C7] to-[#8F9499] text-black shadow-inner">
+                  Silver Badge
+                </div>
+              </div>
+              <div className="flex items-baseline gap-3">
+                <span className="text-4xl font-bold text-[#E6E6E6] tracking-tighter">$12</span>
+                <span className="text-sm font-medium text-[#B8B8B8] tracking-wide">/ month</span>
+                <span className="text-[10px] font-black text-[#9A9A9A] uppercase tracking-[0.2em] ml-4">$144 / year</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6 mb-12">
+            {[
+              "Unlimited meeting bookings",
+              "Smart matching (AI recommendations)",
+              "Advanced search filters (expertise level, depth)",
+              "Reduced or no ads"
+            ].map(f => (
+              <div key={f} className="flex items-center gap-4 text-[#B8B8B8] font-medium text-base">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#BFC3C7]"></div>
+                {f}
+              </div>
+            ))}
+          </div>
+
+          <button className="w-full py-6 bg-transparent border-2 border-[#BFC3C7]/30 text-[#E6E6E6] font-black uppercase tracking-[0.3em] text-[11px] rounded-2xl hover:bg-[#BFC3C7] hover:text-black hover:border-transparent transition-all duration-300 active:scale-[0.98]">
+            Go Silver
+          </button>
+        </div>
+
+        {/* Golden Access Card */}
+        <div className="group relative bg-neutral-950 border border-[#C9A24D]/30 rounded-[3rem] p-10 md:p-14 overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.8)] hover:shadow-[#C9A24D]/10 transition-all duration-700">
+          {/* Subtle light sweep animation */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#C9A24D]/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[2000ms] pointer-events-none" />
+          
+          <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12 relative z-10">
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <h2 className="text-4xl font-bold uppercase tracking-tight text-[#EEDD8C]">BE GOLDEN</h2>
+                <div className="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-[#F2D27A]/50 bg-gradient-to-br from-[#6E5318] via-[#F2D27A] to-[#A57C2B] text-black shadow-lg">
+                  ✦ Golden Badge
+                </div>
+              </div>
+              <div className="flex items-baseline gap-3">
+                <span className="text-4xl font-bold text-[#E6E6E6] tracking-tighter">$24</span>
+                <span className="text-sm font-medium text-[#B8B8B8] tracking-wide">/ month</span>
+                <span className="text-[10px] font-black text-[#C9A24D]/60 uppercase tracking-[0.2em] ml-4">$288 / year</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative z-10">
+            <p className="text-[11px] font-black text-[#C9A24D] uppercase tracking-[0.3em] mb-8">Everything in Silver, plus:</p>
+            <div className="space-y-6 mb-12">
+              {[
+                "Priority visibility in discovery",
+                "Calendar sync (Google & Apple)",
+                "Personalized insights: interests & profile stats",
+                "Golden profile badge for instant trust"
+              ].map(f => (
+                <div key={f} className="flex items-center gap-4 text-[#E6E6E6] font-medium text-base">
+                  <div className="w-2 h-2 rounded-full bg-gradient-to-br from-[#EEDD8C] to-[#C9A24D] shadow-[0_0_10px_rgba(201,162,77,0.5)]"></div>
+                  {f}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button className="relative z-10 w-full py-6 bg-gradient-to-br from-[#6E5318] via-[#C9A24D] to-[#A57C2B] text-black font-black uppercase tracking-[0.3em] text-[11px] rounded-2xl shadow-xl hover:brightness-110 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98]">
+            Go Golden
+          </button>
+        </div>
+      </div>
+
+      {/* Transactional Section */}
+      <section className="text-center py-16 space-y-6 border-t border-neutral-900/50">
+        <h2 className="text-2xl font-bold text-[#E6E6E6] uppercase tracking-tight">Not ready for a subscription?</h2>
+        <div className="max-w-lg mx-auto space-y-6">
+          <p className="text-[#B8B8B8] text-base font-medium leading-relaxed">
+            You can book 2–3 meetings per month for free.<br />
+            After that, pay per individual meeting.
+          </p>
+          <div className="pt-4">
+            <span className="text-2xl font-bold text-[#E6E6E6] tracking-tighter">$1.99 – $4.99</span>
+            <span className="block text-[10px] font-black text-[#9A9A9A] uppercase tracking-[0.4em] mt-2">Per connection</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Soft Reassurance Footer */}
+      <footer className="text-center pb-20 pt-10">
+        <p className="text-[10px] font-black text-neutral-800 uppercase tracking-[0.6em]">Kindred Membership Access</p>
+      </footer>
+    </div>
+  );
+};
 
 const ProfileSetupView = ({
   currentUser,
@@ -1069,7 +1177,6 @@ const ProfileSetupView = ({
          )}
          </div>
 
-         {/* Discard Confirmation Dialog */}
          {showDiscardConfirm && (
            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowDiscardConfirm(false)}></div>
@@ -1195,7 +1302,6 @@ const App = () => {
   const [chatsOpen, setChatsOpen] = useState(false);
   const [notifsOpen, setNotifsOpen] = useState(false);
   
-  // Filtering & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   
@@ -1206,7 +1312,6 @@ const App = () => {
   const [filterAge, setFilterAge] = useState('Any');
   const [filterLocation, setFilterLocation] = useState('');
 
-  // Meetings specific state
   const [meetingFilterDate, setMeetingFilterDate] = useState<Date | null>(null);
 
   const handleUpdateProfile = (updates: Partial<User>) => {
@@ -1261,7 +1366,6 @@ const App = () => {
     });
   }, [searchQuery, filterPersonality, filterTime, filterDepth, filterIntent]);
 
-  // Derived date calculation for mock reminders
   const reminderEvents = useMemo(() => {
     const today = new Date();
     
@@ -1279,7 +1383,7 @@ const App = () => {
       const d = new Date(today);
       const day = d.getDay();
       const diff = (6 - day + 7) % 7;
-      d.setDate(d.getDate() + (diff === 0 ? 7 : diff)); // Next Saturday
+      d.setDate(d.getDate() + (diff === 0 ? 7 : diff)); 
       return d;
     };
 
@@ -1327,14 +1431,10 @@ const App = () => {
               <h1 className="text-6xl md:text-8xl font-bold text-white uppercase tracking-tighter font-display">Unlock. You.</h1>
             </div>
 
-            {/* HERO SEARCH BAR - BOLDER & PROVOCATIVE COMMAND BAR */}
             <div className="max-w-6xl mx-auto w-full group relative py-12">
               <div className="flex items-center gap-3 w-full">
-                {/* Search Input Container */}
                 <div className="relative flex-1 min-w-0 group/search transition-all duration-100 hover:-translate-y-0.5">
-                  {/* Kindred Red Accent Line */}
                   <div className={`absolute left-0 top-0 bottom-0 w-[4px] bg-[#FF2A2A] rounded-l-[8px] z-20 transition-all duration-100 group-focus-within/search:w-[6px]`}></div>
-                  
                   <input
                     type="text"
                     placeholder="Who do you want to talk to?"
@@ -1352,8 +1452,6 @@ const App = () => {
                     onClick={() => !showFilters && setShowFilters(true)}
                   />
                 </div>
-                
-                {/* Filters Trigger */}
                 <button 
                   onClick={() => setShowFilters(!showFilters)}
                   className={`
@@ -1369,19 +1467,15 @@ const App = () => {
                 </button>
               </div>
 
-              {/* FILTERS PANEL */}
               <div className={`transition-all duration-500 ease-in-out ${showFilters ? 'max-h-[2000px] opacity-100 mt-6 overflow-visible' : 'max-h-0 opacity-0 pointer-events-none overflow-hidden'}`}>
                 <div className="p-12 bg-[#141414] border border-white/10 rounded-[3rem] space-y-8 relative shadow-[0_16px_50px_rgba(0,0,0,0.65)]">
                   <div className="flex justify-between items-center border-b border-neutral-800 pb-8">
-                    <div>
-                      {/* Section title and subtitle removed as per request */}
-                    </div>
+                    <div></div>
                     {isFiltersActive && (
                       <button onClick={clearFilters} className="text-[11px] font-black text-neutral-500 hover:text-white uppercase tracking-widest transition-all cursor-pointer underline underline-offset-8 decoration-neutral-800 hover:decoration-white">Reset all</button>
                     )}
                   </div>
                   
-                  {/* Primary Filters */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
                     <div className="space-y-6">
                       <label className="text-[16px] font-bold text-white tracking-tight block">What energy do you seek?</label>
@@ -1412,7 +1506,6 @@ const App = () => {
                     </div>
                   </div>
 
-                  {/* Secondary Filters */}
                   <div className="pt-12 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
                     <div className="space-y-6">
                       <label className="text-[16px] font-bold text-white tracking-tight block">When are you most present?</label>
@@ -1443,7 +1536,6 @@ const App = () => {
                     </div>
                   </div>
 
-                  {/* Tertiary Filters Grid: Age & Location (Location block moved slightly higher via pt-2 instead of pt-8) */}
                   <div className="pt-2 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
                     <div className="space-y-6">
                       <label className="text-[16px] font-bold text-white tracking-tight block">Age</label>
@@ -1458,7 +1550,6 @@ const App = () => {
                         ))}
                       </div>
                     </div>
-
                     <div className="space-y-6">
                       <label className="text-[16px] font-bold text-white tracking-tight block">Location</label>
                       <AutocompleteInput 
@@ -1475,7 +1566,6 @@ const App = () => {
               </div>
             </div>
 
-            {/* RESULTS GRID */}
             <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-32 transition-opacity duration-1000 ${!searchQuery && !showFilters ? 'opacity-70 grayscale-[0.4]' : 'opacity-100 grayscale-0'}`}>
               {filteredUsers.length > 0 ? filteredUsers.map(user => (
                 <div key={user.id} className="bg-neutral-900/40 border border-neutral-800/80 rounded-[2.5rem] overflow-hidden transition-all duration-700 group cursor-pointer shadow-2xl hover:bg-neutral-800/60 hover:-translate-y-[2px] transform">
@@ -1499,7 +1589,6 @@ const App = () => {
                         <span key={i} className="text-[10px] px-4 py-1.5 bg-neutral-950 border border-neutral-800 rounded-full font-bold uppercase tracking-widest text-neutral-500 transition-colors group-hover:text-neutral-300 group-hover:border-neutral-700">{i}</span>
                       ))}
                     </div>
-                    {/* Strictly remove 'Click' preview action strictly hidden on mobile version (hidden md:block) */}
                     <button className="hidden md:block w-full py-5 bg-white text-black font-black uppercase tracking-[0.25em] text-[11px] rounded-2xl hover:shadow-2xl hover:scale-[1.02] transform transition-all active:scale-95">Click</button>
                   </div>
                 </div>
@@ -1538,13 +1627,10 @@ const App = () => {
                       key={id}
                       className="group relative bg-[#121212] border border-neutral-800/80 rounded-[2rem] p-6 flex items-center gap-6 transition-all duration-150 hover:bg-[#1a1a1a] hover:border-neutral-700 hover:-translate-y-0.5 cursor-pointer shadow-xl active:scale-[0.995]"
                     >
-                      {/* Subtle red left accent */}
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-12 bg-[#FF2A2A]/40 rounded-r-full group-hover:h-16 group-hover:bg-[#FF2A2A] transition-all duration-150"></div>
-                      
                       <div className="w-16 h-16 rounded-full overflow-hidden border border-white/5 flex-shrink-0 group-hover:scale-105 transition-transform duration-150">
                         <img src={reminder.user.avatar} alt={reminder.user.name} className="w-full h-full object-cover" />
                       </div>
-                      
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
                           <h3 className="text-lg font-bold text-neutral-400 group-hover:text-white transition-colors uppercase tracking-tight truncate">{reminder.user.name}</h3>
@@ -1554,8 +1640,6 @@ const App = () => {
                         </div>
                         <p className="text-neutral-500 group-hover:text-neutral-200 transition-colors mt-1 font-medium leading-relaxed italic line-clamp-2">"{reminder.topic}"</p>
                       </div>
-                      
-                      {/* Preview action hidden on mobile version (hidden md:flex) */}
                       <div className="hidden md:flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 px-2">
                         <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">View</span>
                         <Icons.Zap className="w-4 h-4 text-[#FF2A2A]/80" />
@@ -1571,7 +1655,6 @@ const App = () => {
                 </div>
               </div>
 
-              {/* Side Calendar Widget - Usable Overview */}
               <div className="w-full md:w-[420px] flex-shrink-0 animate-in fade-in zoom-in duration-500">
                 <div className="bg-[#121212] border border-neutral-800 rounded-[2rem] overflow-hidden shadow-2xl">
                   <div className="p-4 border-b border-neutral-800 bg-[#161616]">
@@ -1592,7 +1675,6 @@ const App = () => {
                 </div>
               </div>
             </div>
-            
             {reminderEvents.length === 0 && (
               <div className="py-24 text-center border-2 border-dashed border-neutral-900 rounded-[3rem]">
                 <p className="text-neutral-700 font-black uppercase tracking-[0.4em] text-sm">Waiting for a new wave.</p>
@@ -1600,6 +1682,8 @@ const App = () => {
             )}
           </div>
         )}
+
+        {view === ViewState.GOLDEN && <GoldenView />}
 
         {view === ViewState.PROFILE && (
           <ProfileSetupView 
@@ -1614,7 +1698,6 @@ const App = () => {
         )}
       </main>
 
-      {/* Sidebars Updated to Match Elevated Design */}
       {chatsOpen && (
         <>
           <div className="fixed inset-0 z-[110] bg-black/55 backdrop-blur-[6px] animate-in fade-in duration-200" onClick={() => setChatsOpen(false)} />
