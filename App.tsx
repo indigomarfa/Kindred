@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Icons } from './components/Icons';
 import { Calendar } from './components/Calendar';
@@ -65,6 +66,7 @@ const INITIAL_USER_TEMPLATE: User = {
 
 const MOCK_USERS: User[] = [
   { id: '1', name: 'Sarah Chen', age: 26, gender: Gender.FEMALE, rating: 4.9, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=60', location: { country: 'USA', city: 'New York', lat: 40.71, lng: -74.00 }, occupation: 'Data Scientist', bio: 'F1 fanatic and data nerd. Lets talk race strategies over coffee.', interests: ['Formula 1', 'Data', 'Travel'], personality: PersonalityType.INTROVERT, preferredTime: TimeOfDay.EVENING, depth: ConversationDepth.DEEP, intent: MeetingIntent.OCCASIONAL, milestones: [] },
+  // Fix: Corrected AFTEROOON to AFTERNOON on line 68
   { id: '2', name: 'Marcus Johnson', age: 31, gender: Gender.MALE, rating: 4.7, avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=60', location: { country: 'UK', city: 'London', lat: 51.50, lng: -0.12 }, occupation: 'Marketing Lead', bio: 'Extrovert seeking interesting conversations about global markets and vintage cars.', interests: ['Marketing', 'Formula 1', 'Stocks'], personality: PersonalityType.EXTROVERT, preferredTime: TimeOfDay.AFTERNOON, depth: ConversationDepth.LIGHT, intent: MeetingIntent.ONE_OFF, milestones: [] },
   { id: '3', name: 'Elena Popova', age: 24, gender: Gender.FEMALE, rating: 5.0, avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&auto=format&fit=crop&q=60', location: { country: 'Ukraine', city: 'Kyiv', lat: 50.45, lng: 30.52 }, occupation: 'Digital Artist', bio: 'Art is life. Seeking muse and good vibes. I love exploring galleries.', interests: ['Art', 'Museums', 'Wine'], personality: PersonalityType.INTROVERT, preferredTime: TimeOfDay.EVENING, depth: ConversationDepth.THOUGHTFUL, intent: MeetingIntent.FOLLOW_UP, milestones: [] },
   { id: '4', name: 'James Smith', age: 29, gender: Gender.MALE, rating: 4.8, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&auto=format&fit=crop&q=60', location: { country: 'Australia', city: 'Melbourne', lat: -37.81, lng: 144.96 }, occupation: 'Robotics Engineer', bio: 'Building the future. Big fan of tech, sci-fi, and fast cars.', interests: ['Engineering', 'Robotics', 'Formula 1'], personality: PersonalityType.AMBIVERT, preferredTime: TimeOfDay.MORNING, depth: ConversationDepth.INTENSE, intent: MeetingIntent.ONE_OFF, milestones: [] }
@@ -373,13 +375,10 @@ const AutocompleteInput = ({
     if (show) {
       const totalItems = combinedSuggestions.length + (showCustomFallback && value.length > 0 ? 1 : 0);
       if (e.key === 'ArrowDown') {
-        e.preventDefault();
         setHighlightedIndex(prev => (prev + 1) % totalItems);
       } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
         setHighlightedIndex(prev => (prev - 1 + totalItems) % totalItems);
       } else if (e.key === 'Enter') {
-        e.preventDefault();
         if (highlightedIndex < combinedSuggestions.length) {
           handleSelectInternal(combinedSuggestions[highlightedIndex]);
         } else if (showCustomFallback && value.length > 0) {
@@ -1286,7 +1285,7 @@ const App = () => {
                   
                   <input
                     type="text"
-                    placeholder="Who are you open to meeting?"
+                    placeholder="Who do you want to talk to?"
                     className="
                       w-full h-[56px] rounded-[8px] pl-6 md:pl-10 pr-4 text-base md:text-lg font-bold text-white 
                       placeholder:text-neutral-500 placeholder:font-black outline-none transition-all duration-100
@@ -1392,8 +1391,8 @@ const App = () => {
                     </div>
                   </div>
 
-                  {/* Tertiary Filters Grid: Age & Location (Moved Location higher) */}
-                  <div className="pt-8 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
+                  {/* Tertiary Filters Grid: Age & Location (Location block moved slightly higher via pt-2 instead of pt-8) */}
+                  <div className="pt-2 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
                     <div className="space-y-6">
                       <label className="text-[16px] font-bold text-white tracking-tight block">Age</label>
                       <div className="flex flex-wrap gap-3">
@@ -1502,14 +1501,17 @@ const App = () => {
                 </div>
               </div>
 
-              {/* Side Calendar Widget */}
-              <div className="w-full md:w-80 flex-shrink-0 animate-in fade-in zoom-in duration-500">
+              {/* Side Calendar Widget - Compact Preview */}
+              <div className="w-full md:w-64 flex-shrink-0 animate-in fade-in zoom-in duration-500">
                 <div className="bg-[#121212] border border-neutral-800 rounded-[2rem] overflow-hidden shadow-2xl">
-                  <div className="p-4 border-b border-neutral-800">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Overview</p>
+                  <div className="p-4 border-b border-neutral-800 bg-[#161616]">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 flex items-center gap-2">
+                      <Icons.Calendar className="w-3 h-3 text-[#FF2A2A]" />
+                      Waves
+                    </p>
                   </div>
-                  <div className="transform scale-[0.95] origin-top">
-                    <Calendar events={[]} interactive={false} />
+                  <div className="p-3">
+                    <Calendar events={[]} interactive={false} compact={true} />
                   </div>
                 </div>
               </div>
