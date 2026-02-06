@@ -613,6 +613,165 @@ const GoldenView = () => {
   );
 };
 
+const AvailabilitySetupView = ({ onComplete }: { onComplete: () => void }) => {
+  // Pre-select 1-2 slots to silently teach the interaction as requested.
+  const initialSelection = useMemo(() => {
+    const today = new Date();
+    const tue = new Date(today);
+    tue.setDate(tue.getDate() + (2 - tue.getDay() + 7) % 7);
+    const thu = new Date(today);
+    thu.setDate(thu.getDate() + (4 - thu.getDay() + 7) % 7);
+    
+    return new Set<string>([
+      `${tue.toDateString()}-14:00`,
+      `${thu.toDateString()}-18:00`
+    ]);
+  }, []);
+
+  const [selectedSlots, setSelectedSlots] = useState<Set<string>>(initialSelection);
+  const [automationEnabled, setAutomationEnabled] = useState(false);
+  const [automationFreq, setAutomationFreq] = useState<'WEEKLY' | 'MONTHLY' | null>(null);
+
+  const next14Days = useMemo(() => {
+    const dates = [];
+    const today = new Date();
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      dates.push(d);
+    }
+    return dates;
+  }, []);
+
+  const timeSlots = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"];
+
+  const toggleSlot = (date: Date, slot: string) => {
+    const key = `${date.toDateString()}-${slot}`;
+    const next = new Set(selectedSlots);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    setSelectedSlots(next);
+  };
+
+  return (
+    <div className="min-h-screen bg-black py-16 px-6 relative overflow-hidden flex flex-col items-center">
+      <Background isAuth />
+      <div className="max-w-3xl w-full z-10 space-y-12 animate-in fade-in duration-1000">
+        <header className="space-y-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white uppercase tracking-tight leading-tight font-display">
+            LET OTHERS KNOW WHEN YOU ARE READY TO MEET UP
+          </h1>
+          <p className="text-[#B8B8B8] text-base font-medium">
+            Your availability helps us suggest better matches.
+          </p>
+        </header>
+
+        {/* Contained Card for Grid */}
+        <div className="bg-[#0D0D0D] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col h-[520px]">
+          {/* Header Row (Time Labels) */}
+          <div className="grid grid-cols-[100px_1fr] border-b border-white/5 bg-neutral-900/40">
+             <div className="p-5 border-r border-white/5 flex items-center justify-center">
+               <Icons.Calendar className="w-4 h-4 text-neutral-500" />
+             </div>
+             <div className="grid grid-cols-7">
+                {timeSlots.map(t => (
+                  <div key={t} className="py-5 text-[9px] font-black text-neutral-500 text-center uppercase tracking-widest">{t.split(':')[0]}</div>
+                ))}
+             </div>
+          </div>
+
+          {/* Scrollable Matrix */}
+          <div className="flex-1 overflow-y-auto scrollbar-hide">
+            {next14Days.map((date) => {
+              const isToday = new Date().toDateString() === date.toDateString();
+              return (
+                <div key={date.toISOString()} className="grid grid-cols-[100px_1fr] border-b border-white/5 last:border-none group">
+                  <div className={`p-5 border-r border-white/5 flex flex-col justify-center items-center transition-colors ${isToday ? 'bg-white/[0.03]' : 'bg-transparent'}`}>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#9A9A9A] mb-1">
+                      {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                    </span>
+                    <span className={`text-lg font-bold ${isToday ? 'text-white' : 'text-[#B8B8B8]'}`}>
+                      {date.getDate()}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-7 gap-px bg-white/5">
+                    {timeSlots.map(slot => {
+                      const isSelected = selectedSlots.has(`${date.toDateString()}-${slot}`);
+                      return (
+                        <button
+                          key={slot}
+                          onClick={() => toggleSlot(date, slot)}
+                          className={`aspect-square transition-all duration-300 border-none outline-none relative group/cell cursor-pointer ${
+                            isSelected 
+                              ? 'bg-neutral-200/90 border-l-2 border-l-[#FF2A2A]' 
+                              : 'bg-black hover:bg-neutral-800'
+                          }`}
+                        >
+                          {isSelected && (
+                             <div className="absolute inset-0 shadow-[inset_0_0_12px_rgba(255,255,255,0.2)]" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Automation Section */}
+        <section className="space-y-6 pt-4">
+          <div className="flex items-center justify-between p-8 bg-[#0D0D0D] border border-white/10 rounded-[2rem] shadow-xl">
+            <p className="text-[13px] font-bold text-[#E6E6E6] uppercase tracking-widest">
+              UPDATE THESE AVAILABILITY SLOTS AUTOMATICALLY
+            </p>
+            <button 
+              onClick={() => setAutomationEnabled(!automationEnabled)}
+              className={`w-14 h-7 rounded-full relative transition-all duration-300 ${automationEnabled ? 'bg-neutral-600' : 'bg-neutral-900'}`}
+            >
+              <div className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-all duration-300 ${automationEnabled ? 'left-8 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : 'left-1'}`} />
+            </button>
+          </div>
+
+          {automationEnabled && (
+            <div className="flex bg-[#0D0D0D] border border-white/10 p-1.5 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-400">
+              <button 
+                onClick={() => setAutomationFreq('WEEKLY')}
+                className={`flex-1 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-300 ${automationFreq === 'WEEKLY' ? 'bg-white/10 text-white shadow-inner' : 'text-[#9A9A9A] hover:text-white'}`}
+              >
+                WEEKLY
+              </button>
+              <button 
+                onClick={() => setAutomationFreq('MONTHLY')}
+                className={`flex-1 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-300 ${automationFreq === 'MONTHLY' ? 'bg-white/10 text-white shadow-inner' : 'text-[#9A9A9A] hover:text-white'}`}
+              >
+                MONTHLY
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-8 pt-8 items-center w-full">
+          <button 
+            onClick={onComplete}
+            className="w-full max-w-sm py-6 bg-[#E6E6E6] text-black font-black uppercase tracking-[0.3em] text-[11px] rounded-2xl shadow-2xl hover:bg-white hover:shadow-white/5 active:scale-[0.98] transition-all duration-300"
+          >
+            SAVE AVAILABILITY
+          </button>
+          <button 
+            onClick={onComplete}
+            className="text-[10px] font-black uppercase tracking-[0.4em] text-[#9A9A9A] hover:text-white transition-colors duration-300"
+          >
+            SKIP THIS STEP FOR NOW
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ProfileSetupView = ({
   currentUser,
   handleUpdateProfile,
@@ -739,7 +898,8 @@ const ProfileSetupView = ({
       milestones: newMilestones,
       identityLabel: label
     });
-    setAuthStep(AuthStep.COMPLETED);
+    // Immediately trigger availability screen post-onboarding
+    setAuthStep(AuthStep.AVAILABILITY);
     setIsInternalEditing(false);
   };
 
@@ -1417,7 +1577,8 @@ const App = () => {
 
   if (authStep === AuthStep.LANDING) return <LandingView setAuthStep={setAuthStep} />;
   if (authStep === AuthStep.SIGNUP) return <SignupView currentUser={currentUser} handleUpdateProfile={handleUpdateProfile} setAuthStep={setAuthStep} />;
-  if (authStep !== AuthStep.COMPLETED && !currentUser.hasCompletedOnboarding) return <ProfileSetupView currentUser={currentUser} handleUpdateProfile={handleUpdateProfile} setAuthStep={setAuthStep} handleAiBio={handleAiBio} />;
+  if (authStep === AuthStep.PROFILE_SETUP) return <ProfileSetupView currentUser={currentUser} handleUpdateProfile={handleUpdateProfile} setAuthStep={setAuthStep} handleAiBio={handleAiBio} />;
+  if (authStep === AuthStep.AVAILABILITY) return <AvailabilitySetupView onComplete={() => setAuthStep(AuthStep.COMPLETED)} />;
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-neutral-800/30">
