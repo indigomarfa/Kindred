@@ -89,6 +89,11 @@ export interface User {
   hasCompletedOnboarding?: boolean;
   milestones: Milestone[];
   identityLabel?: string;
+  availability?: string[];
+  automation?: {
+    enabled: boolean;
+    frequency: 'WEEKLY' | 'MONTHLY' | null;
+  };
 }
 
 export interface Meeting {
