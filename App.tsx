@@ -62,7 +62,8 @@ const INITIAL_USER_TEMPLATE: User = {
   isGolden: false,
   hasCompletedOnboarding: false,
   milestones: [],
-  availability: []
+  availability: [],
+  automation: { enabled: false, frequency: null }
 };
 
 const MOCK_USERS: User[] = [
@@ -1333,7 +1334,7 @@ const ProfileSetupView = ({
                   </div>
                 </button>
 
-                {/* Collapsible Availability Section */}
+                {/* AVAILABILITY COLLAPSIBLE SECTION */}
                 <div className="col-span-1 md:col-span-2 space-y-4">
                   <button 
                     onClick={() => setIsAvailabilityExpanded(!isAvailabilityExpanded)}
@@ -1351,7 +1352,7 @@ const ProfileSetupView = ({
                   {isAvailabilityExpanded && (
                     <div className="bg-[#0D0D0D] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in slide-in-from-top-4 duration-500">
                       <div className="p-8 space-y-10">
-                        {/* Grid rolled inline */}
+                        {/* Inline Availability Grid */}
                         <div className="bg-black border border-white/5 rounded-[2rem] overflow-hidden flex flex-col h-[400px]">
                            <div className="grid grid-cols-[80px_1fr] border-b border-white/5 bg-neutral-900/40">
                               <div className="p-4 border-r border-white/5 flex items-center justify-center">
@@ -1398,7 +1399,7 @@ const ProfileSetupView = ({
                            </div>
                         </div>
 
-                        {/* Automation Section inline */}
+                        {/* Inline Automation Toggle */}
                         <div className="space-y-6">
                            <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
                              <p className="text-[11px] font-bold text-[#E6E6E6] uppercase tracking-widest">Update these availability slots automatically</p>
@@ -1417,7 +1418,7 @@ const ProfileSetupView = ({
                            )}
                         </div>
 
-                        {/* Rollout Actions */}
+                        {/* Actions for rollout */}
                         <div className="flex gap-4 items-center">
                           <button 
                             disabled={!hasAvailabilityChanges}
@@ -1463,16 +1464,17 @@ const ProfileSetupView = ({
              </div>
 
              <div className="pt-8 border-t border-neutral-900 flex justify-between items-center">
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    if (isInternalEditing) setIsInternalEditing(false);
-                    else prevStep();
-                  }} 
-                  className="text-[#7A7A7A] hover:text-white text-xs font-black uppercase tracking-widest transition-all"
-                >
-                  {isInternalEditing ? 'Cancel' : 'Back'}
-                </button>
+                <div className="flex items-center">
+                  {isInternalEditing && (
+                    <button 
+                      type="button" 
+                      onClick={() => setIsInternalEditing(false)} 
+                      className="text-[#7A7A7A] hover:text-white text-xs font-black uppercase tracking-widest transition-all"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
                 
                 {isInternalEditing ? (
                    <button 
@@ -1959,3 +1961,104 @@ const App = () => {
                           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF2A2A]/80 px-3 py-1 bg-[#FF2A2A]/5 rounded-full border border-[#FF2A2A]/10 transition-all duration-150 group-hover:shadow-[0_0_10px_rgba(255,42,42,0.25)] group-hover:text-white group-hover:border-[#FF2A2A]/30">
                             {reminder.time}
                           </span>
+                        </div>
+                        <p className="text-neutral-500 group-hover:text-neutral-200 transition-colors mt-1 font-medium leading-relaxed italic line-clamp-2">"{reminder.topic}"</p>
+                      </div>
+                      <div className="hidden md:flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 px-2">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">View</span>
+                        <Icons.Zap className="w-4 h-4 text-[#FF2A2A]/80" />
+                      </div>
+                    </div>
+                  ))}
+
+                  {filteredReminders.length === 0 && (
+                    <div className="py-24 text-center border-2 border-dashed border-neutral-900 rounded-[3rem]">
+                      <p className="text-neutral-700 font-black uppercase tracking-[0.4em] text-sm">No meetings scheduled for this day.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="w-full md:w-[420px] flex-shrink-0 animate-in fade-in zoom-in duration-500">
+                <div className="bg-[#121212] border border-neutral-800 rounded-[2rem] overflow-hidden shadow-2xl">
+                  <div className="p-4 border-b border-neutral-800 bg-[#161616]">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 flex items-center gap-2">
+                      <Icons.Calendar className="w-3 h-3 text-[#FF2A2A]" />
+                      Schedule
+                    </p>
+                  </div>
+                  <div className="p-3">
+                    <Calendar 
+                      events={calendarItems} 
+                      interactive={true} 
+                      compact={true} 
+                      onDateClick={setMeetingFilterDate}
+                      selectedDate={meetingFilterDate}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {reminderEvents.length === 0 && (
+              <div className="py-24 text-center border-2 border-dashed border-neutral-900 rounded-[3rem]">
+                <p className="text-neutral-700 font-black uppercase tracking-[0.4em] text-sm">Waiting for a new wave.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {view === ViewState.GOLDEN && <GoldenView />}
+
+        {view === ViewState.PROFILE && (
+          <ProfileSetupView 
+            currentUser={currentUser} 
+            handleUpdateProfile={handleUpdateProfile} 
+            setAuthStep={setAuthStep} 
+            handleAiBio={handleAiBio} 
+            isEditMode={true} 
+            isBackgrounded={isPopUpOpen} 
+            onClose={() => setView(ViewState.DISCOVERY)}
+          />
+        )}
+      </main>
+
+      {chatsOpen && (
+        <>
+          <div className="fixed inset-0 z-[110] bg-black/55 backdrop-blur-[6px] animate-in fade-in duration-200" onClick={() => setChatsOpen(false)} />
+          <div className="fixed inset-y-0 right-0 w-80 bg-[#141414] border-l border-white/10 z-[120] shadow-[0_16px_50px_rgba(0,0,0,0.65)] animate-in slide-in-from-right duration-300">
+             <div className="relative z-10 h-full p-8">
+               <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+                  <h3 className="font-bold uppercase tracking-[0.2em] text-[11px] text-white">Messages</h3>
+                  <button onClick={() => setChatsOpen(false)} className="text-neutral-500 hover:text-white transition-all"><Icons.X className="w-5 h-5" /></button>
+               </div>
+               <div className="flex flex-col items-center justify-center h-full -mt-20">
+                 <div className="w-1.5 h-1.5 rounded-full bg-neutral-800 mb-6"></div>
+                 <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.3em] text-center">No active chats</p>
+               </div>
+             </div>
+          </div>
+        </>
+      )}
+
+      {notifsOpen && (
+        <>
+          <div className="fixed inset-0 z-[110] bg-black/55 backdrop-blur-[6px] animate-in fade-in duration-200" onClick={() => setNotifsOpen(false)} />
+          <div className="fixed inset-y-0 right-0 w-80 bg-[#141414] border-l border-white/10 z-[120] shadow-[0_16px_50px_rgba(0,0,0,0.65)] animate-in slide-in-from-right duration-300">
+             <div className="relative z-10 h-full p-8">
+               <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+                  <h3 className="font-bold uppercase tracking-[0.2em] text-[11px] text-white">Notifications</h3>
+                  <button onClick={() => setNotifsOpen(false)} className="text-neutral-500 hover:text-white transition-all"><Icons.X className="w-5 h-5" /></button>
+               </div>
+               <div className="flex flex-col items-center justify-center h-full -mt-20">
+                 <div className="w-1.5 h-1.5 rounded-full bg-neutral-800 mb-6"></div>
+                 <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.3em] text-center">All caught up</p>
+               </div>
+             </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default App;
