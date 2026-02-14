@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Icons } from './components/Icons';
 import { Calendar } from './components/Calendar';
@@ -16,9 +17,9 @@ const accentRed = "#FF2A2A";
 const accentGold = "#C5A059";
 const accentSilver = "#949494";
 
-const textPrimary = "#E6E6E6";
-const textSecondary = "#B8B8B8";
-const textMuted = "#9A9A9A";
+const textPrimary = "#F5F5F5";
+const textSecondary = "#D4D4D4";
+const textMuted = "#A3A3A3";
 
 const inputIdleBase = "bg-neutral-900/40 border border-neutral-800/50 shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.02),0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all duration-500";
 const inputHoverBase = "hover:border-neutral-700 hover:shadow-[0_20px_50px_-20px_rgba(255,42,42,0.08),0_10px_15px_-3px_rgba(0,0,0,0.2)] hover:bg-neutral-900/60";
@@ -37,7 +38,9 @@ const CITY_SUGGESTIONS = [
 
 const POPULAR_INTERESTS = [
   "Artificial Intelligence", "Stoicism", "Formula 1", "Cybersecurity", 
-  "Minimalism", "Digital Art", "Cooking", "Photography", "Travel", "Gaming"
+  "Minimalism", "Digital Art", "Cooking", "Photography", "Travel", "Gaming",
+  "Blockchain", "Web3", "Coffee Roasting", "Street Photography", "Classical Music",
+  "Psychology", "Sustainability", "Venture Capital", "Interior Design", "Hiking"
 ];
 
 const SELF_DEFINITIONS: SelfDefinition[] = [
@@ -88,8 +91,8 @@ const Background = ({ isAuth = false }: { isAuth?: boolean }) => (
           backgroundSize: '80px 80px' 
         }}></div>
       )}
-      <div className="absolute left-[5%] top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-white/5 to-transparent"></div>
-      <div className="absolute right-[5%] top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-white/5 to-transparent"></div>
+      <div className="absolute left-[5%] top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+      <div className="absolute right-[5%] top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
     </div>
   </div>
 );
@@ -259,7 +262,7 @@ const CustomSelect = ({
 }: { 
   value: string; 
   options: string[]; 
-  onChange: (val: any) => void; 
+  onChange: (val: string) => void; 
   placeholder: string; 
   label: string;
   height?: string;
@@ -284,14 +287,14 @@ const CustomSelect = ({
 
   return (
     <div className={`relative group ${isOpen ? 'z-[100]' : ''}`}>
-      {label && <label className="block text-[10px] font-bold text-[#949494] uppercase tracking-widest mb-3 group-focus-within:text-white transition-colors">{label}</label>}
+      {label && <label className="block text-[10px] font-bold text-neutral-300 uppercase tracking-widest mb-3 group-focus-within:text-white transition-colors">{label}</label>}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-6 py-0 transition-all flex items-center justify-between outline-none font-bold ${height} text-left rounded-xl ${isOpen ? 'border-[#FF2A2A] shadow-[inset_2px_0_0_0_#FF2A2A,0_0_15px_rgba(255,42,42,0.1)] relative z-[101]' : `${inputIdleBase} ${inputHoverBase} focus:border-[#FF2A2A] focus:shadow-[inset_2px_0_0_0_#FF2A2A]`} ${!value ? 'text-[#7A7A7A]' : 'text-white'}`}
+        className={`w-full px-6 py-0 transition-all flex items-center justify-between outline-none font-bold ${height} text-left rounded-xl ${isOpen ? 'border-[#FF2A2A] shadow-[inset_2px_0_0_0_#FF2A2A,0_0_15px_rgba(255,42,42,0.1)] relative z-[101]' : `${inputIdleBase} ${inputHoverBase} focus:border-[#FF2A2A] focus:shadow-[inset_2px_0_0_0_#FF2A2A]`} ${!value ? 'text-neutral-500' : 'text-white'}`}
       >
         <span className="truncate">{value || placeholder}</span>
-        <Icons.Menu className={`w-3.5 h-3.5 transition-all duration-300 ${isOpen ? 'rotate-90 text-white' : 'text-[#949494]'} group-hover:text-white`} />
+        <Icons.Menu className={`w-3.5 h-3.5 transition-all duration-300 ${isOpen ? 'rotate-90 text-white' : 'text-neutral-400'} group-hover:text-white`} />
       </button>
 
       {isOpen && (
@@ -308,7 +311,7 @@ const CustomSelect = ({
                 key={opt}
                 type="button"
                 onClick={() => handleSelect(opt)}
-                className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative group/opt border-b border-white/[0.03] last:border-none ${value === opt ? 'bg-white/[0.04] text-white shadow-[inset_1px_0_0_rgba(255,255,255,0.05)]' : 'text-[#7A7A7A] hover:text-white hover:bg-white/[0.02]'}`}
+                className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative group/opt border-b border-white/[0.03] last:border-none ${value === opt ? 'bg-white/[0.04] text-white shadow-[inset_1px_0_0_rgba(255,255,255,0.05)]' : 'text-neutral-400 hover:text-white hover:bg-white/[0.02]'}`}
               >
                 {value === opt && (
                   <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
@@ -332,7 +335,9 @@ const AutocompleteInput = ({
   onSelect,
   showCustomFallback = false,
   isLoading = false,
-  localSuggestions = []
+  localSuggestions = [],
+  className = "",
+  inputHeight = "h-[56px]"
 }: { 
   value: string; 
   onChange: (val: string) => void; 
@@ -343,6 +348,8 @@ const AutocompleteInput = ({
   showCustomFallback?: boolean;
   isLoading?: boolean;
   localSuggestions?: string[];
+  className?: string;
+  inputHeight?: string;
 }) => {
   const [show, setShow] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -367,16 +374,23 @@ const AutocompleteInput = ({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (show) {
-      const totalItems = combinedSuggestions.length + (showCustomFallback && value.length > 0 ? 1 : 0);
+      const showFallback = showCustomFallback && value.length > 0 && !combinedSuggestions.some(f => f.toLowerCase() === value.toLowerCase());
+      const totalItems = combinedSuggestions.length + (showFallback ? 1 : 0);
+      
       if (e.key === 'ArrowDown') {
-        setHighlightedIndex(prev => (prev + 1) % totalItems);
+        e.preventDefault();
+        setHighlightedIndex(prev => (prev + 1) % (totalItems || 1));
       } else if (e.key === 'ArrowUp') {
-        setHighlightedIndex(prev => (prev - 1 + totalItems) % totalItems);
+        e.preventDefault();
+        setHighlightedIndex(prev => (prev - 1 + (totalItems || 1)) % (totalItems || 1));
       } else if (e.key === 'Enter') {
-        if (highlightedIndex < combinedSuggestions.length) {
-          handleSelectInternal(combinedSuggestions[highlightedIndex]);
-        } else if (showCustomFallback && value.length > 0) {
-          handleSelectInternal(value);
+        if (totalItems > 0) {
+          e.preventDefault();
+          if (highlightedIndex < combinedSuggestions.length) {
+            handleSelectInternal(combinedSuggestions[highlightedIndex]);
+          } else if (showFallback) {
+            handleSelectInternal(value);
+          }
         }
       } else if (e.key === 'Escape') {
         setShow(false);
@@ -386,17 +400,35 @@ const AutocompleteInput = ({
 
   const hasItemsToShow = (value.length > 0 || combinedSuggestions.length > 0);
 
+  const renderSuggestionText = (text: string, query: string) => {
+    if (!query) return text;
+    const parts = text.split(new RegExp(`(${query})`, 'gi'));
+    return (
+      <span>
+        {parts.map((part, i) => 
+          part.toLowerCase() === query.toLowerCase() 
+            ? <span key={i} className="text-white font-black">{part}</span> 
+            : <span key={i} className="text-neutral-400">{part}</span>
+        )}
+      </span>
+    );
+  };
+
   return (
-    <div className={`relative group ${show && hasItemsToShow ? 'z-[100]' : ''}`}>
-      {label && <label className="block text-[10px] font-bold text-[#949494] uppercase tracking-widest mb-3 group-focus-within:text-white transition-colors">{label}</label>}
+    <div className={`relative group ${show && hasItemsToShow ? 'z-[100]' : ''} ${className}`}>
+      {label && <label className="block text-[10px] font-bold text-neutral-300 uppercase tracking-widest mb-3 group-focus-within:text-white transition-colors">{label}</label>}
       <div className="relative">
         <input 
           ref={inputRef}
           type="text"
-          className={`w-full px-4 py-0 transition-all outline-none font-medium h-[56px] text-sm text-white placeholder-[#7A7A7A] ${inputIdleBase} ${inputHoverBase} ${inputFocusBase} rounded-xl`}
+          className={`w-full px-6 py-0 transition-all outline-none font-medium ${inputHeight} text-sm text-white placeholder-neutral-500 ${inputIdleBase} ${inputHoverBase} ${inputFocusBase} rounded-xl`}
           placeholder={placeholder}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setShow(true);
+            setHighlightedIndex(0);
+          }}
           onKeyDown={handleKeyDown}
           onFocus={() => setShow(true)}
           onBlur={() => setTimeout(() => setShow(false), 200)}
@@ -409,25 +441,32 @@ const AutocompleteInput = ({
         )}
       </div>
       
-      {show && hasItemsToShow && (
+      {show && value.length >= 1 && (
         <div className="absolute top-[calc(100%+8px)] left-0 w-full z-[110] bg-[#141414] border border-white/10 rounded-2xl shadow-[0_16px_50px_rgba(0,0,0,0.65)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-[150ms] ease-out">
-          {combinedSuggestions.map((s, idx) => (
-            <button 
-              key={s}
-              type="button"
-              onMouseEnter={() => setHighlightedIndex(idx)}
-              onMouseDown={(e) => {
-                e.preventDefault(); 
-                handleSelectInternal(s);
-              }}
-              className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === idx ? 'bg-white/10 text-white shadow-[inset_1px_0_0_0_rgba(255,255,255,0.05)]' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
-            >
-              {highlightedIndex === idx && (
-                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
-              )}
-              <span className="relative z-10">{s}</span>
-            </button>
-          ))}
+          {combinedSuggestions.length > 0 ? (
+            combinedSuggestions.map((s, idx) => (
+              <button 
+                key={s}
+                type="button"
+                onMouseEnter={() => setHighlightedIndex(idx)}
+                onMouseDown={(e) => {
+                  e.preventDefault(); 
+                  handleSelectInternal(s);
+                }}
+                className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === idx ? 'bg-white/10 text-white shadow-[inset_1px_0_0_0_rgba(255,255,255,0.05)]' : 'text-neutral-400 hover:bg-white/5 hover:text-white'}`}
+              >
+                {highlightedIndex === idx && (
+                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
+                )}
+                <span className="relative z-10">{renderSuggestionText(s, value)}</span>
+              </button>
+            ))
+          ) : (
+            <div className="p-4 text-[10px] font-black uppercase tracking-widest text-neutral-500 italic text-center">
+              No exact match — try a broader topic
+            </div>
+          )}
+
           {showCustomFallback && value.length > 0 && !combinedSuggestions.some(f => f.toLowerCase() === value.toLowerCase()) && (
             <button 
               type="button"
@@ -436,13 +475,13 @@ const AutocompleteInput = ({
                 e.preventDefault();
                 handleSelectInternal(value);
               }}
-              className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === combinedSuggestions.length ? 'bg-white/10 text-white' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
+              className={`w-full text-left p-4 text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-3 relative border-b border-white/5 last:border-none ${highlightedIndex === combinedSuggestions.length ? 'bg-white/10 text-white shadow-[inset_1px_0_0_0_rgba(255,255,255,0.05)]' : 'text-neutral-400 hover:bg-white/5 hover:text-white'}`}
             >
               {highlightedIndex === combinedSuggestions.length && (
                 <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF2A2A] shadow-[0_0_8px_rgba(255,42,42,0.4)]"></div>
               )}
               <Icons.Sparkles className="w-4 h-4 text-amber-500/80" />
-              Add custom: "{value}"
+              <span className="relative z-10">Add custom: "{value}"</span>
             </button>
           )}
         </div>
@@ -472,7 +511,7 @@ const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: a
                ? 'border-white text-white' 
                : item.special 
                  ? 'border-transparent text-amber-500 hover:text-amber-300 hover:scale-105 transform' 
-                 : 'border-transparent text-neutral-500 hover:text-white'
+                 : 'border-transparent text-neutral-300 hover:text-white'
            }`}
          >
            {item.label}
@@ -482,10 +521,10 @@ const Navbar = ({ currentUser, view, handleNav, setChatsOpen, setNotifsOpen }: a
 
     <div className="flex items-center gap-6">
       <div className="flex items-center gap-2">
-        <button onClick={() => setChatsOpen(prev => !prev)} className="hidden md:block p-2 text-neutral-500 hover:text-white hover:scale-110 transition-all">
+        <button onClick={() => setChatsOpen(prev => !prev)} className="hidden md:block p-2 text-neutral-400 hover:text-white hover:scale-110 transition-all">
           <Icons.MessageCircle className="w-5 h-5" />
         </button>
-        <button onClick={() => setNotifsOpen(prev => !prev)} className="p-2 text-neutral-500 hover:text-white hover:scale-110 transition-all">
+        <button onClick={() => setNotifsOpen(prev => !prev)} className="p-2 text-neutral-400 hover:text-white hover:scale-110 transition-all">
           <Icons.Bell className="w-5 h-5" />
         </button>
       </div>
@@ -501,10 +540,10 @@ const GoldenView = () => {
     <div className="max-w-3xl mx-auto py-12 px-6 space-y-24 animate-in fade-in duration-700">
       {/* Hero Section */}
       <section className="text-center space-y-6 pt-10">
-        <h1 className="text-6xl md:text-8xl font-bold uppercase tracking-tighter font-display leading-[0.9]">
+        <h1 className="text-6xl md:text-8xl font-bold uppercase tracking-tighter font-display leading-[0.9] text-[#F5F5F5]">
           BE <span className="text-transparent bg-clip-text bg-gradient-to-b from-[#EEDD8C] via-[#C5A059] to-[#8C6F3D]">GOLDEN.</span>
         </h1>
-        <p className="text-[#E6E6E6] text-lg md:text-xl font-medium tracking-wide">
+        <p className="text-[#D4D4D4] text-lg md:text-xl font-medium tracking-wide">
           Be visible where intention matters.
         </p>
       </section>
@@ -516,15 +555,15 @@ const GoldenView = () => {
           <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <h2 className="text-4xl font-bold uppercase tracking-tight text-[#E6E6E6]">BE SILVER</h2>
+                <h2 className="text-4xl font-bold uppercase tracking-tight text-[#F5F5F5]">BE SILVER</h2>
                 <div className="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-[#BFC3C7]/40 bg-gradient-to-br from-[#BFC3C7] to-[#8F9499] text-black shadow-inner">
                   Silver Badge
                 </div>
               </div>
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-bold text-[#E6E6E6] tracking-tighter">$12</span>
-                <span className="text-sm font-medium text-[#B8B8B8] tracking-wide">/ month</span>
-                <span className="text-[10px] font-black text-[#9A9A9A] uppercase tracking-[0.2em] ml-4">$144 / year</span>
+                <span className="text-4xl font-bold text-[#F5F5F5] tracking-tighter">$12</span>
+                <span className="text-sm font-medium text-[#D4D4D4] tracking-wide">/ month</span>
+                <span className="text-[10px] font-black text-[#A3A3A3] uppercase tracking-[0.2em] ml-4">$144 / year</span>
               </div>
             </div>
           </div>
@@ -536,21 +575,20 @@ const GoldenView = () => {
               "Advanced search filters (expertise level, depth)",
               "Reduced or no ads"
             ].map(f => (
-              <div key={f} className="flex items-center gap-4 text-[#B8B8B8] font-medium text-base">
+              <div key={f} className="flex items-center gap-4 text-[#D4D4D4] font-medium text-base">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#BFC3C7]"></div>
                 {f}
               </div>
             ))}
           </div>
 
-          <button className="w-full py-6 bg-transparent border-2 border-[#BFC3C7]/30 text-[#E6E6E6] font-black uppercase tracking-[0.3em] text-[11px] rounded-2xl hover:bg-[#BFC3C7] hover:text-black hover:border-transparent transition-all duration-300 active:scale-[0.98]">
+          <button className="w-full py-6 bg-transparent border-2 border-[#BFC3C7]/30 text-[#F5F5F5] font-black uppercase tracking-[0.3em] text-[11px] rounded-2xl hover:bg-[#BFC3C7] hover:text-black hover:border-transparent transition-all duration-300 active:scale-[0.98]">
             Go Silver
           </button>
         </div>
 
         {/* Golden Access Card */}
         <div className="group relative bg-neutral-950 border border-[#C9A24D]/30 rounded-[3rem] p-10 md:p-14 overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.8)] hover:shadow-[#C9A24D]/10 transition-all duration-700">
-          {/* Subtle light sweep animation */}
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#C9A24D]/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[2000ms] pointer-events-none" />
           
           <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12 relative z-10">
@@ -562,9 +600,9 @@ const GoldenView = () => {
                 </div>
               </div>
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-bold text-[#E6E6E6] tracking-tighter">$24</span>
-                <span className="text-sm font-medium text-[#B8B8B8] tracking-wide">/ month</span>
-                <span className="text-[10px] font-black text-[#C9A24D]/60 uppercase tracking-[0.2em] ml-4">$288 / year</span>
+                <span className="text-4xl font-bold text-[#F5F5F5] tracking-tighter">$24</span>
+                <span className="text-sm font-medium text-[#D4D4D4] tracking-wide">/ month</span>
+                <span className="text-[10px] font-black text-[#C9A24D]/80 uppercase tracking-[0.2em] ml-4">$288 / year</span>
               </div>
             </div>
           </div>
@@ -578,7 +616,7 @@ const GoldenView = () => {
                 "Personalized insights: interests & profile stats",
                 "Golden profile badge for instant trust"
               ].map(f => (
-                <div key={f} className="flex items-center gap-4 text-[#E6E6E6] font-medium text-base">
+                <div key={f} className="flex items-center gap-4 text-[#F5F5F5] font-medium text-base">
                   <div className="w-2 h-2 rounded-full bg-gradient-to-br from-[#EEDD8C] to-[#C9A24D] shadow-[0_0_10px_rgba(201,162,77,0.5)]"></div>
                   {f}
                 </div>
@@ -592,22 +630,20 @@ const GoldenView = () => {
         </div>
       </div>
 
-      {/* Transactional Section */}
       <section className="text-center py-16 space-y-6 border-t border-neutral-900/50">
-        <h2 className="text-2xl font-bold text-[#E6E6E6] uppercase tracking-tight">Not ready for a subscription?</h2>
+        <h2 className="text-2xl font-bold text-[#F5F5F5] uppercase tracking-tight">Not ready for a subscription?</h2>
         <div className="max-w-lg mx-auto space-y-6">
-          <p className="text-[#B8B8B8] text-base font-medium leading-relaxed">
+          <p className="text-[#D4D4D4] text-base font-medium leading-relaxed">
             You can book 2–3 meetings per month for free.<br />
             After that, pay per individual meeting.
           </p>
           <div className="pt-4">
-            <span className="text-2xl font-bold text-[#E6E6E6] tracking-tighter">$1.99 – $4.99</span>
-            <span className="block text-[10px] font-black text-[#9A9A9A] uppercase tracking-[0.4em] mt-2">Per connection</span>
+            <span className="text-2xl font-bold text-[#F5F5F5] tracking-tighter">$1.99 – $4.99</span>
+            <span className="block text-[10px] font-black text-[#A3A3A3] uppercase tracking-[0.4em] mt-2">Per connection</span>
           </div>
         </div>
       </section>
 
-      {/* Soft Reassurance Footer */}
       <footer className="text-center pb-20 pt-10">
         <p className="text-[10px] font-black text-neutral-800 uppercase tracking-[0.6em]">Kindred Membership Access</p>
       </footer>
@@ -616,7 +652,6 @@ const GoldenView = () => {
 };
 
 const AvailabilitySetupView = ({ onComplete }: { onComplete: () => void }) => {
-  // Pre-select 1-2 slots to silently teach the interaction as requested.
   const initialSelection = useMemo(() => {
     const today = new Date();
     const tue = new Date(today);
@@ -655,6 +690,8 @@ const AvailabilitySetupView = ({ onComplete }: { onComplete: () => void }) => {
     setSelectedSlots(next);
   };
 
+  const hasSelectedSlots = selectedSlots.size >= 1;
+
   return (
     <div className="min-h-screen bg-black py-16 px-6 relative overflow-hidden flex flex-col items-center">
       <Background isAuth />
@@ -663,36 +700,33 @@ const AvailabilitySetupView = ({ onComplete }: { onComplete: () => void }) => {
           <h1 className="text-4xl md:text-5xl font-bold text-white uppercase tracking-tight leading-tight font-display">
             LET OTHERS KNOW WHEN YOU ARE READY TO MEET UP
           </h1>
-          <p className="text-[#B8B8B8] text-base font-medium">
+          <p className="text-[#D4D4D4] text-base font-medium">
             Your availability helps us suggest better matches.
           </p>
         </header>
 
-        {/* Contained Card for Grid */}
         <div className="bg-[#0D0D0D] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col h-[520px]">
-          {/* Header Row (Time Labels) */}
           <div className="grid grid-cols-[100px_1fr] border-b border-white/5 bg-neutral-900/40">
              <div className="p-5 border-r border-white/5 flex items-center justify-center">
-               <Icons.Calendar className="w-4 h-4 text-neutral-500" />
+               <Icons.Calendar className="w-4 h-4 text-neutral-400" />
              </div>
              <div className="grid grid-cols-7">
                 {timeSlots.map(t => (
-                  <div key={t} className="py-5 text-[9px] font-black text-neutral-500 text-center uppercase tracking-widest">{t.split(':')[0]}</div>
+                  <div key={t} className="py-5 text-[9px] font-black text-neutral-400 text-center uppercase tracking-widest">{t.split(':')[0]}</div>
                 ))}
              </div>
           </div>
 
-          {/* Scrollable Matrix */}
           <div className="flex-1 overflow-y-auto scrollbar-hide">
             {next14Days.map((date) => {
               const isToday = new Date().toDateString() === date.toDateString();
               return (
                 <div key={date.toISOString()} className="grid grid-cols-[100px_1fr] border-b border-white/5 last:border-none group">
-                  <div className={`p-5 border-r border-white/5 flex flex-col justify-center items-center transition-colors ${isToday ? 'bg-white/[0.03]' : 'bg-transparent'}`}>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-[#9A9A9A] mb-1">
+                  <div className={`p-5 border-r border-white/5 flex flex-col justify-center items-center transition-colors ${isToday ? 'bg-white/[0.05]' : 'bg-transparent'}`}>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-neutral-300 mb-1">
                       {date.toLocaleDateString('en-US', { weekday: 'short' })}
                     </span>
-                    <span className={`text-lg font-bold ${isToday ? 'text-white' : 'text-[#B8B8B8]'}`}>
+                    <span className={`text-lg font-bold ${isToday ? 'text-white' : 'text-neutral-300'}`}>
                       {date.getDate()}
                     </span>
                   </div>
@@ -705,7 +739,7 @@ const AvailabilitySetupView = ({ onComplete }: { onComplete: () => void }) => {
                           onClick={() => toggleSlot(date, slot)}
                           className={`aspect-square transition-all duration-300 border-none outline-none relative group/cell cursor-pointer ${
                             isSelected 
-                              ? 'bg-neutral-200/90 border-l-2 border-l-[#FF2A2A]' 
+                              ? 'bg-neutral-100 border-l-2 border-l-[#FF2A2A]' 
                               : 'bg-black hover:bg-neutral-800'
                           }`}
                         >
@@ -722,10 +756,9 @@ const AvailabilitySetupView = ({ onComplete }: { onComplete: () => void }) => {
           </div>
         </div>
 
-        {/* Automation Section */}
         <section className="space-y-6 pt-4">
           <div className="flex items-center justify-between p-8 bg-[#0D0D0D] border border-white/10 rounded-[2rem] shadow-xl">
-            <p className="text-[13px] font-bold text-[#E6E6E6] uppercase tracking-widest">
+            <p className="text-[13px] font-bold text-[#F5F5F5] uppercase tracking-widest">
               UPDATE THESE AVAILABILITY SLOTS AUTOMATICALLY
             </p>
             <button 
@@ -740,13 +773,13 @@ const AvailabilitySetupView = ({ onComplete }: { onComplete: () => void }) => {
             <div className="flex bg-[#0D0D0D] border border-white/10 p-1.5 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-400">
               <button 
                 onClick={() => setAutomationFreq('WEEKLY')}
-                className={`flex-1 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-300 ${automationFreq === 'WEEKLY' ? 'bg-white/10 text-white shadow-inner' : 'text-[#9A9A9A] hover:text-white'}`}
+                className={`flex-1 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-300 ${automationFreq === 'WEEKLY' ? 'bg-white/10 text-white shadow-inner' : 'text-neutral-300 hover:text-white'}`}
               >
                 WEEKLY
               </button>
               <button 
                 onClick={() => setAutomationFreq('MONTHLY')}
-                className={`flex-1 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-300 ${automationFreq === 'MONTHLY' ? 'bg-white/10 text-white shadow-inner' : 'text-[#9A9A9A] hover:text-white'}`}
+                className={`flex-1 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-300 ${automationFreq === 'MONTHLY' ? 'bg-white/10 text-white shadow-inner' : 'text-neutral-300 hover:text-white'}`}
               >
                 MONTHLY
               </button>
@@ -754,20 +787,42 @@ const AvailabilitySetupView = ({ onComplete }: { onComplete: () => void }) => {
           )}
         </section>
 
-        {/* Action Buttons */}
         <div className="flex flex-col gap-8 pt-8 items-center w-full">
+          <div className={`transition-all duration-[200ms] ${hasSelectedSlots ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'}`}>
+            <button 
+              onClick={onComplete}
+              disabled={hasSelectedSlots}
+              className="w-full max-w-sm py-6 bg-[#E6E6E6] text-black font-black uppercase tracking-[0.3em] text-[11px] rounded-2xl shadow-2xl hover:bg-white hover:shadow-white/5 active:scale-[0.98] transition-all duration-300"
+            >
+              SAVE AVAILABILITY
+            </button>
+          </div>
           <button 
             onClick={onComplete}
-            className="w-full max-w-sm py-6 bg-[#E6E6E6] text-black font-black uppercase tracking-[0.3em] text-[11px] rounded-2xl shadow-2xl hover:bg-white hover:shadow-white/5 active:scale-[0.98] transition-all duration-300"
-          >
-            SAVE AVAILABILITY
-          </button>
-          <button 
-            onClick={onComplete}
-            className="text-[10px] font-black uppercase tracking-[0.4em] text-[#9A9A9A] hover:text-white transition-colors duration-300"
+            className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-300 hover:text-white transition-colors duration-300"
           >
             SKIP THIS STEP FOR NOW
           </button>
+        </div>
+      </div>
+
+      {/* STICKY BOTTOM CTA */}
+      <div 
+        className={`fixed bottom-0 left-0 right-0 z-50 flex justify-center transition-all ease-in-out pointer-events-none ${
+          hasSelectedSlots 
+            ? 'opacity-100 translate-y-0 duration-[200ms]' 
+            : 'opacity-0 translate-y-4 duration-[150ms]'
+        }`}
+      >
+        <div className="w-full max-w-3xl px-6 pointer-events-auto">
+          <div className="bg-[#0d0d0d]/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-8px_20px_rgba(0,0,0,0.4)] p-6 md:p-8 flex items-center justify-center rounded-t-[2.5rem]">
+            <button 
+              onClick={onComplete}
+              className="w-full max-w-sm py-6 bg-[#F5F5F5] text-black font-black uppercase tracking-[0.3em] text-[11px] rounded-2xl shadow-2xl hover:bg-white active:scale-[0.98] transition-all duration-[300ms]"
+            >
+              CONTINUE
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -800,7 +855,6 @@ const ProfileSetupView = ({
   const [triedToSubmit, setTriedToSubmit] = useState(false);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
 
-  // Availability inline state
   const [isAvailabilityExpanded, setIsAvailabilityExpanded] = useState(false);
   const [tempAvailability, setTempAvailability] = useState<Set<string>>(new Set(currentUser.availability || []));
   const [tempAutomation, setTempAutomation] = useState(currentUser.automation || { enabled: false, frequency: null });
@@ -905,7 +959,6 @@ const ProfileSetupView = ({
       milestones: newMilestones,
       identityLabel: label
     });
-    // Immediately trigger availability screen post-onboarding
     setAuthStep(AuthStep.AVAILABILITY);
     setIsInternalEditing(false);
   };
@@ -923,8 +976,8 @@ const ProfileSetupView = ({
           ))}
         </div>
         <div className="flex justify-between mt-4">
-          <span className="text-[10px] font-black text-[#949494] uppercase tracking-widest noted-feedback">{labels[step-1]}</span>
-          <span className="text-[9px] font-bold text-[#949494] uppercase tracking-widest">{step === totalSteps ? "Taking shape" : "Moving forward"}</span>
+          <span className="text-[10px] font-black text-neutral-200 uppercase tracking-widest noted-feedback">{labels[step-1]}</span>
+          <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">{step === totalSteps ? "Taking shape" : "Moving forward"}</span>
         </div>
       </div>
     );
@@ -933,10 +986,10 @@ const ProfileSetupView = ({
   const StepActionButtons = ({ onNext, onPrev, nextLabel = "Keep going", skip = false }: { onNext: () => void, onPrev?: () => void, nextLabel?: string, skip?: boolean }) => (
     <div className="pt-10 flex justify-between items-center">
       {onPrev ? (
-        <button type="button" onClick={onPrev} className="text-[#7A7A7A] hover:text-white text-xs font-bold uppercase tracking-widest transition-all hover:scale-10 transform">Back</button>
+        <button type="button" onClick={onPrev} className="text-neutral-400 hover:text-white text-xs font-bold uppercase tracking-widest transition-all hover:scale-10 transform">Back</button>
       ) : <div />}
       <div className="flex gap-8 items-center">
-        {skip && !isEditMode && <button type="button" onClick={onNext} className="text-[#7A7A7A] hover:text-white text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 transform">Skip</button>}
+        {skip && !isEditMode && <button type="button" onClick={onNext} className="text-neutral-400 hover:text-white text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 transform">Skip</button>}
         <button 
           type="button" 
           onClick={onNext} 
@@ -978,7 +1031,6 @@ const ProfileSetupView = ({
   const availabilitySummary = useMemo(() => {
     if (!currentUser.availability || currentUser.availability.length === 0) return "Not set yet";
     const total = currentUser.availability.length;
-    // Basic logic for slots per week estimate
     const perWeek = Math.max(1, Math.floor(total / 2)); 
     return `${perWeek}–${perWeek + 2} slots per week · ${currentUser.preferredTime}`;
   }, [currentUser.availability, currentUser.preferredTime]);
@@ -1012,13 +1064,13 @@ const ProfileSetupView = ({
              <h2 className="text-4xl font-bold text-white uppercase tracking-tighter font-display">
                 {isComplete ? "Your member card" : "It gets personal"}
              </h2>
-             <p className="text-[10px] font-black uppercase tracking-widest text-[#949494] mt-1.5 opacity-100">
+             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-300 mt-1.5 opacity-100">
                 {isComplete ? "This is you." : "Building your member card"}
              </p>
              {isEditMode && step === 7 && (
                 <button 
                   onClick={() => setIsInternalEditing(!isInternalEditing)}
-                  className={`mt-5 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border ${isInternalEditing ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-neutral-900 border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-white'}`}
+                  className={`mt-5 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border ${isInternalEditing ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-neutral-900 border-neutral-700 text-neutral-300 hover:border-neutral-500 hover:text-white'}`}
                 >
                   {isInternalEditing ? <Icons.X className="w-3.5 h-3.5" /> : <Icons.Zap className="w-3.5 h-3.5" />}
                   {isInternalEditing ? 'Done' : 'Edit'}
@@ -1042,15 +1094,15 @@ const ProfileSetupView = ({
            <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
              <div className="space-y-2 narrative-beat">
                <h3 className="text-3xl font-bold text-white uppercase tracking-tighter font-display">Who you are</h3>
-               <p className="text-[#949494] text-sm font-medium leading-snug max-w-md">We’ll take this step by step.</p>
+               <p className="text-neutral-300 text-sm font-medium leading-snug max-w-md">We’ll take this step by step.</p>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                <div className="space-y-3 group">
-                 <label className="block text-[10px] font-bold text-[#949494] uppercase tracking-widest">Age</label>
+                 <label className="block text-[10px] font-bold text-neutral-300 uppercase tracking-widest">Age</label>
                  <input 
                     type="number" 
                     min="18" 
-                    className={`w-full px-6 py-0 transition-all outline-none rounded-xl h-[64px] text-lg font-bold text-white text-left placeholder-[#7A7A7A] ${inputIdleBase} ${inputHoverBase} ${inputFocusBase}`}
+                    className={`w-full px-6 py-0 transition-all outline-none rounded-xl h-[64px] text-lg font-bold text-white text-left placeholder-neutral-500 ${inputIdleBase} ${inputHoverBase} ${inputFocusBase}`}
                     placeholder="e.g. 28"
                     value={currentUser.age || ''} 
                     onChange={(e) => handleUpdateProfile({age: parseInt(e.target.value) || 0})} 
@@ -1074,21 +1126,21 @@ const ProfileSetupView = ({
            <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
              <div className="space-y-2 narrative-beat">
                <h3 className="text-3xl font-bold text-white uppercase tracking-tighter font-display">In the world</h3>
-               <p className="text-[#949494] text-sm font-medium leading-snug max-w-md">How you spend your time and energy gives us context.</p>
+               <p className="text-neutral-300 text-sm font-medium leading-snug max-w-md">How you spend your time and energy gives us context.</p>
              </div>
              <div className="space-y-6">
                <AutocompleteInput 
                   label="Occupation" 
                   placeholder="e.g. Product Manager" 
                   value={currentUser.occupation} 
-                  onChange={(val) => handleUpdateProfile({occupation: val})} 
+                  onChange={(val: string) => handleUpdateProfile({occupation: val})} 
                   suggestions={OCCUPATION_SUGGESTIONS} 
                />
                <AutocompleteInput 
                   label="Current City" 
                   placeholder="e.g. London" 
                   value={currentUser.location.city} 
-                  onChange={(val) => handleUpdateProfile({location: {...currentUser.location, city: val, country: 'Global'}})} 
+                  onChange={(val: string) => handleUpdateProfile({location: {...currentUser.location, city: val, country: 'Global'}})} 
                   suggestions={CITY_SUGGESTIONS} 
                />
              </div>
@@ -1100,22 +1152,22 @@ const ProfileSetupView = ({
            <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
              <div className="space-y-2 narrative-beat">
                <h3 className="text-3xl font-bold text-white uppercase tracking-tighter font-display">Social Energy</h3>
-               <p className="text-[#949494] text-sm font-medium leading-snug max-w-md">Choose what actually fits your life rhythm.</p>
+               <p className="text-neutral-300 text-sm font-medium leading-snug max-w-md">Choose what actually fits your life rhythm.</p>
              </div>
              <div className="space-y-8">
                <div className="space-y-4">
-                  <label className="block text-[10px] font-black text-[#949494] uppercase tracking-widest">Social Battery</label>
+                  <label className="block text-[10px] font-black text-neutral-300 uppercase tracking-widest">Social Battery</label>
                   <div className="grid grid-cols-3 gap-3">
                     {Object.values(PersonalityType).map(t => (
-                      <button key={t} type="button" onClick={() => handleUpdateProfile({personality: t})} className={`py-5 px-2 border-none text-[10px] font-black uppercase tracking-widest transition-all rounded-xl h-[64px] ${currentUser.personality === t ? 'bg-white text-black shadow-[0_15px_35px_-8px_rgba(255,42,42,0.35)]' : 'bg-neutral-800/50 text-neutral-600 hover:bg-neutral-700/50 hover:text-white hover:scale-[1.02] transform'}`}>{t}</button>
+                      <button key={t} type="button" onClick={() => handleUpdateProfile({personality: t})} className={`py-5 px-2 border-none text-[10px] font-black uppercase tracking-widest transition-all rounded-xl h-[64px] ${currentUser.personality === t ? 'bg-white text-black shadow-[0_15px_35px_-8px_rgba(255,42,42,0.35)]' : 'bg-neutral-800/50 text-neutral-400 hover:bg-neutral-700/50 hover:text-white hover:scale-[1.02] transform'}`}>{t}</button>
                     ))}
                   </div>
                </div>
                <div className="space-y-4">
-                  <label className="block text-[10px] font-black text-[#949494] uppercase tracking-widest">General Availability</label>
+                  <label className="block text-[10px] font-black text-neutral-300 uppercase tracking-widest">General Availability</label>
                   <div className="grid grid-cols-2 gap-3">
                     {Object.values(TimeOfDay).map(t => (
-                      <button key={t} type="button" onClick={() => handleUpdateProfile({preferredTime: t})} className={`py-3 px-6 text-[10px] font-black uppercase border-none transition-all text-left rounded-xl h-[64px] flex items-center ${currentUser.preferredTime === t ? 'bg-white text-black shadow-[0_15px_35px_-8px_rgba(255,42,42,0.35)]' : 'bg-neutral-800/50 text-neutral-500 hover:bg-neutral-700/50 hover:text-white hover:scale-[1.02] transform'}`}>{t}</button>
+                      <button key={t} type="button" onClick={() => handleUpdateProfile({preferredTime: t})} className={`py-3 px-6 text-[10px] font-black uppercase border-none transition-all text-left rounded-xl h-[64px] flex items-center ${currentUser.preferredTime === t ? 'bg-white text-black shadow-[0_15px_35px_-8px_rgba(255,42,42,0.35)]' : 'bg-neutral-800/50 text-neutral-400 hover:bg-neutral-700/50 hover:text-white hover:scale-[1.02] transform'}`}>{t}</button>
                     ))}
                   </div>
                </div>
@@ -1128,14 +1180,14 @@ const ProfileSetupView = ({
            <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
              <div className="space-y-2 narrative-beat">
                <h3 className="text-3xl font-bold text-white uppercase tracking-tighter font-display">Passions</h3>
-               <p className="text-[#949494] text-sm font-medium leading-snug max-w-md italic">Pick what reflects you best. Choose at least 2.</p>
+               <p className="text-neutral-300 text-sm font-medium leading-snug max-w-md italic">Pick what reflects you best. Choose at least 2.</p>
              </div>
              <div className="space-y-7">
                 <AutocompleteInput 
                   label=""
                   placeholder="Type an interest or discover one below..."
                   value={interestInput}
-                  onChange={setInterestInput}
+                  onChange={(val: string) => setInterestInput(val)}
                   suggestions={aiSuggestions}
                   onSelect={handleInterestSelect}
                   showCustomFallback={true}
@@ -1143,7 +1195,7 @@ const ProfileSetupView = ({
                   localSuggestions={localFilteredInterests}
                 />
                 
-                <div className="bg-[#212121] rounded-[2.5rem] p-9 border border-white/5 transition-all duration-500 shadow-[inset_0_2px_12px_rgba(0,0,0,0.5)]">
+                <div className="bg-[#212121] rounded-[2.5rem] p-9 border border-white/5 transition-all duration-500 shadow-[inset_0_2px_12px_rgba(0,0,0,0.6)]">
                   <div className="flex flex-wrap gap-2.5">
                      {POPULAR_INTERESTS.slice(0, 10).map((item, idx) => {
                        const isSelected = currentUser.interests.includes(item);
@@ -1156,8 +1208,8 @@ const ProfileSetupView = ({
                             px-6 py-3.5 transition-all duration-200 text-[10px] font-bold tracking-widest uppercase rounded-2xl 
                             active:scale-95 flex items-center gap-2.5 border
                             ${isSelected 
-                              ? 'bg-[#333] border-neutral-500 text-white shadow-[0_8px_20px_rgba(0,0,0,0.4)] translate-y-[-1px]' 
-                              : 'bg-black/40 border-neutral-800/60 text-neutral-300 hover:border-neutral-600 hover:bg-neutral-800 hover:text-white'}
+                              ? 'bg-[#333] border-neutral-400 text-white shadow-[0_8px_20px_rgba(0,0,0,0.4)] translate-y-[-1px]' 
+                              : 'bg-black/40 border-neutral-800/60 text-neutral-300 hover:border-neutral-500 hover:bg-neutral-800 hover:text-white'}
                           `}
                         >
                           {isSelected && (
@@ -1172,13 +1224,13 @@ const ProfileSetupView = ({
 
                {currentUser.interests.length > 0 && (
                   <div className="pt-4 space-y-4">
-                    <label className="block text-[9px] font-black text-neutral-700 uppercase tracking-[0.3em] ml-1">Your Selection</label>
+                    <label className="block text-[9px] font-black text-neutral-300 uppercase tracking-[0.3em] ml-1">Your Selection</label>
                     <div className="flex flex-wrap gap-2.5">
                       {currentUser.interests.map(tag => (
                         <span key={tag} className="flex items-center gap-2.5 px-5 py-2.5 bg-neutral-900 border border-neutral-800 text-white text-[10px] font-black uppercase tracking-widest rounded-full animate-in zoom-in duration-300 shadow-md">
                           <div className="w-1 h-1 rounded-full bg-[#FF2A2A]"></div>
                           {tag}
-                          <button type="button" onClick={() => toggleInterest(tag)} className="text-neutral-600 hover:text-white transition-colors ml-0.5"><Icons.X className="w-3 h-3"/></button>
+                          <button type="button" onClick={() => toggleInterest(tag)} className="text-neutral-400 hover:text-white transition-colors ml-0.5"><Icons.X className="w-3 h-3"/></button>
                         </span>
                       ))}
                     </div>
@@ -1193,16 +1245,16 @@ const ProfileSetupView = ({
            <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
              <div className="space-y-2 narrative-beat">
                <h3 className="text-3xl font-bold text-white uppercase tracking-tighter font-display">Depth</h3>
-               <p className="text-[#949494] text-sm font-medium leading-snug max-w-md">Everyone starts somewhere.</p>
+               <p className="text-neutral-300 text-sm font-medium leading-snug max-w-md">Everyone starts somewhere.</p>
              </div>
              <div className="space-y-8">
                 <div className="space-y-4">
-                  <label className="block text-[10px] font-black text-[#949494] uppercase tracking-widest">How long have you been into this?</label>
+                  <label className="block text-[10px] font-black text-neutral-300 uppercase tracking-widest">How long have you been into this?</label>
                   <div className="grid grid-cols-2 gap-4 max-w-sm">
                     <input 
                       type="number" 
                       min="1" 
-                      className={`w-full px-6 py-0 transition-all outline-none rounded-xl h-[64px] text-lg font-bold text-white placeholder-[#7A7A7A] ${inputIdleBase} ${inputHoverBase} ${inputFocusBase}`}
+                      className={`w-full px-6 py-0 transition-all outline-none rounded-xl h-[64px] text-lg font-bold text-white placeholder-neutral-500 ${inputIdleBase} ${inputHoverBase} ${inputFocusBase}`}
                       placeholder="e.g. 2"
                       value={currentUser.interestDuration?.value || ''}
                       onChange={(e) => handleUpdateProfile({ 
@@ -1217,10 +1269,10 @@ const ProfileSetupView = ({
                        placeholder="Unit"
                        value={currentUser.interestDuration?.unit?.toUpperCase() || ""}
                        options={["WEEKS", "MONTHS", "YEARS"]}
-                       onChange={(val) => handleUpdateProfile({ 
+                       onChange={(val: string) => handleUpdateProfile({ 
                          interestDuration: { 
                            value: currentUser.interestDuration?.value || 0, 
-                           unit: val.charAt(0) + val.slice(1).toLowerCase() as any
+                           unit: (val.charAt(0) + val.slice(1).toLowerCase()) as any
                          } 
                        })}
                     />
@@ -1228,14 +1280,14 @@ const ProfileSetupView = ({
                 </div>
 
                 <div className="space-y-4">
-                  <label className="block text-[10px] font-black text-[#949494] uppercase tracking-widest">How do you see yourself?</label>
+                  <label className="block text-[10px] font-black text-neutral-300 uppercase tracking-widest">How do you see yourself?</label>
                   <div className="flex flex-wrap gap-2">
                     {SELF_DEFINITIONS.map(def => (
                       <button
                         key={def}
                         type="button"
                         onClick={() => handleUpdateProfile({ selfDefinition: def })}
-                        className={`px-5 py-4 border-none text-[9px] font-black uppercase tracking-widest transition-all rounded-xl h-[64px] ${currentUser.selfDefinition === def ? 'bg-white text-black shadow-[0_15px_35px_-8px_rgba(255,42,42,0.35)]' : 'bg-neutral-800/50 text-neutral-600 hover:bg-neutral-700/50 hover:text-white hover:scale-[1.02] transform'}`}
+                        className={`px-5 py-4 border-none text-[9px] font-black uppercase tracking-widest transition-all rounded-xl h-[64px] ${currentUser.selfDefinition === def ? 'bg-white text-black shadow-[0_15px_35px_-8px_rgba(255,42,42,0.35)]' : 'bg-neutral-800/50 text-neutral-400 hover:bg-neutral-700/50 hover:text-white hover:scale-[1.02] transform'}`}
                       >
                         {def}
                       </button>
@@ -1251,15 +1303,15 @@ const ProfileSetupView = ({
            <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
              <div className="space-y-2 narrative-beat">
                <h3 className="text-3xl font-bold text-white uppercase tracking-tighter font-display">Your voice</h3>
-               <p className="text-[#949494] text-sm font-medium leading-snug max-w-md">Let others drive the same wave</p>
+               <p className="text-neutral-300 text-sm font-medium leading-snug max-w-md">Let others drive the same wave</p>
              </div>
              <div className="space-y-6">
                 <div className="space-y-3">
-                  <p className="text-[10px] text-neutral-400 font-bold tracking-wide italic leading-snug">
+                  <p className="text-[10px] text-neutral-200 font-bold tracking-wide italic leading-snug">
                     A few sentences are enough — you can always change this later.
                   </p>
                   <textarea 
-                    className={`w-full h-48 p-10 transition-all outline-none resize-none text-white text-lg font-normal leading-[1.8] rounded-3xl placeholder-[#8A8A8A] bg-[#1e1e1e]/80 border border-white/5 shadow-[inset_0_2px_10px_rgba(0,0,0,0.6)] focus:bg-[#212121] focus:border-neutral-500 focus:shadow-[inset_4px_0_0_0_#FF2A2A,0_0_20px_rgba(255,42,42,0.1)]`}
+                    className={`w-full h-48 p-10 transition-all outline-none resize-none text-white text-lg font-normal leading-[1.8] rounded-3xl placeholder-neutral-500 bg-[#1e1e1e]/80 border border-white/5 shadow-[inset_0_2px_10px_rgba(0,0,0,0.6)] focus:bg-[#212121] focus:border-neutral-500 focus:shadow-[inset_4px_0_0_0_#FF2A2A,0_0_20px_rgba(255,42,42,0.1)]`}
                     placeholder="What makes a conversation meaningful to you?" 
                     value={currentUser.bio} 
                     onChange={(e) => handleUpdateProfile({bio: e.target.value})} 
@@ -1270,7 +1322,7 @@ const ProfileSetupView = ({
                     type="button" 
                     onClick={handleAutoBioInternal} 
                     disabled={isGeneratingBio} 
-                    className="flex items-center gap-2 text-[9px] text-neutral-400 transition-all font-black uppercase tracking-[0.2em] py-[7px] px-[11px] rounded-md opacity-80 hover:opacity-100 cursor-pointer"
+                    className="flex items-center gap-2 text-[9px] text-neutral-300 transition-all font-black uppercase tracking-[0.2em] py-[7px] px-[11px] rounded-md opacity-80 hover:opacity-100 cursor-pointer"
                   >
                     <Icons.Sparkles className="w-3.5 h-3.5" />
                     {isGeneratingBio ? 'Refining...' : 'Refine with AI'}
@@ -1285,7 +1337,7 @@ const ProfileSetupView = ({
            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-1000">
              {isInternalEditing && (
                 <div className="space-y-2 narrative-beat">
-                  <p className="text-[#949494] text-sm font-medium leading-snug max-w-md italic opacity-70">
+                  <p className="text-neutral-300 text-sm font-medium leading-snug max-w-md italic opacity-70">
                     Choose a block to refine.
                   </p>
                 </div>
@@ -1297,7 +1349,7 @@ const ProfileSetupView = ({
                   className={`bg-black/30 border border-neutral-800/80 p-5 rounded-3xl relative text-left transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 group shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] ${isInternalEditing ? 'hover:border-white/40 hover:-translate-y-0.5 cursor-pointer' : 'cursor-default'}`}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <label className="text-[9px] font-black text-[#949494] uppercase tracking-[0.2em] block">Basics</label>
+                    <label className="text-[9px] font-black text-neutral-300 uppercase tracking-widest block">Basics</label>
                     {isInternalEditing && <Icons.Zap className="w-3 h-3 text-[#FF2A2A] opacity-0 group-hover:opacity-100 transition-opacity" />}
                   </div>
                   <p className="font-bold text-white text-base tracking-tight">{currentUser.age || '?'} yrs · {currentUser.gender || 'Other'}</p>
@@ -1308,11 +1360,11 @@ const ProfileSetupView = ({
                   className={`bg-black/30 border border-neutral-800/80 p-5 rounded-3xl relative text-left transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 group shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] delay-75 ${isInternalEditing ? 'hover:border-white/40 hover:-translate-y-0.5 cursor-pointer' : 'cursor-default'}`}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <label className="text-[9px] font-black text-[#949494] uppercase tracking-[0.2em] block">Location & Work</label>
+                    <label className="text-[9px] font-black text-[#949494] uppercase tracking-widest block">Location & Work</label>
                     {isInternalEditing && <Icons.Zap className="w-3 h-3 text-[#FF2A2A] opacity-0 group-hover:opacity-100 transition-opacity" />}
                   </div>
                   <p className="font-bold text-white text-base tracking-tight truncate">
-                    {currentUser.occupation || 'Wanderer'} <span className="text-neutral-500 font-medium lowercase">in</span> {currentUser.location.city || 'Secret'}
+                    {currentUser.occupation || 'Wanderer'} <span className="text-neutral-400 font-medium lowercase">in</span> {currentUser.location.city || 'Secret'}
                   </p>
                 </button>
 
@@ -1321,28 +1373,27 @@ const ProfileSetupView = ({
                   className={`bg-black/30 border border-neutral-800/80 p-6 rounded-[2.5rem] relative text-left transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 group col-span-1 md:col-span-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] delay-150 ${isInternalEditing ? 'hover:border-white/40 hover:-translate-y-0.5 cursor-pointer' : 'cursor-default'}`}
                 >
                   <div className="flex justify-between items-start mb-4">
-                    <label className="text-[9px] font-black uppercase tracking-[0.2em] block">Passions</label>
+                    <label className="text-[9px] font-black uppercase tracking-widest block">Passions</label>
                     {isInternalEditing && <span className="text-[9px] font-black text-[#FF2A2A] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Add/Remove</span>}
                   </div>
                   <div className="flex flex-wrap gap-2.5">
                     {currentUser.interests.length > 0 ? currentUser.interests.map(i => (
                       <span key={i} className="text-[10px] px-4 py-1.5 bg-neutral-900 border border-white/10 rounded-full font-black uppercase tracking-widest text-white flex items-center gap-2 group/chip transition-all hover:bg-neutral-800 hover:border-white/20">
                         {i}
-                        {isInternalEditing && <Icons.X className="w-3 h-3 text-neutral-500 hover:text-white" />}
+                        {isInternalEditing && <Icons.X className="w-3 h-3 text-neutral-300 hover:text-white" />}
                       </span>
-                    )) : <p className="text-neutral-600 italic text-sm">No passions listed yet.</p>}
+                    )) : <p className="text-neutral-400 italic text-sm">No passions listed yet.</p>}
                   </div>
                 </button>
 
-                {/* AVAILABILITY COLLAPSIBLE SECTION */}
                 <div className="col-span-1 md:col-span-2 space-y-4">
                   <button 
                     onClick={() => setIsAvailabilityExpanded(!isAvailabilityExpanded)}
                     className="w-full bg-black/30 border border-neutral-800/80 p-6 rounded-[2.5rem] relative text-left transition-all duration-300 group shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] hover:border-white/20"
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <label className="text-[9px] font-black text-[#949494] uppercase tracking-[0.2em] block">Availability</label>
-                      <Icons.Menu className={`w-3.5 h-3.5 transition-all duration-500 text-neutral-500 ${isAvailabilityExpanded ? 'rotate-180 text-white' : ''}`} />
+                      <label className="text-[9px] font-black text-[#949494] uppercase tracking-widest block">Availability</label>
+                      <Icons.Menu className={`w-3.5 h-3.5 transition-all duration-500 text-neutral-400 ${isAvailabilityExpanded ? 'rotate-180 text-white' : ''}`} />
                     </div>
                     {!isAvailabilityExpanded && (
                       <p className="font-bold text-white text-base tracking-tight">{availabilitySummary}</p>
@@ -1352,15 +1403,14 @@ const ProfileSetupView = ({
                   {isAvailabilityExpanded && (
                     <div className="bg-[#0D0D0D] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in slide-in-from-top-4 duration-500">
                       <div className="p-8 space-y-10">
-                        {/* Inline Availability Grid */}
                         <div className="bg-black border border-white/5 rounded-[2rem] overflow-hidden flex flex-col h-[400px]">
                            <div className="grid grid-cols-[80px_1fr] border-b border-white/5 bg-neutral-900/40">
                               <div className="p-4 border-r border-white/5 flex items-center justify-center">
-                                <Icons.Calendar className="w-4 h-4 text-neutral-500" />
+                                <Icons.Calendar className="w-4 h-4 text-neutral-400" />
                               </div>
                               <div className="grid grid-cols-7">
                                  {timeSlots.map(t => (
-                                   <div key={t} className="py-4 text-[8px] font-black text-neutral-500 text-center uppercase tracking-widest">{t.split(':')[0]}</div>
+                                   <div key={t} className="py-4 text-[8px] font-black text-neutral-400 text-center uppercase tracking-widest">{t.split(':')[0]}</div>
                                  ))}
                               </div>
                            </div>
@@ -1369,11 +1419,11 @@ const ProfileSetupView = ({
                                const isToday = new Date().toDateString() === date.toDateString();
                                return (
                                  <div key={date.toISOString()} className="grid grid-cols-[80px_1fr] border-b border-white/5 last:border-none">
-                                   <div className={`p-4 border-r border-white/5 flex flex-col justify-center items-center ${isToday ? 'bg-white/[0.02]' : ''}`}>
-                                     <span className="text-[8px] font-black uppercase tracking-widest text-[#9A9A9A] mb-1">
+                                   <div className={`p-4 border-r border-white/5 flex flex-col justify-center items-center ${isToday ? 'bg-white/[0.05]' : ''}`}>
+                                     <span className="text-[8px] font-black uppercase tracking-widest text-neutral-300 mb-1">
                                        {date.toLocaleDateString('en-US', { weekday: 'short' })}
                                      </span>
-                                     <span className={`text-md font-bold ${isToday ? 'text-white' : 'text-[#B8B8B8]'}`}>
+                                     <span className={`text-md font-bold ${isToday ? 'text-white' : 'text-neutral-300'}`}>
                                        {date.getDate()}
                                      </span>
                                    </div>
@@ -1385,7 +1435,7 @@ const ProfileSetupView = ({
                                            key={slot}
                                            onClick={() => toggleAvailabilitySlot(date, slot)}
                                            className={`aspect-square transition-all duration-300 border-none outline-none relative group/cell cursor-pointer ${
-                                             isSelected ? 'bg-neutral-200/90 border-l-2 border-l-[#FF2A2A]' : 'bg-black hover:bg-neutral-800'
+                                             isSelected ? 'bg-neutral-100 border-l-2 border-l-[#FF2A2A]' : 'bg-black hover:bg-neutral-800'
                                            }`}
                                          >
                                            {isSelected && <div className="absolute inset-0 shadow-[inset_0_0_10px_rgba(255,255,255,0.2)]" />}
@@ -1399,10 +1449,9 @@ const ProfileSetupView = ({
                            </div>
                         </div>
 
-                        {/* Inline Automation Toggle */}
                         <div className="space-y-6">
                            <div className="flex items-center justify-between p-6 bg-black border border-white/5 rounded-2xl">
-                             <p className="text-[11px] font-bold text-[#E6E6E6] uppercase tracking-widest">Update these availability slots automatically</p>
+                             <p className="text-[11px] font-bold text-[#F5F5F5] uppercase tracking-widest">Update these availability slots automatically</p>
                              <button 
                                onClick={() => setTempAutomation({...tempAutomation, enabled: !tempAutomation.enabled})}
                                className={`w-12 h-6 rounded-full relative transition-all duration-300 ${tempAutomation.enabled ? 'bg-neutral-600' : 'bg-neutral-900'}`}
@@ -1412,13 +1461,12 @@ const ProfileSetupView = ({
                            </div>
                            {tempAutomation.enabled && (
                              <div className="flex bg-black border border-white/5 p-1 rounded-xl animate-in fade-in duration-300">
-                               <button onClick={() => setTempAutomation({...tempAutomation, frequency: 'WEEKLY'})} className={`flex-1 py-3 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${tempAutomation.frequency === 'WEEKLY' ? 'bg-white/10 text-white shadow-inner' : 'text-[#9A9A9A]'}`}>WEEKLY</button>
-                               <button onClick={() => setTempAutomation({...tempAutomation, frequency: 'MONTHLY'})} className={`flex-1 py-3 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${tempAutomation.frequency === 'MONTHLY' ? 'bg-white/10 text-white shadow-inner' : 'text-[#9A9A9A]'}`}>MONTHLY</button>
+                               <button onClick={() => setTempAutomation({...tempAutomation, frequency: 'WEEKLY'})} className={`flex-1 py-3 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${tempAutomation.frequency === 'WEEKLY' ? 'bg-white/10 text-white shadow-inner' : 'text-neutral-300'}`}>WEEKLY</button>
+                               <button onClick={() => setTempAutomation({...tempAutomation, frequency: 'MONTHLY'})} className={`flex-1 py-3 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${tempAutomation.frequency === 'MONTHLY' ? 'bg-white/10 text-white shadow-inner' : 'text-neutral-300'}`}>MONTHLY</button>
                              </div>
                            )}
                         </div>
 
-                        {/* Actions for rollout */}
                         <div className="flex gap-4 items-center">
                           <button 
                             disabled={!hasAvailabilityChanges}
@@ -1429,7 +1477,7 @@ const ProfileSetupView = ({
                               });
                               setIsAvailabilityExpanded(false);
                             }}
-                            className={`flex-1 py-4 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl transition-all ${hasAvailabilityChanges ? 'bg-[#E6E6E6] text-black shadow-xl hover:bg-white active:scale-95' : 'bg-neutral-800 text-neutral-600 cursor-not-allowed'}`}
+                            className={`flex-1 py-4 font-black uppercase tracking-[0.2em] text-[10px] rounded-xl transition-all ${hasAvailabilityChanges ? 'bg-[#E6E6E6] text-black shadow-xl hover:bg-white active:scale-95' : 'bg-neutral-800 text-neutral-400 cursor-not-allowed'}`}
                           >
                             Update Availability
                           </button>
@@ -1439,7 +1487,7 @@ const ProfileSetupView = ({
                               setTempAutomation(currentUser.automation || { enabled: false, frequency: null });
                               setIsAvailabilityExpanded(false);
                             }}
-                            className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#9A9A9A] hover:text-white transition-colors"
+                            className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-neutral-300 hover:text-white transition-colors"
                           >
                             Cancel
                           </button>
@@ -1457,7 +1505,7 @@ const ProfileSetupView = ({
                     <label className="text-[9px] font-black text-[#949494] uppercase tracking-widest block">Your Voice</label>
                     {isInternalEditing && <Icons.Zap className="w-3 h-3 text-[#FF2A2A] opacity-0 group-hover:opacity-100 transition-opacity" />}
                   </div>
-                  <p className="text-neutral-400 font-medium italic leading-relaxed text-base line-clamp-3">
+                  <p className="text-neutral-300 font-medium italic leading-relaxed text-base line-clamp-3">
                     "{currentUser.bio || "No bio yet. Let people know what you're about."}"
                   </p>
                 </button>
@@ -1469,7 +1517,7 @@ const ProfileSetupView = ({
                     <button 
                       type="button" 
                       onClick={() => setIsInternalEditing(false)} 
-                      className="text-[#7A7A7A] hover:text-white text-xs font-black uppercase tracking-widest transition-all"
+                      className="text-neutral-400 hover:text-white text-xs font-black uppercase tracking-widest transition-all"
                     >
                       Cancel
                     </button>
@@ -1479,7 +1527,9 @@ const ProfileSetupView = ({
                 {isInternalEditing ? (
                    <button 
                     type="button" 
-                    onClick={finishOnboarding} 
+                    onClick={() => {
+                        finishOnboarding();
+                    }} 
                     className="px-14 py-5 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_20px_50px_rgba(255,42,42,0.25)] transition-all text-[11px] rounded-2xl"
                   >
                     Save changes
@@ -1505,7 +1555,7 @@ const ProfileSetupView = ({
              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowDiscardConfirm(false)}></div>
              <div className="bg-neutral-900 border border-white/10 p-10 rounded-[2.5rem] shadow-2xl relative z-10 max-w-sm w-full animate-in zoom-in-95 duration-200">
                <h4 className="text-xl font-bold uppercase tracking-tight text-white mb-4">Discard changes?</h4>
-               <p className="text-neutral-400 text-sm font-medium mb-8 leading-relaxed">Your edits will be lost. Return to discovery?</p>
+               <p className="text-neutral-300 text-sm font-medium mb-8 leading-relaxed">Your edits will be lost. Return to discovery?</p>
                <div className="flex flex-col gap-3">
                  <button 
                    onClick={() => {
@@ -1536,7 +1586,7 @@ const LandingView = ({ setAuthStep }: { setAuthStep: (step: AuthStep) => void })
     <Background isAuth />
     <div className="relative z-10">
       <h1 className="text-7xl md:text-9xl font-bold text-white tracking-tighter mb-16 font-display drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)] uppercase">KIND<span style={{ color: accentRed }}>RED.</span></h1>
-      <p className="text-xl text-[#7A7A7A] font-light mb-16 tracking-wide animate-in fade-in duration-1000">Where shared interests meet shared time.</p>
+      <p className="text-xl text-neutral-300 font-light mb-16 tracking-wide animate-in fade-in duration-1000">Where shared interests meet shared time.</p>
       
       <div className="relative inline-block animate-in zoom-in duration-700 delay-300">
         <StartJourney3DButton onClick={() => setAuthStep(AuthStep.SIGNUP)} />
@@ -1561,8 +1611,8 @@ const SignupView = ({ currentUser, handleUpdateProfile, setAuthStep }: any) => {
       <div className="max-w-lg w-full relative z-10">
         <div className="w-full bg-neutral-900/80 backdrop-blur-xl border border-white/15 p-14 pb-12 rounded-[3rem] shadow-2xl relative z-[1]">
           <div className="relative flex bg-black/60 p-1.5 rounded-2xl mb-10">
-             <button onClick={() => setIsLogin(false)} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest relative z-10 transition-all ${!isLogin ? 'text-black bg-white rounded-xl' : 'text-[#7A7A7A]'}`}>NEW HERE</button>
-             <button onClick={() => setIsLogin(true)} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest relative z-10 transition-all ${isLogin ? 'text-black bg-white rounded-xl' : 'text-[#7A7A7A]'}`}>WELCOME BACK</button>
+             <button onClick={() => setIsLogin(false)} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest relative z-10 transition-all ${!isLogin ? 'text-black bg-white rounded-xl' : 'text-neutral-400'}`}>NEW HERE</button>
+             <button onClick={() => setIsLogin(true)} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest relative z-10 transition-all ${isLogin ? 'text-black bg-white rounded-xl' : 'text-neutral-400'}`}>WELCOME BACK</button>
           </div>
 
           <form className="space-y-8" onSubmit={(e) => { 
@@ -1573,16 +1623,16 @@ const SignupView = ({ currentUser, handleUpdateProfile, setAuthStep }: any) => {
           }}>
             {!isLogin && (
               <div className="space-y-2 group">
-                <label className="block text-[9px] font-black text-[#7A7A7A] uppercase tracking-widest ml-1">NAME</label>
-                <input required type="text" className={`w-full p-5 transition-all outline-none rounded-xl font-bold text-white placeholder-[#7A7A7A] ${inputIdleBase} ${inputHoverBase} ${inputFocusBase}`} placeholder="e.g. Alex Rivera" value={name} onChange={(e) => setName(e.target.value)} />
+                <label className="block text-[9px] font-black text-neutral-300 uppercase tracking-widest ml-1">NAME</label>
+                <input required type="text" className={`w-full p-5 transition-all outline-none rounded-xl font-bold text-white placeholder-neutral-500 ${inputIdleBase} ${inputHoverBase} ${inputFocusBase}`} placeholder="e.g. Alex Rivera" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
             )}
             <div className="space-y-2 group">
-              <label className="block text-[9px] font-black text-[#7A7A7A] uppercase tracking-widest ml-1">EMAIL</label>
-              <input required type="email" className={`w-full p-5 transition-all outline-none rounded-xl font-bold text-white placeholder-[#7A7A7A] ${inputIdleBase} ${inputHoverBase} ${inputFocusBase}`} placeholder="alex@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <label className="block text-[9px] font-black text-neutral-300 uppercase tracking-widest ml-1">EMAIL</label>
+              <input required type="email" className={`w-full p-5 transition-all outline-none rounded-xl font-bold text-white placeholder-neutral-500 ${inputIdleBase} ${inputHoverBase} ${inputFocusBase}`} placeholder="alex@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
 
-            <button type="submit" disabled={!isEnabled} className={`w-full py-6 font-black uppercase tracking-[0.2em] transition-all duration-[300ms] rounded-xl text-[11px] ${isEnabled ? 'bg-[#F5F5F5] text-black shadow-lg' : 'bg-neutral-800/80 text-[#7A7A7A]'}`}>
+            <button type="submit" disabled={!isEnabled} className={`w-full py-6 font-black uppercase tracking-[0.2em] transition-all duration-[300ms] rounded-xl text-[11px] ${isEnabled ? 'bg-[#F5F5F5] text-black shadow-lg' : 'bg-neutral-800/80 text-neutral-500'}`}>
               {isLogin ? 'GO ON' : 'GET STARTED'}
             </button>
           </form>
@@ -1607,7 +1657,7 @@ const FilterChip: React.FC<{
       px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] transition-all border relative cursor-pointer
       ${active 
         ? 'bg-[#f5f5f5] text-black border-transparent shadow-md' 
-        : 'bg-[#2a2a2a] border-neutral-700 text-neutral-300 hover:border-neutral-500 hover:text-white hover:-translate-y-0.5'
+        : 'bg-[#2a2a2a] border-neutral-700 text-neutral-200 hover:border-neutral-500 hover:text-white hover:-translate-y-0.5'
       }
     `}
   >
@@ -1625,7 +1675,7 @@ const App = () => {
   const [chatsOpen, setChatsOpen] = useState(false);
   const [notifsOpen, setNotifsOpen] = useState(false);
   
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
   
   const [filterPersonality, setFilterPersonality] = useState<PersonalityType | 'ANY'>('ANY');
@@ -1674,11 +1724,13 @@ const App = () => {
   , [filterPersonality, filterTime, filterDepth, filterIntent, filterAge, filterLocation]);
 
   const filteredUsers = useMemo(() => {
-    return MOCK_USERS.filter(user => {
-      const matchesSearch = !searchQuery || 
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.occupation.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.interests.some(i => i.toLowerCase().includes(searchQuery.toLowerCase()));
+    // Explicitly casting searchQuery to string to avoid type inference issues
+    const query: string = (searchQuery as string).toLowerCase();
+    return MOCK_USERS.filter((user: User) => {
+      const matchesSearch = !query || 
+        user.name.toLowerCase().includes(query) ||
+        user.occupation.toLowerCase().includes(query) ||
+        user.interests.some((interest: string) => interest.toLowerCase().includes(query));
       
       const matchesPersonality = filterPersonality === 'ANY' || user.personality === filterPersonality;
       const matchesTime = filterTime === 'ANY' || user.preferredTime === filterTime;
@@ -1688,6 +1740,13 @@ const App = () => {
       return matchesSearch && matchesPersonality && matchesTime && matchesDepth && matchesIntent;
     });
   }, [searchQuery, filterPersonality, filterTime, filterDepth, filterIntent]);
+
+  const searchSuggestions = useMemo(() => {
+    if (!searchQuery) return [];
+    return POPULAR_INTERESTS.filter(i => 
+      i.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
 
   const reminderEvents = useMemo(() => {
     const today = new Date();
@@ -1752,28 +1811,26 @@ const App = () => {
         {view === ViewState.DISCOVERY && (
           <div className="space-y-16 animate-in fade-in duration-700">
             <div>
-              <h1 className="text-6xl md:text-8xl font-bold text-white uppercase tracking-tighter font-display">Unlock. You.</h1>
+              <h1 className="text-6xl md:text-8xl font-bold text-[#F5F5F5] uppercase tracking-tighter font-display">Unlock. You.</h1>
             </div>
 
             <div className="max-w-6xl mx-auto w-full group relative py-12">
               <div className="flex items-center gap-3 w-full">
                 <div className="relative flex-1 min-w-0 group/search transition-all duration-100 hover:-translate-y-0.5">
                   <div className={`absolute left-0 top-0 bottom-0 w-[4px] bg-[#FF2A2A] rounded-l-[8px] z-20 transition-all duration-100 group-focus-within/search:w-[6px]`}></div>
-                  <input
-                    type="text"
+                  <AutocompleteInput 
+                    label=""
                     placeholder="Who do you want to talk to?"
-                    className="
-                      w-full h-[56px] rounded-[8px] pl-6 md:pl-10 pr-4 text-base md:text-lg font-bold text-white 
-                      placeholder:text-neutral-500 placeholder:font-black outline-none transition-all duration-100
-                      bg-[#121212] border border-white/35
-                      hover:border-white/50
-                      focus:bg-[#141414] focus:border-white/70 focus:text-white
-                      caret-[#FF2A2A]
-                      truncate
-                    "
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onClick={() => !showFilters && setShowFilters(true)}
+                    onChange={(val: string) => setSearchQuery(val)}
+                    suggestions={searchSuggestions}
+                    onSelect={(val: string) => {
+                      setSearchQuery(val);
+                      if (!showFilters) setShowFilters(true);
+                    }}
+                    showCustomFallback={false}
+                    className="w-full"
+                    inputHeight="h-[56px]"
                   />
                 </div>
                 <button 
@@ -1781,7 +1838,7 @@ const App = () => {
                   className={`
                     flex-shrink-0 h-[56px] px-5 md:px-8 rounded-[8px] 
                     text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-100 
-                    bg-[#1a1a1a] border border-white/10 text-neutral-400
+                    bg-[#1a1a1a] border border-white/10 text-neutral-200
                     hover:border-[#FF2A2A] hover:text-white hover:bg-[#222]
                     active:scale-95
                     ${showFilters ? 'border-[#FF2A2A] text-white bg-neutral-800' : ''}
@@ -1796,13 +1853,13 @@ const App = () => {
                   <div className="flex justify-between items-center border-b border-neutral-800 pb-8">
                     <div></div>
                     {isFiltersActive && (
-                      <button onClick={clearFilters} className="text-[11px] font-black text-neutral-500 hover:text-white uppercase tracking-widest transition-all cursor-pointer underline underline-offset-8 decoration-neutral-800 hover:decoration-white">Reset all</button>
+                      <button onClick={clearFilters} className="text-[11px] font-black text-neutral-300 hover:text-white uppercase tracking-widest transition-all cursor-pointer underline underline-offset-8 decoration-neutral-800 hover:decoration-white">Reset all</button>
                     )}
                   </div>
                   
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
                     <div className="space-y-6">
-                      <label className="text-[16px] font-bold text-white tracking-tight block">What energy do you seek?</label>
+                      <label className="text-[16px] font-bold text-[#F5F5F5] tracking-tight block">What energy do you seek?</label>
                       <div className="flex flex-wrap gap-3">
                         {(['ANY', ...Object.values(PersonalityType)] as const).map((t) => (
                           <FilterChip 
@@ -1816,7 +1873,7 @@ const App = () => {
                     </div>
 
                     <div className="space-y-6">
-                      <label className="text-[16px] font-bold text-white tracking-tight block">How do you want it to feel?</label>
+                      <label className="text-[16px] font-bold text-[#F5F5F5] tracking-tight block">How do you want it to feel?</label>
                       <div className="flex flex-wrap gap-3">
                         {(['ANY', ...Object.values(ConversationDepth)] as const).map((t) => (
                           <FilterChip 
@@ -1832,7 +1889,7 @@ const App = () => {
 
                   <div className="pt-12 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
                     <div className="space-y-6">
-                      <label className="text-[16px] font-bold text-white tracking-tight block">When are you most present?</label>
+                      <label className="text-[16px] font-bold text-[#F5F5F5] tracking-tight block">When are you most present?</label>
                       <div className="flex flex-wrap gap-3">
                         {(['ANY', ...Object.values(TimeOfDay)] as const).map((t) => (
                           <FilterChip 
@@ -1846,7 +1903,7 @@ const App = () => {
                     </div>
 
                     <div className="space-y-6">
-                      <label className="text-[16px] font-bold text-white tracking-tight block">How do you want it to continue?</label>
+                      <label className="text-[16px] font-bold text-[#F5F5F5] tracking-tight block">How do you want it to continue?</label>
                       <div className="flex flex-wrap gap-3">
                         {(['ANY', ...Object.values(MeetingIntent)] as const).map((t) => (
                           <FilterChip 
@@ -1862,7 +1919,7 @@ const App = () => {
 
                   <div className="pt-2 border-t border-neutral-800/50 grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-12">
                     <div className="space-y-6">
-                      <label className="text-[16px] font-bold text-white tracking-tight block">Age</label>
+                      <label className="text-[16px] font-bold text-[#F5F5F5] tracking-tight block">Age</label>
                       <div className="flex flex-wrap gap-3">
                         {['Any', '18–24', '25–34', '35–44', '45+'].map((range) => (
                           <FilterChip 
@@ -1875,14 +1932,14 @@ const App = () => {
                       </div>
                     </div>
                     <div className="space-y-6">
-                      <label className="text-[16px] font-bold text-white tracking-tight block">Location</label>
+                      <label className="text-[16px] font-bold text-[#F5F5F5] tracking-tight block">Location</label>
                       <AutocompleteInput 
                         label=""
                         placeholder="e.g. San Francisco, London"
                         value={filterLocation}
-                        onChange={setFilterLocation}
+                        onChange={(val: string) => setFilterLocation(val)}
                         suggestions={CITY_SUGGESTIONS}
-                        onSelect={setFilterLocation}
+                        onSelect={(val: string) => setFilterLocation(val)}
                       />
                     </div>
                   </div>
@@ -1890,7 +1947,7 @@ const App = () => {
               </div>
             </div>
 
-            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-32 transition-opacity duration-1000 ${!searchQuery && !showFilters ? 'opacity-70 grayscale-[0.4]' : 'opacity-100 grayscale-0'}`}>
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-32 transition-opacity duration-1000 ${!searchQuery && !showFilters ? 'opacity-80 grayscale-[0.2]' : 'opacity-100 grayscale-0'}`}>
               {filteredUsers.length > 0 ? filteredUsers.map(user => (
                 <div key={user.id} className="bg-neutral-900/40 border border-neutral-800/80 rounded-[2.5rem] overflow-hidden transition-all duration-700 group cursor-pointer shadow-2xl hover:bg-neutral-800/60 hover:-translate-y-[2px] transform">
                   <div className="h-72 relative overflow-hidden">
@@ -1902,15 +1959,15 @@ const App = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 transition-opacity duration-200 group-hover:opacity-65"></div>
                     <div className="absolute bottom-6 left-6">
-                      <h3 className="text-3xl font-bold uppercase tracking-tight">{user.name}, {user.age}</h3>
-                      <p className="text-[11px] text-neutral-400 font-black uppercase tracking-[0.25em] mt-1">{user.occupation}</p>
+                      <h3 className="text-3xl font-bold uppercase tracking-tight text-[#F5F5F5]">{user.name}, {user.age}</h3>
+                      <p className="text-[11px] text-neutral-300 font-black uppercase tracking-[0.25em] mt-1">{user.occupation}</p>
                     </div>
                   </div>
                   <div className="p-8 space-y-6">
-                    <p className="text-[15px] text-neutral-400 line-clamp-2 italic font-medium leading-relaxed">"{user.bio}"</p>
+                    <p className="text-[15px] text-neutral-200 line-clamp-2 italic font-medium leading-relaxed">"{user.bio}"</p>
                     <div className="flex flex-wrap gap-2.5">
                       {user.interests.map(i => (
-                        <span key={i} className="text-[10px] px-4 py-1.5 bg-neutral-950 border border-neutral-800 rounded-full font-bold uppercase tracking-widest text-neutral-500 transition-colors group-hover:text-neutral-300 group-hover:border-neutral-700">{i}</span>
+                        <span key={i} className="text-[10px] px-4 py-1.5 bg-neutral-950 border border-neutral-800 rounded-full font-bold uppercase tracking-widest text-neutral-300 transition-colors group-hover:text-white group-hover:border-neutral-600">{i}</span>
                       ))}
                     </div>
                     <button className="hidden md:block w-full py-5 bg-white text-black font-black uppercase tracking-[0.25em] text-[11px] rounded-2xl hover:shadow-2xl hover:scale-[1.02] transform transition-all active:scale-95">Click</button>
@@ -1918,8 +1975,8 @@ const App = () => {
                 </div>
               )) : (
                 <div className="col-span-full py-32 text-center animate-in fade-in duration-500">
-                   <p className="text-neutral-700 font-black uppercase tracking-[0.4em] text-sm">No signal matching your current frequency.</p>
-                   <button onClick={clearFilters} className="mt-8 text-[11px] text-white underline underline-offset-4 font-bold uppercase tracking-widest">Clear Tuning</button>
+                   <p className="text-neutral-300 font-black uppercase tracking-[0.4em] text-sm">No signal matching your current frequency.</p>
+                   <button onClick={clearFilters} className="mt-8 text-[11px] text-[#F5F5F5] underline underline-offset-4 font-bold uppercase tracking-widest">Clear Tuning</button>
                 </div>
               )}
             </div>
@@ -1932,13 +1989,13 @@ const App = () => {
               <div className="space-y-2 flex-1">
                 <div className="flex justify-between items-end">
                   <div>
-                    <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tighter font-display">Your Kind Reminder</h2>
-                    <p className="text-[#949494] text-sm font-medium tracking-wide">Conversations you’ve said yes to.</p>
+                    <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tighter font-display text-[#F5F5F5]">Your Kind Reminder</h2>
+                    <p className="text-neutral-300 text-sm font-medium tracking-wide">Conversations you’ve said yes to.</p>
                   </div>
                   {meetingFilterDate && (
                     <button 
                       onClick={() => setMeetingFilterDate(null)}
-                      className="text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-white transition-colors pb-1 border-b border-neutral-800 hover:border-neutral-500"
+                      className="text-[10px] font-black uppercase tracking-widest text-neutral-300 hover:text-white transition-colors pb-1 border-b border-neutral-800 hover:border-neutral-500"
                     >
                       Clear filter
                     </button>
@@ -1957,15 +2014,15 @@ const App = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
-                          <h3 className="text-lg font-bold text-neutral-400 group-hover:text-white transition-colors uppercase tracking-tight truncate">{reminder.user.name}</h3>
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF2A2A]/80 px-3 py-1 bg-[#FF2A2A]/5 rounded-full border border-[#FF2A2A]/10 transition-all duration-150 group-hover:shadow-[0_0_10px_rgba(255,42,42,0.25)] group-hover:text-white group-hover:border-[#FF2A2A]/30">
+                          <h3 className="text-lg font-bold text-neutral-200 group-hover:text-white transition-colors uppercase tracking-tight truncate">{reminder.user.name}</h3>
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF2A2A] px-3 py-1 bg-[#FF2A2A]/5 rounded-full border border-[#FF2A2A]/20 transition-all duration-150 group-hover:shadow-[0_0_10px_rgba(255,42,42,0.25)] group-hover:text-white group-hover:border-[#FF2A2A]/40">
                             {reminder.time}
                           </span>
                         </div>
-                        <p className="text-neutral-500 group-hover:text-neutral-200 transition-colors mt-1 font-medium leading-relaxed italic line-clamp-2">"{reminder.topic}"</p>
+                        <p className="text-neutral-400 group-hover:text-neutral-100 transition-colors mt-1 font-medium leading-relaxed italic line-clamp-2">"{reminder.topic}"</p>
                       </div>
                       <div className="hidden md:flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 px-2">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">View</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-neutral-300">View</span>
                         <Icons.Zap className="w-4 h-4 text-[#FF2A2A]/80" />
                       </div>
                     </div>
@@ -1973,7 +2030,7 @@ const App = () => {
 
                   {filteredReminders.length === 0 && (
                     <div className="py-24 text-center border-2 border-dashed border-neutral-900 rounded-[3rem]">
-                      <p className="text-neutral-700 font-black uppercase tracking-[0.4em] text-sm">No meetings scheduled for this day.</p>
+                      <p className="text-neutral-400 font-black uppercase tracking-[0.4em] text-sm">No meetings scheduled for this day.</p>
                     </div>
                   )}
                 </div>
@@ -1982,7 +2039,7 @@ const App = () => {
               <div className="w-full md:w-[420px] flex-shrink-0 animate-in fade-in zoom-in duration-500">
                 <div className="bg-[#121212] border border-neutral-800 rounded-[2rem] overflow-hidden shadow-2xl">
                   <div className="p-4 border-b border-neutral-800 bg-[#161616]">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 flex items-center gap-2">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-200 flex items-center gap-2">
                       <Icons.Calendar className="w-3 h-3 text-[#FF2A2A]" />
                       Schedule
                     </p>
@@ -2001,7 +2058,7 @@ const App = () => {
             </div>
             {reminderEvents.length === 0 && (
               <div className="py-24 text-center border-2 border-dashed border-neutral-900 rounded-[3rem]">
-                <p className="text-neutral-700 font-black uppercase tracking-[0.4em] text-sm">Waiting for a new wave.</p>
+                <p className="text-neutral-400 font-black uppercase tracking-[0.4em] text-sm">Waiting for a new wave.</p>
               </div>
             )}
           </div>
@@ -2029,11 +2086,11 @@ const App = () => {
              <div className="relative z-10 h-full p-8">
                <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
                   <h3 className="font-bold uppercase tracking-[0.2em] text-[11px] text-white">Messages</h3>
-                  <button onClick={() => setChatsOpen(false)} className="text-neutral-500 hover:text-white transition-all"><Icons.X className="w-5 h-5" /></button>
+                  <button onClick={() => setChatsOpen(false)} className="text-neutral-400 hover:text-white transition-all"><Icons.X className="w-5 h-5" /></button>
                </div>
                <div className="flex flex-col items-center justify-center h-full -mt-20">
                  <div className="w-1.5 h-1.5 rounded-full bg-neutral-800 mb-6"></div>
-                 <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.3em] text-center">No active chats</p>
+                 <p className="text-neutral-400 text-[10px] font-black uppercase tracking-[0.3em] text-center">No active chats</p>
                </div>
              </div>
           </div>
@@ -2047,11 +2104,11 @@ const App = () => {
              <div className="relative z-10 h-full p-8">
                <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
                   <h3 className="font-bold uppercase tracking-[0.2em] text-[11px] text-white">Notifications</h3>
-                  <button onClick={() => setNotifsOpen(false)} className="text-neutral-500 hover:text-white transition-all"><Icons.X className="w-5 h-5" /></button>
+                  <button onClick={() => setNotifsOpen(false)} className="text-neutral-400 hover:text-white transition-all"><Icons.X className="w-5 h-5" /></button>
                </div>
                <div className="flex flex-col items-center justify-center h-full -mt-20">
                  <div className="w-1.5 h-1.5 rounded-full bg-neutral-800 mb-6"></div>
-                 <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.3em] text-center">All caught up</p>
+                 <p className="text-neutral-400 text-[10px] font-black uppercase tracking-[0.3em] text-center">All caught up</p>
                </div>
              </div>
           </div>

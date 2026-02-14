@@ -77,8 +77,8 @@ export const generateFullProfile = async (name: string): Promise<any> => {
     });
 
     const text = response.text;
-    // Cast to any to handle structured JSON response safely in various TS environments
-    return text ? (JSON.parse(text) as any) : null;
+    // Ensure text exists before parsing
+    return text ? JSON.parse(text) : null;
   } catch (error) {
     console.error("Gemini Full Profile Error:", error);
     return null;
@@ -114,7 +114,7 @@ export const getInterestSuggestions = async (input: string): Promise<string[]> =
 
     const text = response.text;
     if (!text) return [];
-    // Explicitly cast JSON.parse result to string[] to resolve 'unknown' type inference errors
+    // Explicitly cast result to ensure string[] return type
     const result = JSON.parse(text) as string[];
     suggestionCache.set(cacheKey, result);
     return result;
@@ -153,7 +153,7 @@ export const getRelatedInterests = async (currentInterests: string[]): Promise<s
 
     const text = response.text;
     if (!text) return [];
-    // Explicitly cast JSON.parse result to string[] to resolve 'unknown' type inference errors
+    // Explicitly cast result to ensure string[] return type
     const result = JSON.parse(text) as string[];
     relatedCache.set(cacheKey, result);
     return result;

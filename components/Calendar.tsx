@@ -53,12 +53,12 @@ export const Calendar: React.FC<CalendarProps> = ({ events, onDateClick, interac
         className={`
           aspect-square border border-neutral-800 p-1.5 relative transition-all group overflow-hidden flex flex-col items-center
           ${interactive ? 'cursor-pointer hover:bg-neutral-800' : ''}
-          ${isSelected ? 'bg-white/5 ring-1 ring-inset ring-neutral-500 z-10' : (isToday ? 'bg-red-900/5' : 'bg-neutral-900')}
+          ${isSelected ? 'bg-white/10 ring-1 ring-inset ring-neutral-400 z-10' : (isToday ? 'bg-red-900/10' : 'bg-neutral-900')}
         `}
       >
         <span className={`
           ${compact ? 'text-[10px]' : 'text-sm font-semibold'} block mb-1 text-center
-          ${isToday ? 'text-red-500 bg-red-900/20 w-4 h-4 rounded-full flex items-center justify-center' : (isSelected ? 'text-white' : 'text-neutral-500')}
+          ${isToday ? 'text-red-500 bg-red-900/30 w-4 h-4 rounded-full flex items-center justify-center' : (isSelected ? 'text-white' : 'text-neutral-200')}
         `}>
           {d}
         </span>
@@ -70,7 +70,7 @@ export const Calendar: React.FC<CalendarProps> = ({ events, onDateClick, interac
                 key={idx} 
                 className={`
                   text-[10px] sm:text-xs truncate px-1.5 py-0.5 rounded
-                  ${evt.type === 'meeting' ? 'bg-red-500/20 text-red-300' : 'bg-neutral-800 text-neutral-400'}
+                  ${evt.type === 'meeting' ? 'bg-red-500/20 text-red-100' : 'bg-neutral-700 text-neutral-100'}
                 `}
               >
                 {evt.title}
@@ -110,15 +110,15 @@ export const Calendar: React.FC<CalendarProps> = ({ events, onDateClick, interac
     <div className="w-full bg-neutral-900 rounded-2xl shadow-sm border border-neutral-800 overflow-hidden">
       {!compact && (
         <div className="bg-neutral-900 p-4 border-b border-neutral-800 flex justify-between items-center">
-          <h3 className="font-bold text-lg text-white">
+          <h3 className="font-bold text-lg text-[#F5F5F5]">
             {today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </h3>
-          <div className="text-xs text-neutral-500 font-medium tracking-wide uppercase">English (US)</div>
+          <div className="text-xs text-neutral-300 font-medium tracking-wide uppercase">English (US)</div>
         </div>
       )}
       <div className="grid grid-cols-7 text-center border-b border-neutral-800 bg-neutral-900">
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
-          <div key={day} className={`${compact ? 'py-2 text-[9px]' : 'py-2 text-xs'} font-semibold text-neutral-500 uppercase tracking-wider`}>
+          <div key={day} className={`${compact ? 'py-2 text-[9px]' : 'py-2 text-xs'} font-semibold text-neutral-300 uppercase tracking-wider`}>
             {day}
           </div>
         ))}
