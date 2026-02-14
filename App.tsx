@@ -337,7 +337,8 @@ const AutocompleteInput = ({
   isLoading = false,
   localSuggestions = [],
   className = "",
-  inputHeight = "h-[56px]"
+  inputHeight = "h-[56px]",
+  textClassName = "text-sm font-medium"
 }: { 
   value: string; 
   onChange: (val: string) => void; 
@@ -350,6 +351,7 @@ const AutocompleteInput = ({
   localSuggestions?: string[];
   className?: string;
   inputHeight?: string;
+  textClassName?: string;
 }) => {
   const [show, setShow] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -421,7 +423,7 @@ const AutocompleteInput = ({
         <input 
           ref={inputRef}
           type="text"
-          className={`w-full px-6 py-0 transition-all outline-none font-medium ${inputHeight} text-sm text-white placeholder-neutral-500 ${inputIdleBase} ${inputHoverBase} ${inputFocusBase} rounded-xl`}
+          className={`w-full px-6 py-0 transition-all outline-none text-white placeholder-neutral-500 ${inputHeight} ${textClassName} ${inputIdleBase} ${inputHoverBase} ${inputFocusBase} rounded-xl`}
           placeholder={placeholder}
           value={value}
           onChange={(e) => {
@@ -1070,7 +1072,7 @@ const ProfileSetupView = ({
              {isEditMode && step === 7 && (
                 <button 
                   onClick={() => setIsInternalEditing(!isInternalEditing)}
-                  className={`mt-5 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border ${isInternalEditing ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-neutral-900 border-neutral-700 text-neutral-300 hover:border-neutral-500 hover:text-white'}`}
+                  className={`mt-5 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border ${isInternalEditing ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,42,42,0.2)]' : 'bg-neutral-900 border-neutral-700 text-neutral-300 hover:border-neutral-500 hover:text-white'}`}
                 >
                   {isInternalEditing ? <Icons.X className="w-3.5 h-3.5" /> : <Icons.Zap className="w-3.5 h-3.5" />}
                   {isInternalEditing ? 'Done' : 'Edit'}
@@ -1723,14 +1725,14 @@ const App = () => {
     filterLocation !== ''
   , [filterPersonality, filterTime, filterDepth, filterIntent, filterAge, filterLocation]);
 
+  // Fix: Explicitly ensure query and term types are strings to avoid "unknown" type error during string operations.
   const filteredUsers = useMemo(() => {
-    // Explicitly casting searchQuery to string to avoid type inference issues
-    const query: string = (searchQuery as string).toLowerCase();
-    return MOCK_USERS.filter((user: User) => {
+    const query = String(searchQuery || '').toLowerCase();
+    return MOCK_USERS.filter((user) => {
       const matchesSearch = !query || 
         user.name.toLowerCase().includes(query) ||
         user.occupation.toLowerCase().includes(query) ||
-        user.interests.some((interest: string) => interest.toLowerCase().includes(query));
+        user.interests.some((interest) => String(interest).toLowerCase().includes(query));
       
       const matchesPersonality = filterPersonality === 'ANY' || user.personality === filterPersonality;
       const matchesTime = filterTime === 'ANY' || user.preferredTime === filterTime;
@@ -1831,6 +1833,7 @@ const App = () => {
                     showCustomFallback={false}
                     className="w-full"
                     inputHeight="h-[56px]"
+                    textClassName="text-xl font-semibold"
                   />
                 </div>
                 <button 
